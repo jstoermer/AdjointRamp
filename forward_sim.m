@@ -17,5 +17,7 @@ for t = 1:s.T
     states = store_states(s, states);
 end
 
-out = states;
+s.states = states;
+
+out = s;
 end
