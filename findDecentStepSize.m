@@ -1,8 +1,6 @@
 function [stepSize] = findDecentStepSize(params)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
-
-stepSize=params.alpha*ones(params.T*(params.N-1));
+% Compute the optimal step size given the parameters
+stepSize=params.alpha*ones(1,params.T*(params.N-1))/params.iter;
 
 end
 
