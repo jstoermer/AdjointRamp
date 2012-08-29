@@ -14,4 +14,4 @@ end
 
 plt(1:T,data(:,:,1));
 plt(1:T,data(:,:,2));
-        
+end
