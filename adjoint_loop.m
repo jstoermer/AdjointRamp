@@ -7,8 +7,8 @@ while counter < iter;
     scen.u = u;
     scen = forward_sim(scen);
     adj = adjoint_sln(scen,scen.states);
-    l = scen.states.ramp_queues;
-    % gradient step!
+    l = {scen.states.ramp_queues}; % l in cell array form
+    % gradient step! u = gradientDescent(adj,l,u, scen?)
 end
 end
 
