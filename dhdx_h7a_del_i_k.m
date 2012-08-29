@@ -1,4 +1,4 @@
-function out = dhdx_h7a_del_i_k(beta, fin, del, ramp_dem)
+function out = dhdx_h7a_del_i_k(beta, fin, del, d)
 % HACK
 p = .5;
 if beta > 0
@@ -8,9 +8,9 @@ if beta > 0
         out = -1 / (1 - beta);
     end
 else
-    if p/(1-p) > del / (fin - (1 - beta)*del)
+    if fin > del / p
         out = -1 / (1 - beta);
-    elseif p/(1-p) < (fin - ramp_dem) / ((1 - beta)*ramp_dem)
+    elseif fin > d / (1 - p)
         out = 0;
     else
         out = 0;
