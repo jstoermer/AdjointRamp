@@ -8,8 +8,7 @@ while counter < iter;
     scen = forward_sim(scen);
     lambda = adjoint_sln(scen,scen.states);
     u = updateControl(scen, lambda);
-    % u = scen.u
-    % l = scen.states.ramp_queues
+    l = {scen.states.ramp_queues};
     % N = scen.N
     % T = scen.T
     % lambda_5k = lambda_5(scen,lambda,k)
