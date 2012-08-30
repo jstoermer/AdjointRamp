@@ -12,11 +12,11 @@ end
 p0_vec = [0,0,0];
 l0_vec = [0,0,0];
 
-D0_vec = [10,0.5,0.8,0,0,0,0,0,0];
+D0_vec = [.1,.2,.3,0.0,0,0,0,0,0];
 
-D = [.3,.3;
-    .3,.1;
-    .3,.3;
+D = [.15,.15;
+    .15,.15;
+    .15,.15;
     .0,.0;
     0,0;
     0,0;
@@ -24,15 +24,15 @@ D = [.3,.3;
     0,0;
     0,0;];
 
-u = [.3,.3;
-    .1,.3;
-    .2,.3;
-    .3,.3;
-    .3,.3;
-    .3,.3;
-    .3,.3;
-    .3,.3;
-    .3,.3;];
+u = [.1,.1;
+    .1,.1;
+    .1,.1;
+    .1,.1;
+    .1,.1;
+    .1,.1;
+    .1,.1;
+    .1,.1;
+    .1,.1;];
 
 beta = [0,.2;
     .2,.2;
@@ -47,8 +47,8 @@ beta = [0,.2;
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
 scen.u = u;
-% scen = forward_sim(scen);
-% plot_states(scen.states);
+scen = forward_sim(scen);
+plot_states(scen.states);
 % s = adjoint_sln(scen, scen.states)
 
-u = adjoint_loop(scen,u);
+% u = adjoint_loop(scen,u);
