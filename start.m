@@ -47,8 +47,8 @@ beta = [0,.2;
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
 scen.u = u;
-scen = forward_sim(scen);
+% scen = forward_sim(scen);
 % plot_states(scen.states);
-s = adjoint_sln(scen, scen.states)
+% s = adjoint_sln(scen, scen.states)
 
-% adjoint_loop(scen,u);
+adjoint_loop(scen,u);
