@@ -3,7 +3,7 @@ function [ u_updated ] = updateControl(u, l, lambda, scen)
 %   Detailed explanation goes here
 % params = struct('N', 'T', 'C', 'R', 'alpha', 'iter');
 
-partialJ_u = computePartialJ_u(R,u,l);
+partialJ_u = computePartialJ_u(scen.R,u,l);
 diagOfPartialH5_u = computePartialH5_u(u,l);
 % Preform a single step of gradient decent
 u_updated = gradDecent(u, partialJ_u, diagOfPartialH5_u, lambda, scen);
