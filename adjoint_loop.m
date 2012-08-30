@@ -5,13 +5,13 @@ u = u0;
 iter = 10;
 counter = 0;
 while counter < iter;
+    scen.iter = counter + 1;
     counter = counter + 1;
     scen.u = u;
     scen = forward_sim(scen);
     lambda = adjoint_sln(scen,scen.states);
     l = {scen.states.ramp_queues};
     l = cell2mat(l(2:end)');
-    size(l);
     u = updateControl(u, l, lambda, scen);
 end
 end

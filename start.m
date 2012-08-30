@@ -51,4 +51,4 @@ scen.u = u;
 % plot_states(scen.states);
 % s = adjoint_sln(scen, scen.states)
 
-adjoint_loop(scen,u);
+u = adjoint_loop(scen,u);
