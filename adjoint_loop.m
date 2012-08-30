@@ -1,12 +1,13 @@
 function u = adjoint_loop(scen,u0)
-scen.R = 1; % HACK
-scen.alpha = .001; % HACK
 u = u0;
-iter = 100;
+iter = 30;
 counter = 0;
 vals = []
+us = [];
+tic
 while counter < iter;
-    counter
+    counter;
+    us = [us, u(:)];
     scen.iter = counter + 1;
     counter = counter + 1;
     scen.u = u;
@@ -18,5 +19,8 @@ while counter < iter;
     l = cell2mat(l(2:end)');
     u = updateControl(u, l, lambda, scen);
 end
+toc
 plt(1:length(vals),vals);
+% plt(1:length(us),us);
+
 end

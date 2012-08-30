@@ -1,8 +1,7 @@
 function out = fund_diagram(v,w,f_max)
 
 rho_c = f_max / v;
-int = f_max + w * rho_c;
-rho_j = w * int;
+rho_j = rho_c + f_max / w;
 
 out.v = v;
 out.w = w;
