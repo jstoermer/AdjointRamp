@@ -12,17 +12,22 @@ end
 p0_vec = [0,0,0];
 l0_vec = [0,0,0];
 
-D0_vec = [1,0.8,0.8,0,0,0,0,0,0];
-D = [.5,0;.5,0;.5,0;0,0;0,0;0,0;0,0;0,0;0,0];
+D0_vec = [1.5,1.5,1.5,0,0,0,0,0,0];
+D = [0,1;0,1;0,0;0,0;0,0;0,0;0,0;0,0;0,0];
 
-u = 1.5*ones(9,2);
+u = ones(9,2);
 
 beta = zeros(9,2);
 
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
 scen.u = u;
-% scen = forward_sim(scen);
+scen = forward_sim(scen);
+
+scen.states.densities
+rhovec = sum([scen.states.densities]);
+lvec = sum([scen.states.ramp_queues]);
+vals = [rhovec lvec]
 % plot_states(scen.states);
 % s = adjoint_sln(scen, scen.states)
 

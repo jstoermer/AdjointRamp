@@ -1,8 +1,8 @@
 function u = adjoint_loopSamitha(scen,u0)
 scen.R = 1; % HACK
-scen.alpha = .001; % HACK
+scen.alpha = 1; % HACK
 u = u0;
-iter = 25;
+iter = 200;
 counter = 0;
 vals = [];
 u0
@@ -19,6 +19,9 @@ while counter < iter;
     u = updateControl(u, l, lambda, scen);
 end
 u
+l
+scen.states.densities
+rho = [scen.states.densities];
 plt(1:length(vals),vals);
-
+[sum(rho) sum(sum(l))]
 end
