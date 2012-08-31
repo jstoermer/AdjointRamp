@@ -9,7 +9,7 @@ w_vec = ones(1,N);
 fm_vec = ones(1,N);
 
 R = 0.1;
-alpha = .1;
+alpha = 1.0;
 
 p0_vec = zeros(T,N);
 l0_vec = zeros(T,N);
