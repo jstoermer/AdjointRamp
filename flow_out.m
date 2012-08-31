@@ -1,6 +1,6 @@
 function out = flow_out(us_cell, flow_in, cell_dem, ramp_dem)
 % HACK
-p = .2;
+p = .8;
 beta = us_cell.props.beta;
 if us_cell.props.beta == 0
     if flow_in > cell_dem / p
