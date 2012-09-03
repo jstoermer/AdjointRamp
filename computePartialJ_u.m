@@ -8,7 +8,7 @@ partialJ_u = zeros(1,T*Nr);
 for i=1:T
     for k=1:Nr;
         if (u(i,k) >= l(i,k))
-            partialJ_u(1,(i-1)*Nr + k) = R;
+            partialJ_u(1,(i-1)*Nr + k) = R*(u(i,k) - l(i,k));
         end
     end
 end

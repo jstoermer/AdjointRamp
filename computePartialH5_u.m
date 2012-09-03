@@ -10,7 +10,10 @@ for i=1:T
     for k=1:Nr;
         if (u(i,k) < l(i,k))
             % diagOfPartialH5_u is the diagonal of partialH5_u
-            diagOfPartialH5_u(1,(i-1)*Nr + k) = 1;
+            % HACK! remove this second if condition
+%            if (u(i,k) > 0)
+                diagOfPartialH5_u(1,(i-1)*Nr + k) = 1;
+%            end
         end
     end
 end

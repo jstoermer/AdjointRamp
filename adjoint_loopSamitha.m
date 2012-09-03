@@ -1,8 +1,8 @@
 function u = adjoint_loopSamitha(scen,u0)
-scen.R = 1; % HACK
-scen.alpha = 0.5; % HACK
+scen.R = 0; % HACK
+scen.alpha = 0.1; % HACK
 u = u0;
-iter = 100;
+iter = 5;
 counter = 0;
 vals = [];
 u0
@@ -16,10 +16,10 @@ while counter < iter;
     lambda = adjoint_sln(scen,scen.states);
     l = {scen.states.ramp_queues};
     l = cell2mat(l(2:end)');
-    u = updateControl(u, l, lambda, scen);
+    u = updateControl(lambda, scen, counter);
     u
 end
-u
+u;
 l
 scen.states.densities
 rho = [scen.states.densities];
