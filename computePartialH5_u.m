@@ -8,7 +8,7 @@ function [ diagOfPartialH5_u ] = computePartialH5_u(u, l)
 diagOfPartialH5_u = zeros(1,T*Nr);
 for i=1:T
     for k=1:Nr;
-        if (u(i,k) < l(i,k))
+        if (u(i,k) <= l(i,k))
             % diagOfPartialH5_u is the diagonal of partialH5_u
             % HACK! remove this second if condition
 %            if (u(i,k) > 0)

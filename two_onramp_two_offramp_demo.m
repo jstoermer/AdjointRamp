@@ -56,7 +56,7 @@ scen.alpha = alpha;
 
 scen.u = u;
 
-adjoint_loop(scen, u);
+adjoint_loopSamitha(scen, u);
 
 % scen = forward_sim(scen);
 % plot_states(scen.states);

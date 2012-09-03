@@ -1,4 +1,4 @@
-clear all; clc; close all;
+clear scen; clc; close all;
 dt = 1; dx = 1; N = 3;
 l_vec = [1,1,1];
 v_vec = [1,1,1];
@@ -13,26 +13,33 @@ end
 p0_vec = [0,0,0];
 l0_vec = [0,0,0];
 
-%D0_vec = [1.0,1.0,1.0,1.0,0,0,0,0,0];
+%D0_vec = [1,1,1,1,0,0,0,0,0];
 D0_vec = [0.9,0.9,0.9,0.9,0,0,0,0,0];
-D = [0,0;0.2,0;0,0;0,0;0,0;0,0;0,0;0,0;0,0];
+D = [0,0;
+    0.2,0;
+    0,0;
+    0,0;
+    0,0;
+    0,0;
+    0,0;
+    0,0;
+    0,0];
 %D = [0,0;0.1,0;0.1,0;0,0;0,0;0,0;0,0;0,0;0,0];
 %D = [0,0;1.5,0;0.5,0;0,0;0,0;0,0;0,0;0,0;0,0];
 %D = [0,0;1,0;0,0;0,0;0,0;0,0;0,0;0,0;0,0];
 %D = [0,0;0.5,0;0.5,0;0,0;0,0;0,0;0,0;0,0;0,0];
 
 u = ones(9,2);
-%u(3,1) = 0.1;
+u(3,1) = 0.19;
 
 beta = zeros(9,2);
 
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
 scen.u = u;
-u
 scen = forward_sim(scen);
 l = {scen.states.ramp_queues};    
-l = cell2mat(l(2:end)')
+l = cell2mat(l(1:end-1)');
 
 scen.states.densities
 rhovec = sum([scen.states.densities]);
