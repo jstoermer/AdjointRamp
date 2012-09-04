@@ -54,9 +54,10 @@ scen.alpha = alpha;
 
 % u(1:N*3,:) = .7;
 
-scen.u = u;
+% scen.u = u;
 
-adjoint_loop(scen, u);
+% adjoint_loop(scen, u);
+adjoint_loop(scen,u);
 
 % scen = forward_sim(scen);
 % plot_states(scen.states);
