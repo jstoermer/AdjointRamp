@@ -30,23 +30,22 @@ D = [0,0;
 %D = [0,0;0.5,0;0.5,0;0,0;0,0;0,0;0,0;0,0;0,0];
 
 u = ones(9,2);
-u(3,1) = 0.19;
+u(3,1) = 0.10;
+%u(4,1) = 0.10;
 
 beta = zeros(9,2);
-
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
 scen.u = u;
 scen = forward_sim(scen);
-l = {scen.states.ramp_queues};    
-l = cell2mat(l(1:end-1)');
 
-scen.states.densities
 rhovec = sum([scen.states.densities]);
-lvec = sum([scen.states.ramp_queues]);
+lvec = sum([scen.states.ramp_queues]);  
+disp('initial cost');
 vals = [rhovec lvec]
+disp('total');
 sum(vals)
-% plot_states(scen.states);
-% s = adjoint_sln(scen, scen.states)
+%plot_states(scen.states);
+%lambda = adjoint_sln(scen, scen.states)
 
 adjoint_loopSamitha(scen,u);

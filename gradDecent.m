@@ -1,16 +1,23 @@
-function [u_updated] = gradDecent(u, partialJ_u, diagOfPartialH5_u, lambda, scen)
+function [u_updated] = gradDecent(lambda, scen)
 % Given the current control u and the parameters required for gradient
 % decent, computes the new updated value of u 
 
-lambda5 = extractLambda5(lambda, scen)';
-gradJ_u = partialJ_u + lambda5.*diagOfPartialH5_u;
-
 t = findDecentStepSize(scen);
 
-u_vect = reshape(u',1,scen.T*(scen.N-1));
-u_updated = u_vect - t*gradJ_u;
+% fixed vars
+lambda5 = extractLambda5(lambda, scen)';
 
-u_updated = reshape(u_updated', scen.T, scen.N-1);
-u_updated = max(u_updated,0);
+% current iteration vars
+u = scen.u;
+l_cell = {scen.states.ramp_queues};
+l = cell2mat(l_cell(1:end-1)');
+
+% current iteration derivatives
+partialJ_u = computePartialJ_u(scen.R,u,l);
+diagOfPartialH5_u = computePartialH5_u(u,l);
+gradJ_u = partialJ_u + lambda5.*diagOfPartialH5_u;
+
+% u_updated = u - t*gradJ_u
+u_updated = update_u(u, t, gradJ_u, scen);
 
 end

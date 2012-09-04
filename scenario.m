@@ -9,6 +9,7 @@ out.cells = cells;
 out.D0 = D0;
 out.N = size(D, 2) + 1;
 out.T = size(D,1);
+out.iter = 0;
 
 % YOU NEED TO ADD u TO STRUCT IN ORDER FOR STUFF TO WORK
 
