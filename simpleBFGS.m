@@ -30,6 +30,7 @@ u = ones(9,2).*1;
 beta = zeros(9,2);
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
-scen.R = 100;
+scen.R = 10;
 % s = adjointBFGS(scen, u);
-compareControlPlot(scen, u);
+% compareControlPlot(scen, u);
+scen = mpc(scen, u, 3, 6);

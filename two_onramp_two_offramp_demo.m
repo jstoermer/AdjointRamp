@@ -56,7 +56,8 @@ scen.R = R;
 
 % adjoint_loop(scen, u);
 % final_u = adjointBFGS(scen,u);
-compareControlPlot(scen, u);
+% compareControlPlot(scen, u);
+scen = mpc(scen, u, 7,7);
 
 % scen = forward_sim(scen);
 % plot_states(scen.states);
