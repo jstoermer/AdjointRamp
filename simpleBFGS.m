@@ -23,12 +23,13 @@ D = [0,0;
     0,0;
     0,0];
 
-u = ones(9,2).*0;
+u = ones(9,2).*1;
 % u(3,1) = 0.10;
 % u(4,1) = 0.10;
 
 beta = zeros(9,2);
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
-scen.R = .5;
-s = adjointBFGS(scen, u);
+scen.R = 100;
+% s = adjointBFGS(scen, u);
+compareControlPlot(scen, u);

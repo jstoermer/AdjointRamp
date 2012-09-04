@@ -8,8 +8,7 @@ v_vec = ones(1,N);
 w_vec = ones(1,N);
 fm_vec = ones(1,N);
 
-R = 0.1;
-alpha = 1.0;
+R = 1;
 
 p0_vec = zeros(T,N);
 l0_vec = zeros(T,N);
@@ -47,7 +46,6 @@ end
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
 scen.R = R;
-scen.alpha = alpha;
 
 
 %% special u
@@ -57,7 +55,8 @@ scen.alpha = alpha;
 % scen.u = u;
 
 % adjoint_loop(scen, u);
-adjoint_loop(scen,u);
+% final_u = adjointBFGS(scen,u);
+compareControlPlot(scen, u);
 
 % scen = forward_sim(scen);
 % plot_states(scen.states);
