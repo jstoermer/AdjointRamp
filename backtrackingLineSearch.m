@@ -3,9 +3,9 @@ function [ u ] = backtrackingLineSearch(lambda, scen, iter)
 %   Detailed explanation goes here
 
 % search params
-alpha = 0.01;
+alpha = 0.2;
 beta = 0.5;
-t = 1;
+t = 0.01;
 
 % fixed vars
 lambda5 = extractLambda5(lambda, scen)';
@@ -32,7 +32,7 @@ while (~terminate)
 
     % update control
     % u_updated = u - t*gradJ_u
-    [u, u_vect, u_updated_vect] = update_u(u, t, gradJ_u, scen);
+    [u, u_vect, u_updated_vect] = update_u(t, gradJ_u, scen);
     
     % forward sim
     scen.u = u;
