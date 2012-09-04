@@ -1,9 +1,9 @@
 function u = adjoint_loopSamitha(scen,u0)
-scen.R = 0.01; % HACK
-scen.alpha = 0.01; % HACK
+scen.R = 100; % HACK
+scen.alpha = 0.5; % HACK
 
 u = u0;
-max_iter = 30;
+max_iter = 100;
 scen.iter = 0;
 vals = [];
 
