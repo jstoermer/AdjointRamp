@@ -1,4 +1,4 @@
-function out = mpc(scen, u0, sim_k, hor_k)
+function out = mpcRamp(scen, u0, sim_k, hor_k)
 
 main_scen = scen;
 main_scen.states = init_state_collector();

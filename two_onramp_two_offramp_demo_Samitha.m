@@ -53,11 +53,15 @@ scen.R = R;
 % u(1:N*3,:) = .7;
 
 % scen.u = u;
-
-% adjoint_loop(scen, u);
-% final_u = adjointBFGS(scen,u);
+tic;
+adjoint_loopSamitha(scen, u);
+display('decent time');
+t1 = toc
+final_u = adjointBFGS(scen,u)
+display('bfgs time');
+t2 = toc - t1
 % compareControlPlot(scen, u);
-scen = mpcRamp(scen, u, 1,1);
+%scen = mpcRamp(scen, u, 1,1);
 
 % scen = forward_sim(scen);
 % plot_states(scen.states);

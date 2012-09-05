@@ -7,6 +7,6 @@ u = scen.u';
 u = u(:)';
 outrho = sum(rho);
 outl = sum(l);
-outu = 3*R*sum(max(0,u - l2).^3);
+outu = (1/3)*R*sum(max(0,u - l2).^3);
 out = outrho + outl + outu;
 end
