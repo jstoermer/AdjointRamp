@@ -31,8 +31,8 @@ beta = zeros(9,2);
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
 scen.R = 10;
-s = adjointBFGS(scen, u);
-scen.alpha = .1;
-s = adjoint_loop(scen, u);
-% compareControlPlot(scen, u);
+% s = adjointBFGS(scen, u);
+% scen.alpha = .1;
+% s = adjoint_loop(scen, u);
+compareControlPlot(scen, u);
 % scen = mpc(scen, u, 1, 2);
