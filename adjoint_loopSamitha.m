@@ -15,6 +15,7 @@ while scen.iter < max_iter;
     vals = [vals, [v1,v2,v3,v4]'];
     lambda = adjoint_sln(scen,scen.states);
     u = updateControl(lambda, scen);
+    v1
 end
 disp('\rho final');
 reshape([scen.states.densities], scen.N+1, scen.T+1)'
