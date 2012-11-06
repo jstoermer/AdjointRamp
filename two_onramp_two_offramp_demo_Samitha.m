@@ -54,12 +54,13 @@ scen.R = R;
 
 % scen.u = u;
 tic;
-adjoint_loopSamitha(scen, u);
-display('decent time');
+u_grad = adjoint_loopSamitha(scen, u);
+display('grad decent time');
 t1 = toc
-final_u = adjointBFGS(scen,u)
+u_bfgs = adjointBFGS(scen,u)
 display('bfgs time');
 t2 = toc - t1
+compareControls(scen, u_grad, u_bfgs);
 % compareControlPlot(scen, u);
 %scen = mpcRamp(scen, u, 1,1);
 
