@@ -1,4 +1,4 @@
-function compareControls(scen, u1, u2)
+function [scen1 scen2] = compareControls(scen, u1, u2)
 scen1 = scen;
 scen1.u = u1;
 scen2 = scen;
