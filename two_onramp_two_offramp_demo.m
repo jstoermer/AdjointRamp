@@ -9,6 +9,7 @@ w_vec = ones(1,N);
 fm_vec = ones(1,N);
 
 R = 1;
+p = 0.8*ones(1,N);
 
 p0_vec = zeros(T,N);
 l0_vec = zeros(T,N);
@@ -43,8 +44,7 @@ end
 
 
 %% scenario 1
-
-scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
+scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, p, dt, dx);
 scen.R = R;
 
 

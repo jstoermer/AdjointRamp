@@ -10,7 +10,7 @@ p = 1;
 for i = 1:N
     cells(i) = highway_cell(v_vec(i), w_vec(i), fm_vec(i), l_vec(i));
 end
-
+ 
 p0_vec = [0,0,0];
 l0_vec = [0,0,0];
 
@@ -34,7 +34,7 @@ u = ones(9,2)*1;
 %u(3,1) = 0.10;
 %u(4,1) = 0.10;
 
-beta = zeros(9,2);
+beta = 0.2*zeros(9,2);
 
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, p, dt, dx);
 scen.u = u;
