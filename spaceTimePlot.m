@@ -1,4 +1,10 @@
-function spaceTimePlot(densities)
+function spaceTimePlot(varargin)
+densities = varargin{1};
+if nargin == 2
+    whitezero = varargin{2};
+else
+    whitezero = false;
+end
 [T,N] = size(densities);
 
 % createfigure(densities);
@@ -24,4 +30,8 @@ xlabel('Downstream');
 ylabel('Time');
 title('Density Profile');
 colorbar;
+if whitezero
+    bottom = min(min(densities));
+    top = max(max(densities));
+    colormap(b2r(bottom, top));
 end
