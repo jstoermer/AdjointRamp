@@ -1,9 +1,9 @@
 function u = adjoint_loopSamitha(scen,u0)
 scen.R = 10; % HACK
-scen.alpha = 0.5; % HACK
+scen.alpha = 0.05; % HACK
 
 u = u0;
-max_iter = 20;
+max_iter = 25;
 scen.iter = 0;
 vals = [];
 
@@ -14,7 +14,7 @@ while scen.iter < max_iter;
     [v1,v2,v3,v4] = cost_function(scen);
     vals = [vals, [v1,v2,v3,v4]'];
     lambda = adjoint_sln(scen,scen.states);
-    u = updateControl(lambda, scen);
+    u = updateControl(lambda, scen)
     v1
 end
 disp('\rho final');

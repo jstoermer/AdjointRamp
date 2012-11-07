@@ -55,12 +55,21 @@ scen.R = R;
 % scen.u = u;
 tic;
 u_grad = adjoint_loopSamitha(scen, u);
+%[scen_grad scen_bfgs] = compareControls(scen, u_grad, u_bfgs);
+%l_gradc = {scen_grad.states.ramp_queues};
+%l_grad = cell2mat(l_gradc(1:end-1)')
+
 display('grad decent time');
 t1 = toc
-u_bfgs = adjointBFGS(scen,u)
-display('bfgs time');
-t2 = toc - t1
-compareControls(scen, u_grad, u_bfgs);
+
+% u_bfgs = adjointBFGS(scen,u)
+% display('bfgs time');
+% t2 = toc - t1
+% display('bfgs l');
+%l_bfgsc = {scen_bfgs.states.ramp_queues};
+%l_bfgs = cell2mat(l_bfgsc(1:end-1)')
+% 
+% t2
 % compareControlPlot(scen, u);
 %scen = mpcRamp(scen, u, 1,1);
 

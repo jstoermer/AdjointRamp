@@ -5,7 +5,8 @@ function [ u ] = backtrackingLineSearch(lambda, scen, iter)
 % search params
 alpha = 0.2;
 beta = 0.5;
-t = 0.01;
+t = findDecentStepSize(scen);
+%t = 0.001;
 
 % fixed vars
 lambda5 = extractLambda5(lambda, scen)';
@@ -16,9 +17,9 @@ l = {scen.states.ramp_queues};
 l = cell2mat(l(1:end-1)');
 
 % current iteration derivatives
-partialJ_u = computePartialJ_u(scen.R,u,l);
-diagOfPartialH5_u = computePartialH5_u(u,l);
-gradJ_u = partialJ_u + lambda5.*diagOfPartialH5_u;
+partialJ_u = computePartialJ_u(scen.R,u,l)
+diagOfPartialH5_u = computePartialH5_u(u,l)
+gradJ_u = partialJ_u + lambda5.*diagOfPartialH5_u
 
 % current iteration cost
 curr_cost = cost_function(scen);
@@ -26,7 +27,7 @@ curr_cost = cost_function(scen);
 terminate = false;
 
 count = 0;
-maxCount = 1;
+maxCount = 10;
 while (~terminate)
     count = count + 1;
 

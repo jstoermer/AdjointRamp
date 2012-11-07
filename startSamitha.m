@@ -38,6 +38,7 @@ beta = zeros(9,2);
 scen = scenario(p0_vec,l0_vec,D0_vec, D, cells, beta, dt, dx);
 scen.u = u;
 scen = forward_sim(scen);
+reshape([scen.states.densities], scen.N+1, scen.T+1)'
 
 rhovec = sum([scen.states.densities]);
 lvec = sum([scen.states.ramp_queues]);  

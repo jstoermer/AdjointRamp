@@ -1,4 +1,4 @@
-function [u_updated] = gradDecent3(lambda, scen)
+function [u_updated] = gradDecent(lambda, scen)
 % Given the current control u and the parameters required for gradient
 % decent, computes the new updated value of u 
 
