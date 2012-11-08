@@ -13,13 +13,12 @@ catch
 end
 
 %% create cells
-
-
-for i = 1:length(data.v)
-    cells(i) = highway_cell(data.v(i), data.w(i), data.fm(i), data.L(i));
+N = length(data.v);
+for i = 1:N
+    links(i).v = data.v(i);
+    links(i).w = data.w(i);
+    links(i).fm = data.fm(i);
 end
-
-
 
 %% scenario 1
 

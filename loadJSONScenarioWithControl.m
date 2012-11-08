@@ -1,10 +1,5 @@
 function out = loadJSONScenarioWithControl(varargin)
-json_file = varargin{1};
-if isstruct(json_file)
-    json = json_file;
-else
-    json = loadjson(json_file);
-end
+json = jsonOrScen(varargin{1});
 if length(varargin) == 2
     u = varargin{2};
 else
