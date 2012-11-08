@@ -6,6 +6,6 @@ if isfield(json, 'scen')
 end
 N = length(json.v);
 T = length(json.D0);
-u = ones(T,N)*0;
+u = ones(T,N)*10000000;
 out = loadJSONScenarioWithControl(json, u);
 end
