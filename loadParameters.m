@@ -1,9 +1,9 @@
-global defaults
+global parameters
 
-defaults.R = .1;
+parameters.R = .1;
 %% gradient methods
 % 1. gradient descent
 % 2. l-bfgs
 
-defaults.gradient_method = 1;
+parameters.gradient_method = 1;
 
