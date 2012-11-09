@@ -19,8 +19,8 @@ iteration = 0;
 while true
     iteration = iteration + 1;
     outputState = forwardSimulation(scen, u);
-    gradient = gradientRampControl(scen, outputState, u);
-    nextU = nextRampControl(scen, gradient, u);
+    gradientJ_u = gradientRampControl(scen, outputState, u);
+    nextU = nextRampControl(scen, gradientj_u, u);
     if stopIterating(scen, u, nextU, iteration)
         u = nextU;
         return;
@@ -61,6 +61,16 @@ switch globalDescentAlgorithm
         warning('Unknown descent algorithm');
 end
 end
+
+function nextU = basicGD(scen, gradientJ_u, u)
+% Given the current control u and the parameters required for gradient
+% decent, computes the new updated value of u 
+t = findDecentStepSize(scen);
+% u_updated = u - t*gradientJ_u
+nextU = update_u(t, scen, gradientJ_u, u);
+
+end
+
 
 function stop = stopIterating(scen, u, nextU, iteration)
     stop = (nextU - u < globalConvergenceThreshold) | (iteration > globalMaxIterations);
