@@ -20,8 +20,7 @@ end
 end
 
 
-function outputState = forwardSimulation(scen, u)
-end
+
 
 function gradient = gradientRampControl(scen, outputState, u)
 end

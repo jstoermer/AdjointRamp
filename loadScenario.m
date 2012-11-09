@@ -6,16 +6,16 @@ function out = loadScenario(json)
 
 %% structure of output:
 %       scen.links:    1xN struct
-%             link:    v,w,fm
+%             link:    v,w,fm,rmax
 %          scen.BC:    D, beta -> T x N matrix
 %          scen.IC:    l0, p0 -> 1 x N matrix
 %           scen.N:    1 x 1 matrix, number of mainlines
 %           scen.T:    1 x 1 matrix, number of demand points specified
 
 %% format of json
-%                    dx:   1 x 1
-%           beta, u0, D:   T x N
-%   p0, l0, p, v, w, fm:   1 x N
+%                          dx:   1 x 1
+%                 beta, u0, D:   T x N
+%   p0, l0, p, v, w, fm, rmax:   1 x N
 %
 
 json = jsonOrScen(json);
@@ -37,6 +37,7 @@ for i = 1:N
     links(i).w = data.w(i);
     links(i).fm = data.fm(i);
     links(i).p = data.p(i);
+    links(i).rmax = data.rmax(i);
 end
 
 %% initial conditions
