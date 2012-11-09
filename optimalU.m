@@ -34,7 +34,22 @@ end
 function outputState = forwardSimulation(scen, u)
 end
 
-function gradient = gradientRampControl(scen, outputState, u)
+function gradientJ_u = gradientRampControl(scen, outputState, u)
+% Finds the gradient for a given scenario, control and resulting output state    
+
+    % Find the adjoint parameters
+    lambda = adjoint_sln(scen,scen.states);
+    lambda5 = extractLambda5(lambda, scen)';
+    
+    % Get l in flat format
+    l_cell = {outputState.ramp_queues};
+    l = cell2mat(l_cell(1:end-1)');
+
+    % Compute the gradient    
+    partialJ_u = computePartialJ_u(scen.R,u,l);
+    diagOfPartialH5_u = computePartialH5_u(u,l);
+    gradientJ_u = partialJ_u + lambda5.*diagOfPartialH5_u;
+    
 end
 
 function nextU = nextRampControl(scen, gradient, u)
