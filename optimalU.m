@@ -1,5 +1,5 @@
 function [u, outputState] = optimalU(varargin)
-scen = jsonOrScen(varargin{1});
+scen = loadScenario(varargin{1});
 try
     u = varargin{2};
 catch e
