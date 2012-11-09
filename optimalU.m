@@ -30,8 +30,6 @@ end
 
 end
 
-
-
 function gradientJ_u = gradientRampControl(scen, outputState, u)
 % Finds the gradient for a given scenario, control and resulting output state    
 
@@ -52,11 +50,11 @@ end
 
 function nextU = nextRampControl(scen, gradient, u)
 % Updates the control given a scenario, current control and gradient
-switch globalDescentAlgorithm
+switch parameters.decentAlgorithm
     case 'basicGradientDescent'
-        basicGD(scen, gradient, u);
+        nextU = basicGD(scen, gradient, u);
     case 'backtrackingLineSearch'
-        btLineSearch(scen, gradient, u);
+        nextU = btLineSearch(scen, gradient, u);
     otherwise
         warning('Unknown descent algorithm');
 end

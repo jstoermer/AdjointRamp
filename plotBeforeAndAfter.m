@@ -5,9 +5,9 @@ if nargin == 2
 else
     useBFGS = true;
 end
-s1 = loadJSONScenario(fn);
+s1 = loadScenario(fn);
 plotForwardSim(s1);
-s2 = loadJSONScenario(fn);
+s2 = loadScenario(fn);
 optimalU = getOptimalMetering(s2,useBFGS);
 s2.u = optimalU;
 plotForwardSim(s2);
