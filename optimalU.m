@@ -36,7 +36,7 @@ function gradientJ_u = gradientRampControl(scen, outputState, u)
 % Finds the gradient for a given scenario, control and resulting output state    
 
     % Find the adjoint parameters
-    lambda = adjoint_sln(scen,scen.states);
+    lambda = adjoint_sln(scen,outputState);
     lambda5 = extractLambda5(lambda, scen)';
     
     % Get l in flat format

@@ -99,9 +99,7 @@ end
 if isempty(linkDown) % end corner case
     supply = inf;
 else
-    rhoCrit = linkDown.v * linkDown.fm;
-    rhoMax = linkDown.fm / linkDown.w + rhoCrit;
-    supply = min([linkDown.fm, linkDown.w * (rhoMax - densityDown)]); % downstream supply
+    supply = min([linkDown.fm, linkDown.w * (linkDown.pm - densityDown)]); % downstream supply
 end
 
 demand = demandUp * (1 - beta) + demandRamp;

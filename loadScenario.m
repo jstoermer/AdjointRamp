@@ -39,6 +39,8 @@ for i = 1:N
     links(i).p = data.p(i);
     links(i).rmax = data.rmax(i);
     links(i).L = data.L(i);
+    links(i).pc = links(i).v * links(i).fm;
+    links(i).pm = links(i).fm / links(i).w + links(i).pc;
 end
 
 %% initial conditions

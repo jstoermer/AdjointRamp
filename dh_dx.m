@@ -1,7 +1,10 @@
 function out = dh_dx(scen, states)
-dt = scen.dt; dx = scen.dx;
-T = length(states) - 1;
-N = length(states(1).densities) - 1;
+%% HACK
+dx = 1;
+%% HACK HACK HACK
+dt = scen.dt;
+T = scen.T;
+N = scen.N;
 n =  T * (8 * N - 1);
 idx = @(a,b,c) idx_lookup(a,b,c,N);
 
