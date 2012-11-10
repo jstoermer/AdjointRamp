@@ -17,3 +17,10 @@
 * l: (T+1) x (N) matrix
 * l(k,i) = cars on the onramp ENTERING link i at time k
 
+### Fluxes
+
+* For each link, time:
+	* flux in
+	* flux out
+	* ramp flux
+	

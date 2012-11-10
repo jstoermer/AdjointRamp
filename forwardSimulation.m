@@ -10,8 +10,8 @@ fluxIn = zeros(T,N);
 fluxOut = zeros(T,N);
 fluxRamp = zeros(T,N);
 % initial conditions
-density(1,:) = scen.p0;
-queue(1,:) = scen.l0;
+density(1,:) = scen.IC.p0;
+queue(1,:) = scen.IC.l0;
 
 for loopT = 1:T % solve for time step loopT
     prevDensity = density(loopT,:);
@@ -28,7 +28,7 @@ for loopT = 1:T % solve for time step loopT
             linkUp = scen.links(loopLink-1);
             densityUp = prevDensity(loopLink-1);
         end
-        if lookLink == N+1 % end b.c.
+        if loopLink == N+1 % end b.c.
             linkDown = [];
             densityDown = 0;
             queue = [];
@@ -60,7 +60,7 @@ for loopT = 1:T % solve for time step loopT
     for loopLink = 1:N
         fIn = inFluxes(loopLink); fOut = outFluxes(loopLink);
         fRampIn = scen.BC.D(loopT, loopLink); fRampOut = rampFluxes(loopLink);
-        newDensity(loopLink) = prevDensity(loopLink) + scen.dt / scen.links(loopLink).l * (fIn - fOut);
+        newDensity(loopLink) = prevDensity(loopLink) + scen.dt / scen.links(loopLink).L * (fIn - fOut);
         newQueue(loopLink) = prevQueue(loopLink) + scen.dt * (fRampIn - fRampOut);
     end
     fluxIn(loopT,:) = inFluxes';
@@ -90,16 +90,18 @@ if isempty(queue) % end corner case
     demandRamp = 0;
 else
     if queue == 0 % check for empty queue
-        demandRamp = min(queueDemand, linkDown.rmax, u); % if empty kick out at demand rate
+        demandRamp = min([queueDemand, linkDown.rmax, u]); % if empty kick out at demand rate
     else
-        demandRamp = min(u,linkDown.rmax); % in non-empty, kick out at max rate
+        demandRamp = min([u,linkDown.rmax]); % in non-empty, kick out at max rate
     end
 end
 
 if isempty(linkDown) % end corner case
     supply = inf;
 else
-    supply = min(linkDown.w * (linkDown.pmax - densityDown)); % downstream supply
+    rhoCrit = linkDown.v * linkDown.fm;
+    rhoMax = linkDown.fm / linkDown.w + rhoCrit;
+    supply = min([linkDown.fm, linkDown.w * (rhoMax - densityDown)]); % downstream supply
 end
 
 demand = demandUp * (1 - beta) + demandRamp;

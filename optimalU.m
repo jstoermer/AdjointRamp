@@ -7,7 +7,7 @@ function [u, outputState] = optimalU(varargin)
 % u - Optimal control 
 % outputState - State evolution resulting from the optimal control
 
-scen = jsonOrScen(varargin{1});
+scen = loadScenario(varargin{1});
 try
     u = varargin{2};
 catch e
