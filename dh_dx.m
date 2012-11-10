@@ -71,11 +71,11 @@ for ci = 1:8
                 out(hi,xi) = dhdx_h3_del_i_k();
                 xi = idx(k,'rho',i);
                 
-                rho = states(k+1).densities(i+1);
+                rho = states.density(k+1,i+1);
                 if i == 0
                     cell = scen.dummy;
                 else
-                    cell = scen.cells(i);
+                    cell = scen.links(i);
                 end
                 v = cell.fd.v;
                 F = cell.fd.f_max;
@@ -89,10 +89,10 @@ for ci = 1:8
                 out(hi,xi) = dhdx_h4_sig_i_k();
                 xi = idx(k,'rho',i);
                 
-                rho = states(k+1).densities(i+1);
-                w = scen.cells(i).fd.w;
-                rho_j = scen.cells(i).fd.rho_j;
-                F = scen.cells(i).fd.f_max;
+                rho = states.density(k+1,i+1);
+                w = scen.links(i).w;
+                rho_j = scen.links(i).pmax;
+                F = scen.links(i).fm;
                 
                 out(hi,xi) = dhdx_h4_rho_i_k(rho,w,rho_j,F);
                 
