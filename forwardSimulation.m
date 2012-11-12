@@ -9,6 +9,9 @@ queue = zeros(T+1, N);
 fluxIn = zeros(T,N);
 fluxOut = zeros(T,N);
 fluxRamp = zeros(T,N);
+mlDemand = zeros(T,N);
+mlSupply = zeros(T,N);
+rampDemand = zeros(T,N);
 % initial conditions
 density(1,:) = scen.IC.p0;
 queue(1,:) = scen.IC.l0;
@@ -45,13 +48,16 @@ for loopT = 1:T % solve for time step loopT
             uCurrent = u(loopT, loopLink);
             p = linkDown.p;
         end
-        [fu, fd, fr] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, uCurrent, beta, p);
+        [fu, fd, fr, dML, dR, sML] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, uCurrent, beta, p);
         if loopLink > 1
-            inFluxes(loopLink-1) = fd;
-            rampFluxes(loopLink - 1) = fr;
+          inFluxes(loopLink-1) = fd;
+          rampFluxes(loopLink - 1) = fr;
+          mlDemand(loopLink - 1) = dML;  
         end
         if loopLink < N + 1
-            outFluxes(loopLink) = fu;
+          rampDemand(loopLink) = dR;
+          outFluxes(loopLink) = fu;
+          mlSupply(loopLink) = sML;
         end
     end
     
@@ -75,10 +81,13 @@ outputState.queue = queue;
 outputState.fluxIn = fluxIn;
 outputState.fluxOut = fluxOut;
 outputState.fluxRamp = fluxRamp;
+outputState.supply = mlSupply;
+outputState.demand = mlDemand;
+outputState.rampDemand = rampDemand;
 
 end
 
-function [flowUp, flowDown, flowRamp] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, u, beta, p)
+function [flowUp, flowDown, flowRamp, demandUp, demandRamp, supply] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, u, beta, p)
 
 if isempty(linkUp) % start corner case
     demandUp = 0;
