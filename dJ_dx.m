@@ -1,13 +1,13 @@
 function out = dJ_dx(N, T)
-n =  T * (8 * N - 1);
+n =  (T+1) * N * 8;
 out = sparse(n,1);
 
-for k = 0:T-1
-    for i = 0:N
-        out(idx_lookup(k,'rho',i,N)) = 1;
+for k = 1:T+1
+    for i = 1:N
+        out(idx(N,k,'rho',i)) = 1;
     end
-    for i = 1:N-1
-        out(idx_lookup(k,'l',i,N)) = 1;
+    for i = 1:N
+        out(idx(N,k,'l',i)) = 1;
     end
 end
 

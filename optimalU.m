@@ -32,33 +32,31 @@ end
 
 
 
-function gradientJ_u = gradientRampControl(scen, outputState, u)
+function out = gradientRampControl(scen, states, u)
 % Finds the gradient for a given scenario, control and resulting output state    
+global parameters;
 
-    % Find the adjoint parameters
-    lambda = adjoint_sln(scen,outputState);
-    lambda5 = extractLambda5(lambda, scen)';
-    
-    % Get l in flat format
-    l_cell = {outputState.ramp_queues};
-    l = cell2mat(l_cell(1:end-1)');
+% get params
+l = states.queue;
+R = parameters.R;
 
-    % Compute the gradient    
-    partialJ_u = computePartialJ_u(scen.R,u,l);
-    diagOfPartialH5_u = computePartialH5_u(u,l);
-    gradientJ_u = partialJ_u + lambda5.*diagOfPartialH5_u;
-    
+% Compute the gradient
+out = dj_du(R,u,l)' + adjoint_sln(scen,states, u)'*dh_du(u,l);
+
 end
 
-function nextU = nextRampControl(scen, gradient, u)
+function out = nextRampControl(scen, gradient, u)
 % Updates the control given a scenario, current control and gradient
-switch globalDescentAlgorithm
-    case 'basicGradientDescent'
-        basicGD(scen, gradient, u);
-    case 'backtrackingLineSearch'
-        btLineSearch(scen, gradient, u);
-    otherwise
-        warning('Unknown descent algorithm');
+global parameters;
+switch parameters.globalDescentAlgorithm
+  case 'basicGradientDescent'
+    out = basicGD(scen, gradient, u);
+  case 'backtrackingLineSearch'
+    out = btLineSearch(scen, gradient, u);
+  case 'lbfgs'
+    out = adjointBFGS(scen, gradient, u);
+  otherwise
+    error('Unknown descent algorithm');
 end
 end
 

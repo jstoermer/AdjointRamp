@@ -5,5 +5,4 @@ parameters.R = .1;
 % 1. gradient descent
 % 2. l-bfgs
 
-parameters.gradient_method = 1;
-
+parameters.globalDescentAlgorithm = 'basicGradientDescent';
