@@ -1,39 +1,18 @@
-function [ u ] = backtrackingLineSearch(lambda, scen, iter)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+function [ u ] = backtrackingLineSearch(scen, gradJ_u, u)
 
-% search params
-alpha = 0.2;
-beta = 0.5;
 t = findDecentStepSize(scen);
-%t = 0.001;
-
-% fixed vars
-lambda5 = extractLambda5(lambda, scen)';
-
-% current iteration vars
-u = scen.u;
-l = {scen.states.ramp_queues};
-l = cell2mat(l(1:end-1)');
-
-% current iteration derivatives
-partialJ_u = computePartialJ_u(scen.R,u,l)
-diagOfPartialH5_u = computePartialH5_u(u,l)
-gradJ_u = partialJ_u + lambda5.*diagOfPartialH5_u
 
 % current iteration cost
 curr_cost = cost_function(scen);
 
 terminate = false;
-
 count = 0;
-maxCount = 10;
 while (~terminate)
     count = count + 1;
 
     % update control
     % u_updated = u - t*gradJ_u
-    [u, u_vect, u_updated_vect] = update_u(t, gradJ_u, scen);
+    [u, u_vect, u_updated_vect] = update_u(t, scen, gradJ_u, u);
     
     % forward sim
     scen.u = u;
@@ -43,7 +22,7 @@ while (~terminate)
     new_cost = cost_function(scen);
     
     % termination check
-    if ((new_cost < curr_cost + alpha*t*gradJ_u*(u_updated_vect - u_vect)') || (count >= maxCount))
+    if ((new_cost < curr_cost + alpha*t*gradJ_u*(u_updated_vect - u_vect)') || (count >= parameters.btLineSearch.maxIters ))
         terminate = true;
     else
         % update vars

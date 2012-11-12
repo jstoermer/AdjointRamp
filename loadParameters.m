@@ -23,4 +23,5 @@ parameters.descentAlgorithm = 'basicGradientDescent';
 
 parameters.btlinesearch.alpha = 0.2;
 parameters.btlinesearch.beta = 0.5;
+parameters.btlinesearch.maxIters = 10;
 
