@@ -1,10 +1,12 @@
 !git checkout master;
 clear all;
-plotForwardSim('networks/samitha1onramp.json');
+net = 'simple'
+fn = ['networks/' net '.json'];
+plotForwardSim(fn);
 !git checkout dhdx;
 clear all;
 loadParameters;
-scen = loadScenario('networks/samitha1onramp.json');
+scen = loadScenario(fn);
 T = scen.T; N = scen.N;
 u = ones(T,N);
 plotForwardSim(scen,u);
