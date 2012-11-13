@@ -27,26 +27,6 @@ end
 
 end
 
-
-
-function out = gradientRampControl(scen, states, u)
-% Finds the gradient for a given scenario, control and resulting output state    
-global parameters;
-
-% get params
-l = states.queue;
-R = parameters.R;
-
-djdu = dj_du(scen, states, u)';
-lambda = adjoint_sln(scen,states, u)';
-dhdu = dh_du(u,l);
-
-
-% Compute the gradient
-out = djdu + lambda*dhdu;
-
-end
-
 function out = nextRampControl(scen, gradient, u, iter)
 % Updates the control given a scenario, current control and gradient
 global parameters;

@@ -1,6 +1,6 @@
 global parameters
 
-parameters.R = 0.01;
+parameters.R = 0.00;
 %% gradient methods
 % 1. gradient descent
 % 2. l-bfgs
