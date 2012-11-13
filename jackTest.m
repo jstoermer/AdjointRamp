@@ -2,7 +2,7 @@
 clear all;
 net = 'samitha1onramp'
 fn = ['networks/' net '.json'];
-plotForwardSim(fn);
+plotBeforeAndAfter(fn);
 !git checkout dhdxexp;
 clear all;
 net = 'samitha1onramp'
@@ -11,4 +11,4 @@ loadParameters;
 scen = loadScenario(fn);
 T = scen.T; N = scen.N;
 u = ones(T,N).*.1;
-plotForwardSim(scen,u);
+plotBeforeAndAfter(scen,u);
