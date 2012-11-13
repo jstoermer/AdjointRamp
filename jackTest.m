@@ -1,6 +1,6 @@
 !git checkout master;
 clear all;
-net = 'simple'
+net = 'samitha1onramp'
 fn = ['networks/' net '.json'];
 plotForwardSim(fn);
 !git checkout dhdx;
@@ -10,5 +10,5 @@ fn = ['networks/' net '.json'];
 loadParameters;
 scen = loadScenario(fn);
 T = scen.T; N = scen.N;
-u = ones(T,N);
+u = ones(T,N).*.2;
 plotForwardSim(scen,u);
