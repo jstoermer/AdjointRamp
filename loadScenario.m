@@ -18,6 +18,11 @@ function out = loadScenario(json)
 %   L, p0, l0, p, v, w, fm, rmax:   1 x N
 %
 
+if isfield(json,'BC') % don't need to be passed into this function, already good to go
+  out = json;
+  return;
+end
+
 json = jsonOrFilename(json);
 
 %% in case json is lazily dumped

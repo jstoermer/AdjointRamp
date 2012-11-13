@@ -7,20 +7,17 @@ function [u, outputState] = optimalU(varargin)
 % u - Optimal control 
 % outputState - State evolution resulting from the optimal control
 
-scen = loadScenario(varargin{1});
-try
-    u = varargin{2};
-catch e
-    disp(e);
-    u = chooseInitialU(scen);
-end
+[scen u] = scenUVarArgIn(varargin, .8);
 
 iteration = 0;
 while true
     iteration = iteration + 1;
     outputState = forwardSimulation(scen, u);
+    totalTravelTime(scen, outputState, u);
     gradient = gradientRampControl(scen, outputState, u);
-    nextU = nextRampControl(scen, gradient, u);
+    full(gradient);
+    nextU = nextRampControl(scen, gradient, u, iteration);
+    nextU
     if stopIterating(scen, u, nextU, iteration)
         u = nextU;
         return;
@@ -40,17 +37,22 @@ global parameters;
 l = states.queue;
 R = parameters.R;
 
+djdu = dj_du(scen, states, u)';
+lambda = adjoint_sln(scen,states, u)';
+dhdu = dh_du(u,l);
+
+
 % Compute the gradient
-out = dj_du(R,u,l)' + adjoint_sln(scen,states, u)'*dh_du(u,l);
+out = djdu + lambda*dhdu;
 
 end
 
-function out = nextRampControl(scen, gradient, u)
+function out = nextRampControl(scen, gradient, u, iter)
 % Updates the control given a scenario, current control and gradient
 global parameters;
 switch parameters.globalDescentAlgorithm
   case 'basicGradientDescent'
-    out = basicGD(scen, gradient, u);
+    out = basicGD(scen, gradient, u, iter);
   case 'backtrackingLineSearch'
     out = btLineSearch(scen, gradient, u);
   case 'lbfgs'
@@ -61,5 +63,6 @@ end
 end
 
 function stop = stopIterating(scen, u, nextU, iteration)
-    stop = (nextU - u < globalConvergenceThreshold) | (iteration > globalMaxIterations);
+global parameters;
+    stop = (norm(nextU - u) < parameters.globalConvergenceThreshold) | (iteration > parameters.globalMaxIterations);
 end

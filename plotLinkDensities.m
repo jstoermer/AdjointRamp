@@ -1,5 +1,3 @@
-function plotLinkDensities(scen)
-data = datafy_states(scen.states);
-densities = data(:,:,1)';
-spaceTimePlot(densities);
+function plotLinkDensities(states)
+spaceTimePlot(states.density);
 end
