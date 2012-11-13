@@ -1,6 +1,6 @@
 !git checkout master;
 clear all;
-net = 'simple'
+net = 'samitha1onramp'
 fn = ['networks/' net '.json'];
 plotForwardSim(fn);
 !git checkout dhdx;
