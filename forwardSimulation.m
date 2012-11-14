@@ -45,6 +45,7 @@ for loopT = 1:T % solve for time step loopT
       uCurrent = 0;
       beta = 0;
       p = 0.0;
+      rmax = 0.0;
     else
       linkDown = scen.links(loopLink);
       densityDown = prevDensity(loopLink);
@@ -53,8 +54,9 @@ for loopT = 1:T % solve for time step loopT
       beta = scen.BC.beta(loopT, loopLink);
       uCurrent = u(loopT, loopLink);
       p = linkDown.p;
+      rmax = linkDown.rmax;
     end
-    [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandR, supplyDS] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, uCurrent, beta, p, scen.dt);
+    [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandR, supplyDS] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, uCurrent, beta, p, scen.dt, rmax);
     if loopLink > 1
       outFluxes(loopLink-1) = fluxUSout;
       mlDemand(loopLink - 1) = demandUS;
@@ -97,7 +99,7 @@ outputState.rampDemand = demandRamp;
 
 end
 
-function [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandRamp, supplyDS] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, u, beta, p, dt)
+function [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandRamp, supplyDS] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, u, beta, p, dt, rmax)
 
 if isempty(linkUp) % start corner case
   demandUS = 0;
@@ -108,11 +110,14 @@ end
 if isempty(queue) % end corner case
   demandRamp = 0;
 else
-  if queue == 0 % check for empty queue
-    demandRamp = min([queueDemand, linkDown.rmax, u]); % if empty kick out at demand rate
-  else
-    demandRamp = min([queue / dt, u,linkDown.rmax]); % in non-empty, kick out at max rate
-  end
+  demandRamp = min([queue / dt, rmax, u]);
+% this approach isn't really working
+%   
+%   if queue == 0 % check for empty queue
+%     demandRamp = min([queueDemand, linkDown.rmax, u]); % if empty kick out at demand rate
+%   else
+%     demandRamp = min([queue / dt, u,linkDown.rmax]); % in non-empty, kick out at max rate
+%   end
 end
 
 if isempty(linkDown) % end corner case

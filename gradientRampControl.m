@@ -70,7 +70,7 @@ end
     else % TODO: need to check block
       xi = hi;
       out(hi,xi) = dhdx_h1a_rho_i_k();
-      xi = idxfn(k-1,ci,i);
+      xi = idxfn(k-1,'rho',i);
       out(hi,xi) = dhdx_h1a_rho_i_km1();
       xi = idxfn(k-1,'fout',i);
       out(hi,xi) = dhdx_h1a_fout_i_km1(dt,scen.links(i).L);
@@ -88,7 +88,7 @@ end
     else
       xi = hi;
       out(hi,xi) = dhdx_h2_l_i_k();
-      xi = idxfn(k-1,ci,i);
+      xi = idxfn(k-1,'l',i);
       out(hi,xi) = dhdx_h2_l_i_km1();
       xi = idxfn(k-1,'r',i);
       out(hi,xi) = dhdx_h2_r_i_k(dt);
@@ -128,8 +128,10 @@ end
     out(hi,xi) = dhdx_h5_d_i_k();
     xi = idxfn(k,'l',i);
     l = states.queue(k,i);
+    rmax = scen.links(i).rmax;
+    dt = scen.dt;
     uVal = u(kk,i);
-    out(hi,xi) = dhdx_h5_l_i_k(l,uVal);
+    out(hi,xi) = dhdx_h5_l_i_k(l,uVal, rmax, dt);
     
   end
 
@@ -155,10 +157,8 @@ end
       d = states.rampDemand(kk,i);
       xi = idxfn(k,'del',i);
       out(hi,xi) = dhdx_h6a_del_im1_k(del,beta,d,sig);
-      
       xi = idxfn(k,'sig',i);
       out(hi,xi) = dhdx_h6a_sig_i_k(del,beta,d,sig);
-      
       xi = idxfn(k,'d',i-1);
       out(hi,xi) = dhdx_h6a_d_im1_k(del,beta,d,sig);
     end

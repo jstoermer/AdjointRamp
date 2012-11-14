@@ -1,12 +1,13 @@
 global parameters
 
-parameters.R = 0.01;
+parameters.R = 10;
 %% gradient methods
 % 1. gradient descent
 % 2. l-bfgs
 
-parameters.globalDescentAlgorithm = 'lbfgs';
-parameters.alpha = 1.0;
+parameters.globalDescentAlgorithm = 'basicGradientDescent';
+% parameters.globalDescentAlgorithm = 'lbfgs';
+parameters.alpha = .05;
 parameters.globalConvergenceThreshold = .0001;
 parameters.globalMaxIterations = 20;
 
