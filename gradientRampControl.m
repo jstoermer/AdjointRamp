@@ -1,21 +1,22 @@
 function out = gradientRampControl(scen, states, u)
-% Finds the gradient for a given scenario, control and resulting output state    
-global parameters;
-
-% get params
-l = states.queue;
-R = parameters.R;
-
+% Finds the gradient for a given scenario, control and resulting output state
 
 dhdx = dh_dx(scen,states, u);
 djdx = dJ_dx(scen,states, u);
 lambda = dhdx' \ djdx';
-djdu = dj_du(scen, states, u);
-dhdu = dh_du(scen, states, u);
+djdu = dJ_du(scen, states, u);
+dhdu = dh_du(scen, states, u)
 
 
 % Compute the gradient
-out = djdu - lambda'*dhdu;
+t1 = -lambda'*dhdu;
+t2 = djdu;
+out = t1 + t2;
+
+disp('t1'); disp(full(unstack(t1,scen)));
+disp('t2'); disp(full(unstack(t2,scen)));
+disp('grad'); disp(full(unstack(out,scen)));
+disp('u'); disp(u);
 end
 
 function out = dh_du(scen, states, u)
@@ -24,14 +25,13 @@ n = (T+1)*N*8;
 nu = T*N;
 c = 'd';
 l = states.queue(1:end-1,:);
-eps = 0.000;
 
 out = sparse(n,nu);
 
 for k = 1:T
   for i = 1:N
     hi = idx(N,k,c,i);
-    ui = k * i;
+    ui = (k-1)*N + i;
     if (u(k,i) < l(k,i))
       out(hi,ui) = -1;
     end
@@ -77,7 +77,7 @@ end
     else % TODO: need to check block
       xi = hi;
       out(hi,xi) = dhdx_h1a_rho_i_k();
-      xi = idxfn(k-1,ci,i);
+      xi = idxfn(k-1,'rho',i);
       out(hi,xi) = dhdx_h1a_rho_i_km1();
       xi = idxfn(k-1,'fout',i);
       out(hi,xi) = dhdx_h1a_fout_i_km1(dt,scen.links(i).L);
@@ -95,7 +95,7 @@ end
     else
       xi = hi;
       out(hi,xi) = dhdx_h2_l_i_k();
-      xi = idxfn(k-1,ci,i);
+      xi = idxfn(k-1,'l',i);
       out(hi,xi) = dhdx_h2_l_i_km1();
       xi = idxfn(k-1,'r',i);
       out(hi,xi) = dhdx_h2_r_i_k(dt);
@@ -135,8 +135,10 @@ end
     out(hi,xi) = dhdx_h5_d_i_k();
     xi = idxfn(k,'l',i);
     l = states.queue(k,i);
+    rmax = scen.links(i).rmax;
+    dt = scen.dt;
     uVal = u(kk,i);
-    out(hi,xi) = dhdx_h5_l_i_k(l,uVal);
+    out(hi,xi) = dhdx_h5_l_i_k(l,uVal, rmax, dt);
     
   end
 
@@ -162,10 +164,8 @@ end
       d = states.rampDemand(kk,i);
       xi = idxfn(k,'del',i);
       out(hi,xi) = dhdx_h6a_del_im1_k(del,beta,d,sig);
-      
       xi = idxfn(k,'sig',i);
       out(hi,xi) = dhdx_h6a_sig_i_k(del,beta,d,sig);
-      
       xi = idxfn(k,'d',i-1);
       out(hi,xi) = dhdx_h6a_d_im1_k(del,beta,d,sig);
     end
@@ -185,15 +185,16 @@ end
       fin = states.fluxIn(kk,i+1);
       beta = scen.BC.beta(kk,i+1);
       d = states.rampDemand(kk,i+1);
-
+      p = scen.links(i).p;
+      
       xi = idxfn(k,'del',i);
-      out(hi,xi) = dhdx_h7a_del_i_k(beta,fin,del,d);
+      out(hi,xi) = dhdx_h7a_del_i_k(beta,fin,del,d, p);
       
       xi = idxfn(k,'fin',i+1);
-      out(hi,xi) = dhdx_h7a_fin_ip1_k(beta,fin,del,d);
+      out(hi,xi) = dhdx_h7a_fin_ip1_k(beta,fin,del,d, p);
       
       xi = idxfn(k,'d',i);
-      out(hi,xi) = dhdx_h7a_d_i_k(beta,fin,del,d);
+      out(hi,xi) = dhdx_h7a_d_i_k(beta,fin,del,d, p);
     end % END OF CHECK
   end
 
@@ -217,30 +218,27 @@ end
 end
 
 
-function out = dj_du(~, states, u)
+function out = dJ_du(~, states, u)
 global parameters;
 R = parameters.R;
 %Given the controls u, on-ramp queue lengths l and penalty term R, computes
 % partialJ_u given by
 % \frac{\partial J}{u_i(k)} = R \cdot \ind{u_i(k) \le l_i(k)}
-uvec = u'; uvec = uvec(:);
-lvec = states.queue(1:end-1,:)'; lvec = lvec(:);
-
-out = sparse(R.*max(uvec - lvec, 0).^2)';
+out = sparse(R.*max(stacker(u) - stacker(states.queue(1:end-1,:)), 0).^2)';
 end
 
-function out = dJ_dx(scen, states, u)
+function out = dJ_dx(scen, ~, ~)
 T = scen.T; N = scen.N;
 n =  (T+1) * N * 8;
 out = sparse(1,n);
 
 for k = 1:T+1
-    for i = 1:N
-        out(idx(N,k,'rho',i)) = scen.links(i).L * scen.dt;
-    end
-    for i = 1:N
-        out(idx(N,k,'l',i)) = scen.dt;
-    end
+  for i = 1:N
+    out(idx(N,k,'rho',i)) = scen.links(i).L * scen.dt;
+  end
+  for i = 1:N
+    out(idx(N,k,'l',i)) = scen.dt;
+  end
 end
 
 end

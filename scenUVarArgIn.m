@@ -6,8 +6,8 @@ if length(cellargs) == 2
 else
   if nargin == 2
     u = chooseInitialU(scen, varargin{2});
-  else    
-    u = noControlU(scen);
+  else
+    u = chooseInitialU(scen);
   end
 end
 end

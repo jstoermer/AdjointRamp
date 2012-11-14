@@ -7,17 +7,21 @@ function [u, outputState] = optimalU(varargin)
 % u - Optimal control 
 % outputState - State evolution resulting from the optimal control
 
-[scen u] = scenUVarArgIn(varargin, .8);
+global parameters;
+[scen u] = scenUVarArgIn(varargin);
+if strcmp(parameters.globalDescentAlgorithm, 'lbfgs')
+  u = adjointBFGS(scen, u);
+  outputState = forwardSimulation(scen, u);
+  return;
+end
 
 iteration = 0;
 while true
     iteration = iteration + 1;
     outputState = forwardSimulation(scen, u);
-    totalTravelTime(scen, outputState, u);
+    totalTravelTime(scen, outputState, u)
     gradient = gradientRampControl(scen, outputState, u);
-    full(gradient);
     nextU = nextRampControl(scen, gradient, u, iteration);
-    nextU
     if stopIterating(scen, u, nextU, iteration)
         u = nextU;
         return;

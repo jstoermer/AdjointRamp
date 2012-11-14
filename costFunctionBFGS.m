@@ -1,6 +1,8 @@
 function out = costFunctionBFGS(u)
-global scen;
-scen.u = reshapeUBFGS(u,scen);
-scen = forward_sim(scen);
-out = cost_function(scen);
+global bfgsStore;
+scen = bfgsStore.scen;
+umat = unstack(u, scen);
+states = forwardSimulation(scen, umat);
+bfgsStore.states = states;
+out = totalTravelTime(scen, states, umat);
 end

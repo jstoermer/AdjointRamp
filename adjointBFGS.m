@@ -1,13 +1,15 @@
-function final_u = adjointBFGS(sc, u0)
-global scen;
-scen = sc;
+function out = adjointBFGS(scen, u)
+clear bfgsStore;
+global parameters;
+global bfgsStore;
+bfgsStore.scen = scen;
 
-x0 = unshapeUBFGS(u0);
-lb = zeros(size(x0));
-ub = ones(size(x0)).*20;
+uvec = stacker(u);
+lb = zeros(size(uvec));
+ub = ones(size(uvec)).*20;
 
-final_u = lbfgsb(x0,lb,ub,'costFunctionBFGS','gradientBFGS',...
-           [],'genericcallback','maxiter',10,'m',4,'factr',1e-8,...
-           'pgtol',1e-2);
-final_u = reshapeUBFGS(final_u, scen);
+final_u = lbfgsb(uvec,lb,ub,'costFunctionBFGS','gradientBFGS',...
+           [],'genericcallback','maxiter',parameters.globalMaxIterations,'m',4,'factr',1e-8,...
+           'pgtol',parameters.globalConvergenceThreshold);
+out = unstack(final_u, scen);
 end
