@@ -1,16 +1,10 @@
 function out = gradientRampControl(scen, states, u)
-% Finds the gradient for a given scenario, control and resulting output state    
-global parameters;
-
-% get params
-l = states.queue;
-R = parameters.R;
-
+% Finds the gradient for a given scenario, control and resulting output state
 
 dhdx = dh_dx(scen,states, u);
 djdx = dJ_dx(scen,states, u);
 lambda = dhdx' \ djdx';
-djdu = dj_du(scen, states, u);
+djdu = dJ_du(scen, states, u);
 dhdu = dh_du(scen, states, u);
 
 
@@ -24,14 +18,13 @@ n = (T+1)*N*8;
 nu = T*N;
 c = 'd';
 l = states.queue(1:end-1,:);
-eps = 0.000;
 
 out = sparse(n,nu);
 
 for k = 1:T
   for i = 1:N
     hi = idx(N,k,c,i);
-    ui = k * i;
+    ui = (k-1)*N + i;
     if (u(k,i) < l(k,i))
       out(hi,ui) = -1;
     end
@@ -185,7 +178,7 @@ end
       fin = states.fluxIn(kk,i+1);
       beta = scen.BC.beta(kk,i+1);
       d = states.rampDemand(kk,i+1);
-
+      
       xi = idxfn(k,'del',i);
       out(hi,xi) = dhdx_h7a_del_i_k(beta,fin,del,d);
       
@@ -217,30 +210,27 @@ end
 end
 
 
-function out = dj_du(~, states, u)
+function out = dJ_du(~, states, u)
 global parameters;
 R = parameters.R;
 %Given the controls u, on-ramp queue lengths l and penalty term R, computes
 % partialJ_u given by
 % \frac{\partial J}{u_i(k)} = R \cdot \ind{u_i(k) \le l_i(k)}
-uvec = u'; uvec = uvec(:);
-lvec = states.queue(1:end-1,:)'; lvec = lvec(:);
-
-out = sparse(R.*max(uvec - lvec, 0).^2)';
+out = sparse(R.*max(stacker(u) - stacker(states.queue(1:end-1,:)), 0).^2)';
 end
 
-function out = dJ_dx(scen, states, u)
+function out = dJ_dx(scen, ~, ~)
 T = scen.T; N = scen.N;
 n =  (T+1) * N * 8;
 out = sparse(1,n);
 
 for k = 1:T+1
-    for i = 1:N
-        out(idx(N,k,'rho',i)) = scen.links(i).L * scen.dt;
-    end
-    for i = 1:N
-        out(idx(N,k,'l',i)) = scen.dt;
-    end
+  for i = 1:N
+    out(idx(N,k,'rho',i)) = scen.links(i).L * scen.dt;
+  end
+  for i = 1:N
+    out(idx(N,k,'l',i)) = scen.dt;
+  end
 end
 
 end
