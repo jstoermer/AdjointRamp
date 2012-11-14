@@ -1,19 +1,9 @@
-function out = dhdx_h7a_del_i_k(beta, fin, del, d)
-% HACK
-p = .5;
-if beta > 0
-    if fin < (1 - beta) * del
-        out = 0;
-    else
-        out = -1 / (1 - beta);
-    end
+function out = dhdx_h7a_del_i_k(beta, fin, del, d, p)
+if p * fin / ( 1- beta) > del
+  out = -(1 - beta);
+elseif (1 - p) * fin > d
+  out = 0;
 else
-    if fin > del / p
-        out = -1 / (1 - beta);
-    elseif fin > d / (1 - p)
-        out = 0;
-    else
-        out = 0;
-    end    
-end     
+  out = 0;
+end
 end

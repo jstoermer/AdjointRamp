@@ -178,15 +178,16 @@ end
       fin = states.fluxIn(kk,i+1);
       beta = scen.BC.beta(kk,i+1);
       d = states.rampDemand(kk,i+1);
+      p = scen.links(i).p;
       
       xi = idxfn(k,'del',i);
-      out(hi,xi) = dhdx_h7a_del_i_k(beta,fin,del,d);
+      out(hi,xi) = dhdx_h7a_del_i_k(beta,fin,del,d, p);
       
       xi = idxfn(k,'fin',i+1);
-      out(hi,xi) = dhdx_h7a_fin_ip1_k(beta,fin,del,d);
+      out(hi,xi) = dhdx_h7a_fin_ip1_k(beta,fin,del,d, p);
       
       xi = idxfn(k,'d',i);
-      out(hi,xi) = dhdx_h7a_d_i_k(beta,fin,del,d);
+      out(hi,xi) = dhdx_h7a_d_i_k(beta,fin,del,d, p);
     end % END OF CHECK
   end
 
