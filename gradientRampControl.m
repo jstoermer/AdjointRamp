@@ -5,11 +5,18 @@ dhdx = dh_dx(scen,states, u);
 djdx = dJ_dx(scen,states, u);
 lambda = dhdx' \ djdx';
 djdu = dJ_du(scen, states, u);
-dhdu = dh_du(scen, states, u);
+dhdu = dh_du(scen, states, u)
 
 
 % Compute the gradient
-out = djdu - lambda'*dhdu;
+t1 = -lambda'*dhdu;
+t2 = djdu;
+out = t1 + t2;
+
+disp('t1'); disp(full(unstack(t1,scen)));
+disp('t2'); disp(full(unstack(t2,scen)));
+disp('grad'); disp(full(unstack(out,scen)));
+disp('u'); disp(u);
 end
 
 function out = dh_du(scen, states, u)
