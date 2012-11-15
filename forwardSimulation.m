@@ -11,6 +11,7 @@ queueStore = zeros(T+1, N);
 fluxIn = zeros(T,N);
 fluxOut = zeros(T,N);
 fluxRamp = zeros(T,N);
+fluxOffRamp = zeros(T,N);
 demandML = zeros(T,N);
 supplyML = zeros(T,N);
 demandRamp = zeros(T,N);
@@ -27,6 +28,7 @@ for loopT = 1:T % solve for time step loopT
   mlDemand =  zeros(1,N);
   mlSupply =  zeros(1,N);
   rampDemand =  zeros(1,N);
+  offRampFlux = zeros(1,N);
   
   for loopLink = 1:N+1
     % solve for junction behind link loopLink
@@ -43,8 +45,8 @@ for loopT = 1:T % solve for time step loopT
       queue = [];
       queueDemand = 0;
       uCurrent = 0;
-      beta = 0;
-      p = 0.0;
+      beta = 1;
+      p = 1.0;
       rmax = 0.0;
     else
       linkDown = scen.links(loopLink);
@@ -56,10 +58,11 @@ for loopT = 1:T % solve for time step loopT
       p = linkDown.p;
       rmax = linkDown.rmax;
     end
-    [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandR, supplyDS] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, uCurrent, beta, p, scen.dt, rmax);
+    [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandR, supplyDS, fluxOff] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, uCurrent, beta, p, scen.dt, rmax);
     if loopLink > 1
       outFluxes(loopLink-1) = fluxUSout;
       mlDemand(loopLink - 1) = demandUS;
+      offRampFluxes(loopLink - 1) = fluxOff;
     end
     if loopLink < N + 1
       rampFluxes(loopLink) = fluxDSRamp;
@@ -83,7 +86,7 @@ for loopT = 1:T % solve for time step loopT
   demandML(loopT, :) = mlDemand;
   demandRamp(loopT, :) = rampDemand;
   supplyML(loopT, :) = mlSupply;
-  
+  fluxOffRamp(loopT, :) = offRampFluxes;
   
   density(loopT+1,:) = newDensity;
   queueStore(loopT + 1,:) = newQueue;
@@ -93,13 +96,14 @@ outputState.queue = queueStore;
 outputState.fluxIn = fluxIn;
 outputState.fluxOut = fluxOut;
 outputState.fluxRamp = fluxRamp;
+outputState.fluxOffRamp = fluxOffRamp;
 outputState.supply = supplyML;
 outputState.demand = demandML;
 outputState.rampDemand = demandRamp;
 
 end
 
-function [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandRamp, supplyDS] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, u, beta, p, dt, rmax)
+function [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandRamp, supplyDS, offRampFlux] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, u, beta, p, dt, rmax)
 
 if isempty(linkUp) % start corner case
   demandUS = 0;
@@ -142,5 +146,9 @@ else % supply constrained
     fluxUSout = (supplyDS - fluxDSRamp) / (1 - beta);
   end
 end
-fluxDSin = demandUS * (1 - beta) + fluxDSRamp;
+fluxDSin = fluxUSout * (1 - beta) + fluxDSRamp;
+offRampFlux = fluxUSout * beta;
+if fluxDSin + offRampFlux ~= fluxUSout + fluxDSRamp
+  return;
+end
 end
