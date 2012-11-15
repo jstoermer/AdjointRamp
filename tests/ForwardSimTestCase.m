@@ -25,7 +25,8 @@ classdef ForwardSimTestCase < TestCase
     
     
     function setUp(self)
-      self.scen = loadScenario('../networks/samitha1onramp.json');
+      loadParameters;
+      self.scen = loadScenario('../networks/simple.json');
       self.u = ones(self.scen.T, self.scen.N);
       self.states = forwardSimulation(self.scen);
     end
@@ -85,6 +86,7 @@ classdef ForwardSimTestCase < TestCase
       pm = self.rep([scen.links.pm]);
       rmax = self.rep([scen.links.rmax]);
       
+
       assertVectorsAlmostEqual(os.demand,...
         min(rho.*v, fm));
       
@@ -92,9 +94,62 @@ classdef ForwardSimTestCase < TestCase
         min(w.*(pm - rho), fm));
       
       assertVectorsAlmostEqual(os.rampDemand,...
-        min(l./scen.dt, min(rmax, self.u));
+        min(l./scen.dt, min(rmax, self.u)));
     end
     
+    
+    function testProperMergingRules(self)
+      os = self.states; scen = self.scen;
+      
+      for k = 1:scen.T
+        for i = 1:scen.N+1
+          if i == 1
+            fout = 0;
+            foff = 0;
+            del = 0;
+          else
+            del = os.demand(k,i-1);
+            fout = os.fluxOut(k,i-1);
+            foff = os.fluxOffRamp(k,i-1);
+          end
+          if i == scen.N + 1
+            fin = 0;
+            fon = 0;
+            beta = 1;
+            p = 1;
+            sig = inf;
+            d = 0;
+          else
+            d = os.rampDemand(k,i);
+            sig = os.supply(k,i);
+            fon = os.fluxRamp(k,i);
+            fin = os.fluxIn(k,i);
+            beta = scen.BC.beta(k,i);
+            p = scen.links(i).p;
+          end
+          
+          tot = fout + fon;
+          
+          if sig > del*(1 - beta) + d
+            assertElementsAlmostEqual(tot, del + d);
+            assertElementsAlmostEqual(fout, del);
+            assertElementsAlmostEqual(fon,  d);
+          else
+            assertElementsAlmostEqual(tot, sig);
+            if sig * p / (1 - beta) > del
+              assertElementsAlmostEqual(fout, del);
+              assertElementsAlmostEqual(fon, sig - del*(1 - beta));
+            elseif sig * (1 - p) > d
+              assertElementsAlmostEqual(fon, d);
+              assertElementsAlmostEqual(fout, (sig - d)/(1 - beta));
+            else
+              assertElementsAlmostEqual(fout, p*sig / ( 1- beta));
+              assertElementsAlmostEqual(fon, (1- p)*sig);
+            end
+          end
+        end
+      end
+    end
     
     function tearDown(self)
     end

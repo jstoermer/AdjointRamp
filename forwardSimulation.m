@@ -132,8 +132,8 @@ if demand < supplyDS % simple when demand constrained
   fluxDSRamp = demandRamp;
 else % supply constrained
   % blindly assume P intersects in feasible region
-  fluxDSRamp = supplyDS / (1 + (1 - beta)* p);
-  fluxUSout = (supplyDS - fluxDSRamp) / (1 - beta);
+  fluxDSRamp = (1 - p) * supplyDS;
+  fluxUSout = p * supplyDS / (1 - beta);
   if fluxUSout > demandUS % maxed out inlink
     fluxUSout = demandUS;
     fluxDSRamp = supplyDS - (1 - beta) * fluxUSout;
