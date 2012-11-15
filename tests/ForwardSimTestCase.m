@@ -8,6 +8,17 @@ classdef ForwardSimTestCase < TestCase
 
   methods
     
+    function out = rep(varargin)
+      self = varargin{1};
+      rowvec = varargin{2};
+      if nargin == 3
+        t = varargin{3};
+      else
+        t = self.scen.T;
+      end
+      out = repmat(rowvec, t, 1);
+    end
+    
     function self = ForwardSimTestCase(name)
       self = self@TestCase(name);
     end
@@ -55,12 +66,33 @@ classdef ForwardSimTestCase < TestCase
       rho = os.density;
       L = [scen.links.L];
       
-      nextCars = rho(2:end, :).*repmat(L, scen.T, 1); 
-      prevCars = rho(1:end-1, :).*repmat(L, scen.T, 1); 
+      nextCars = rho(2:end, :).*self.rep(L);
+      prevCars = rho(1:end-1, :).*self.rep(L);
       carsIn = os.fluxIn .* scen.dt;
       carsOut = os.fluxOut .* scen.dt;
       
       assertVectorsAlmostEqual(nextCars, prevCars + carsIn - carsOut);
+    end
+    
+    function testDemandSupply(self)
+      os = self.states; scen = self.scen;
+      rho = os.density(1:end-1,:);
+      l = os.queue(1:end-1,:);
+      L = self.rep([scen.links.L]);
+      v = self.rep([scen.links.v]);
+      w = self.rep([scen.links.w]);
+      fm = self.rep([scen.links.fm]);
+      pm = self.rep([scen.links.pm]);
+      rmax = self.rep([scen.links.rmax]);
+      
+      assertVectorsAlmostEqual(os.demand,...
+        min(rho.*v, fm));
+      
+      assertVectorsAlmostEqual(os.supply,...
+        min(w.*(pm - rho), fm));
+      
+      assertVectorsAlmostEqual(os.rampDemand,...
+        min(l./scen.dt, min(rmax, self.u));
     end
     
     

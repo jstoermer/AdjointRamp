@@ -111,10 +111,7 @@ else
   demandUS = min(linkUp.v * densityUp, linkUp.fm); % upstream demand
 end
 
-if isempty(queue) % end corner case
-  demandRamp = 0;
-else
-  demandRamp = min([queue / dt, rmax, u]);
+demandRamp = min([queue / dt, rmax, u]);
 % this approach isn't really working
 %   
 %   if queue == 0 % check for empty queue
@@ -122,7 +119,6 @@ else
 %   else
 %     demandRamp = min([queue / dt, u,linkDown.rmax]); % in non-empty, kick out at max rate
 %   end
-end
 
 if isempty(linkDown) % end corner case
   supplyDS = inf;
