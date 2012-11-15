@@ -26,7 +26,7 @@ classdef ForwardSimTestCase < TestCase
     
     function setUp(self)
       loadParameters;
-      self.scen = loadScenario('../networks/simple.json');
+      self.scen = loadScenario('../networks/samitha1onrampcomplex.json');
       self.u = ones(self.scen.T, self.scen.N);
       self.states = forwardSimulation(self.scen);
     end
@@ -128,14 +128,11 @@ classdef ForwardSimTestCase < TestCase
             p = scen.links(i).p;
           end
           
-          tot = fout + fon;
-          
           if sig > del*(1 - beta) + d
-            assertElementsAlmostEqual(tot, del + d);
             assertElementsAlmostEqual(fout, del);
             assertElementsAlmostEqual(fon,  d);
           else
-            assertElementsAlmostEqual(tot, sig);
+            assertElementsAlmostEqual(fin, sig);
             if sig * p / (1 - beta) > del
               assertElementsAlmostEqual(fout, del);
               assertElementsAlmostEqual(fon, sig - del*(1 - beta));
