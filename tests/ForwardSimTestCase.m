@@ -4,6 +4,7 @@ classdef ForwardSimTestCase < TestCase
     scen;
     states;
     u;
+    fn;
   end
 
   methods
@@ -21,12 +22,13 @@ classdef ForwardSimTestCase < TestCase
     
     function self = ForwardSimTestCase(name)
       self = self@TestCase(name);
+      self.fn = '../networks/samitha1onramp.json';
     end
     
     
     function setUp(self)
       loadParameters;
-      self.scen = loadScenario('../networks/samitha1onrampcomplex.json');
+      self.scen = loadScenario(self.fn);
       self.u = ones(self.scen.T, self.scen.N);
       self.states = forwardSimulation(self.scen);
     end
