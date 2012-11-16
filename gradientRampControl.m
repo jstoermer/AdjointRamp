@@ -1,4 +1,4 @@
-function out = gradientRampControl(scen, states, u)
+function [out info] = gradientRampControl(scen, states, u)
 % Finds the gradient for a given scenario, control and resulting output state
 
 dhdx = dh_dx(scen,states, u);
@@ -13,10 +13,16 @@ t1 = -lambda'*dhdu;
 t2 = djdu;
 out = t1 + t2;
 
-disp('t1'); disp(full(unstack(t1,scen)));
-disp('t2'); disp(full(unstack(t2,scen)));
-disp('grad'); disp(full(unstack(out,scen)));
-disp('u'); disp(u);
+info.dhdx = dhdx;
+info.djdx = djdx;
+info.lambda = lambda;
+info.djdu = djdu;
+info.dhdu = dhdu;
+
+% disp('t1'); disp(full(unstack(t1,scen)));
+% disp('t2'); disp(full(unstack(t2,scen)));
+% disp('grad'); disp(full(unstack(out,scen)));
+% disp('u'); disp(u);
 end
 
 function out = dh_du(scen, states, u)

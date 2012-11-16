@@ -1,4 +1,4 @@
-function outputState = forwardSimulation(varargin)
+function [outputState u] = forwardSimulation(varargin)
 %% outputState.density: (T + 1) x N
 %% outputState.queue: (T + 1) x N
 %% outputState.fluxIn/Out/Ramp: 1 x N

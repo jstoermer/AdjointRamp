@@ -29,8 +29,9 @@ classdef ForwardSimTestCase < TestCase
     function setUp(self)
       loadParameters;
       self.scen = loadScenario(self.fn);
-      self.u = ones(self.scen.T, self.scen.N);
-      self.states = forwardSimulation(self.scen);
+      [states u] = forwardSimulation(self.scen);
+      self.u = u;
+      self.states = states;
     end
     
     function testMassBalance(self)
