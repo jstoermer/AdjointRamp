@@ -27,8 +27,7 @@ end
 
 function out = dh_du(scen, states, u)
 T = scen.T; N = scen.N;
-n = (T+1)*N*8;
-nu = T*N;
+n = scen.nConstraints; nu = scen.nControls;
 c = 'd';
 l = states.queue(1:end-1,:);
 
@@ -37,8 +36,11 @@ out = sparse(n,nu);
 for k = 1:T
   for i = 1:N
     hi = idx(N,k,c,i);
-    ui = (k-1)*N + i;
-    if (u(k,i) < l(k,i))
+    ui = uidx(N,k,i);
+    uval = u(k,i);
+    l = states.queue(k,i);
+    rmax = scen.links(i).rmax;
+    if uval < l / scen.dt && uval < rmax
       out(hi,ui) = -1;
     end
   end
@@ -50,8 +52,7 @@ function out = dh_dx(scen, states, u)
 dt = scen.dt;
 T = scen.T;
 N = scen.N;
-C = 8;
-n = (T + 1)*N*C;
+n = scen.nConstraints;
 idxfn = @(a,b,c) idx(N, a, b, c);
 cs = {'rho','l','del','sig','d','fin','fout','r'};
 out = sparse(n,n);
@@ -224,18 +225,22 @@ end
 end
 
 
-function out = dJ_du(~, states, u)
+function out = dJ_du(scen, states, u)
 global parameters;
 R = parameters.R;
 %Given the controls u, on-ramp queue lengths l and penalty term R, computes
 % partialJ_u given by
 % \frac{\partial J}{u_i(k)} = R \cdot \ind{u_i(k) \le l_i(k)}
-out = sparse(R.*max(stacker(u) - stacker(states.queue(1:end-1,:)), 0).^2)';
+out = sparse(...
+  stacker(...
+  R.*(max(u -...
+  min(repmat([scen.links.rmax], scen.T, 1),...
+  states.queue(1:end-1,:)./scen.dt),0).^2))');
 end
 
 function out = dJ_dx(scen, ~, ~)
 T = scen.T; N = scen.N;
-n =  (T+1) * N * 8;
+n = scen.nConstraints;
 out = sparse(1,n);
 
 for k = 1:T+1

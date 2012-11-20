@@ -15,7 +15,6 @@ classdef GradientTestCase < TestCase
     function self = GradientTestCase(name)
       self = self@TestCase(name);
       self.fn = '../networks/samitha1onrampcomplex.json';
-      disp('yeah???');
       self.whatever();
     end
     
@@ -70,7 +69,44 @@ classdef GradientTestCase < TestCase
     end
     
     function testDHDU(self)
+      dhdu = full(self.gradinfo.dhdu); N = self.scen.N; T = self.scen.T;
+      counter = 0;
+      % test for active constraints
+      for k = 1:T
+        for i = 1:N
+          hi = idx(N,k,'d',i);
+          xi = uidx(N,k,i);
+          dhduval = dhdu(hi,xi);
+          uval = self.u(k,i);
+          rval = self.scen.links(i).rmax;
+          lval = self.states.queue(k,i);
+          if uval < rval && uval < lval / self.scen.dt
+            assertElementsAlmostEqual(dhduval, -1); % active u constraint
+            counter = counter + 1; % number of active elements
+          else
+            assertElementsAlmostEqual(dhduval, 0); % not active
+          end
+        end
+      end
       
+      % test for all other values = 0
+      assertEqual(length(find(dhdu)), counter);
+    end
+    
+    function testDJDU(self)
+      global parameters
+      djdu = full(self.gradinfo.djdu); N = self.scen.N; T = self.scen.T;
+      % test for active violations
+      for k = 1:T
+        for i = 1:N
+          xi = uidx(N,k,i);
+          djduval = djdu(xi);
+          uval = self.u(k,i);
+          rval = self.scen.links(i).rmax;
+          lval = self.states.queue(k,i);
+          assertElementsAlmostEqual(djduval, parameters.R*(max(uval - min(lval / self.scen.dt, rval), 0)^2));
+        end
+      end
     end
     
     

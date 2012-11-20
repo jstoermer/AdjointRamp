@@ -71,5 +71,8 @@ scen.N = N;
 scen.T = T;
 scen.dt = data.dt;
 
+scen.nConstraints = (T+1)*N*8;
+scen.nControls = T*N;
+
 out = scen;
 end
