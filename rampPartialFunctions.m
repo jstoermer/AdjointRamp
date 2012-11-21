@@ -14,7 +14,6 @@ c = 'd';
 l = states.queue(1:end-1,:);
 
 out = sparse(n,nu);
-
 for k = 1:T
   for i = 1:N
     hi = idx(N,k,c,i);
@@ -30,15 +29,13 @@ end
 end
 
 function out = dh_dx(scen, states, u)
-%% HACK HACK HACK
 dt = scen.dt;
 T = scen.T;
 N = scen.N;
 n = scen.nConstraints;
 idxfn = @(a,b,c) idx(N, a, b, c);
 cs = {'rho','l','del','sig','d','fin','fout','r'};
-out = sparse(n,n);
-
+out = zeros(n,n);
 for k = 1:T+1 % time step iterator
   kk = min(k,T); % necessary iterator for T+1 flux boundary conditions
   for ci = 1:8
@@ -58,7 +55,6 @@ for k = 1:T+1 % time step iterator
     end
   end
 end
-
   function rhoConstraints()
     if k == 1 % if initial condition (no 0 time)
       xi = hi;
@@ -73,10 +69,8 @@ end
       xi = idxfn(k-1,'fin',i);
       out(hi,xi) = dhdx_h1a_fin_i_km1(dt,scen.links(i).L);
     end % end block
-    
+
   end
-
-
   function lConstraints()
     if k == 1 % if initial condition (no 0 time)
       xi = hi;
@@ -90,8 +84,6 @@ end
       out(hi,xi) = dhdx_h2_r_i_k(dt);
     end
   end
-
-
   function delConstraints()
     xi = hi;
     out(hi,xi) = dhdx_h3_del_i_k();
@@ -101,10 +93,8 @@ end
     v = link.v;
     F = link.fm;
     out(hi,xi) = dhdx_h3_rho_i_k(rho,v,F);
-    
+
   end
-
-
   function sigConstraints()
     xi = hi;
     out(hi,xi) = dhdx_h4_sig_i_k();
@@ -114,11 +104,10 @@ end
     w = link.w;
     rho_j = link.pm;
     F = link.fm;
-    
-    out(hi,xi) = dhdx_h4_rho_i_k(rho,w,rho_j,F);
-    
-  end
 
+    out(hi,xi) = dhdx_h4_rho_i_k(rho,w,rho_j,F);
+
+  end
   function dConstraints()
     xi = hi;
     out(hi,xi) = dhdx_h5_d_i_k();
@@ -128,20 +117,19 @@ end
     dt = scen.dt;
     uVal = u(kk,i);
     out(hi,xi) = dhdx_h5_l_i_k(l,uVal, rmax, dt);
-    
-  end
 
+  end
   function fInConstraints()
     if i == 1 % if first cell (no upstream mainline)
       xi = hi;
       out(hi,xi) = dhdx_h6b_fin_1_k();
-      
+
       d = states.rampDemand(kk,1);
       sig = states.supply(kk,1);
-      
+
       xi = idxfn(k,'d',1);
       out(hi,xi) = dhdx_h6b_d_1_k(d,sig);
-      
+
       xi = idxfn(k,'sig',1);
       out(hi,xi) = dhdx_h6b_sig_1_k(d,sig);
     else
@@ -158,9 +146,8 @@ end
       xi = idxfn(k,'d',i);
       out(hi,xi) = dhdx_h6a_d_im1_k(del,beta,d,sig);
     end
-    
-  end
 
+  end
   function fOutConstraints()
     if i == N % if end cell (no downstream cell)
       xi = hi;
@@ -175,18 +162,17 @@ end
       beta = scen.BC.beta(kk,i+1);
       d = states.rampDemand(kk,i+1);
       p = scen.links(i).p;
-      
+
       xi = idxfn(k,'del',i);
       out(hi,xi) = dhdx_h7a_del_i_k(beta,fin,del,d, p);
-      
+
       xi = idxfn(k,'fin',i+1);
       out(hi,xi) = dhdx_h7a_fin_ip1_k(beta,fin,del,d, p);
-      
+
       xi = idxfn(k,'d',i);
       out(hi,xi) = dhdx_h7a_d_i_k(beta,fin,del,d, p);
     end % END OF CHECK
   end
-
   function rConstraints()
     if i == 1 % if first cell (no upstream cell)
       xi = hi;
@@ -203,7 +189,7 @@ end
       out(hi,xi) = dhdx_h8_fout_i_k(beta);
     end % END OF CHECK
   end
-
+out = sparse(out);
 end
 
 
@@ -285,16 +271,16 @@ out = 1;
 end
 function out = dhdx_h3_rho_i_k(rho,v,F)
 if v * rho < F
-    out = -v;
+  out = -v;
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h4_rho_i_k(rho,w,rho_j,F)
 if w*(rho_j - rho) < F
-    out = w;
+  out = w;
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h4_sig_i_k()
@@ -305,23 +291,23 @@ out = 1;
 end
 function out = dhdx_h5_l_i_k(l,u, rmax, dt);
 if l / dt < u && l / dt < rmax
-    out = -1 / dt;
+  out = -1 / dt;
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h6a_d_im1_k(del,beta,d,sig)
 if (del) * (1 - beta) + d < sig
-    out = -1;
+  out = -1;
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h6a_del_im1_k(del,beta,d,sig)
 if (del) * (1 - beta) + d < sig
-    out = -(1 - beta);
+  out = -(1 - beta);
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h6a_fin_i_k()
@@ -329,23 +315,23 @@ out = 1;
 end
 function out = dhdx_h6a_sig_i_k(del,beta,d,sig)
 if (del) * (1 - beta) + d >= sig
-    out = -1;
+  out = -1;
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h6b_d_1_k(d,sig)
 if (d) < sig
-    out = -1;
+  out = -1;
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h6b_del_0_k(del,sig)
 if (del) < sig
-    out = -1;
+  out = -1;
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h6b_fin_1_k()
@@ -353,9 +339,9 @@ out = 1;
 end
 function out = dhdx_h6b_sig_1_k(d,sig)
 if (d) >= sig
-    out = -1;
+  out = -1;
 else
-    out = 0;
+  out = 0;
 end
 end
 function out = dhdx_h7a_d_i_k(beta, fin, del, d, p)
