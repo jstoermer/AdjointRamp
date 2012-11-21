@@ -73,6 +73,7 @@ scen.dt = data.dt;
 
 scen.nConstraints = (T+1)*N*8;
 scen.nControls = T*N;
+scen.processU = @(u) unstack(u, scen);
 
 out = scen;
 end
