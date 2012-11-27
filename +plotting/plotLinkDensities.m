@@ -1,3 +1,3 @@
 function plotLinkDensities(states)
-spaceTimePlot(states.density);
+plotting.spaceTimePlot(states.density);
 end

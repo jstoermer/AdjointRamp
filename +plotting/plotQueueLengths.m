@@ -1,3 +1,3 @@
 function plotQueueLengths(states)
-spaceTimePlot(states.queue);
+plotting.spaceTimePlot(states.queue);
 end
