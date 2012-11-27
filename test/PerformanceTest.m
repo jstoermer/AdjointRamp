@@ -19,7 +19,7 @@ classdef PerformanceTest < TestCase
     
     
     function setUp(self)
-      loadParameters;
+      setup;
     end
     
     function testHighLevel(self)
@@ -32,51 +32,58 @@ classdef PerformanceTest < TestCase
         fprintf(['\n\n======Running ' fn '======\n\n']);
         disp('load scenario');
         tic
-        scen = loadScenario([self.dir fn]);
+        scen = io.loadScenario([self.dir fn]);
         toc
+        
+        structures = rampAdjointStructures(scen);
+        structure = structures.structure;
+        u = chooseInitialU(scen, .5);
+        
         disp('forward sim');
         tic
-        [states, u] = forwardSimulation(scen);
+        states = structure.updateStates(u);
         toc
-        self.gradient(scen, states, u);
+        
+        self.gradient(scen, structure, u);
       end
     end
     
-    function gradient(self, scen, states, u)
-      fns = self.dfuns;
+    function gradient(self, scen, str, u)
       
+      
+      states = str.getStates();
       fprintf('\n');
       disp('dhdx');
       tic
-      dhdx = fns.dhdx(scen,states, u);
+      dhdx = str.partials.dhdx(scen, states, u);
       toc
       
       fprintf('\n');
       disp('dhdu');
       tic
-      dhdu = fns.dhdu(scen,states, u);
+      dhdu = str.partials.dhdu(scen, states, u);
       toc
       
       fprintf('\n');
       disp('djdx');
       tic
-      djdx = fns.djdx(scen,states, u);
+      djdx = str.partials.djdx(scen, states, u);
       toc
       
       fprintf('\n');
       disp('djdu');
       tic
-      djdu = fns.djdu(scen,states, u);
+      djdu = str.partials.djdu(scen, states, u);
       toc
       
       fprintf('\n');
       disp('system solution');
       tic
-      adjointGradient(dhdx, djdx, djdu, dhdu);
+      str.solveSystem(dhdx, djdx, djdu, dhdu);
       toc
       
     end
-      
+    
     
     function tearDown(self)
     end

@@ -9,30 +9,26 @@ classdef GradientTestCase < TestCase
     fn;
     dhdx;
   end
-
+  
   methods
     
     function self = GradientTestCase(name)
       self = self@TestCase(name);
       self.fn = '../networks/samitha1onrampcomplex.json';
-      self.whatever();
     end
     
-    function whatever(self)
-      loadParameters;
-      self.scen = loadScenario(self.fn);
-      [states, u] = forwardSimulation(self.scen);
-      self.states = states;
+    function setUp(self)
+      setup;
+      [scen, u] = io.loadScenario(self.fn);
+      self.scen = scen;
       self.u = u;
-      [grad, info] = gradientRampControl(self.scen, self.states, u);
+      structures = rampAdjointStructures(scen);
+      s = structures.structure;
+      self.states = s.updateStates(stacker(u));
+      [grad, info] = s.gradient(stacker(u));
       self.gradient = grad;
       self.gradinfo = info;
       self.dhdx = full(self.gradinfo.dhdx);
-    end
-    
-    
-    function setUp(self)
-      return;
     end
     
     
@@ -49,7 +45,7 @@ classdef GradientTestCase < TestCase
       for k = 2:T
         for i = 1:N
           assertElementsAlmostEqual(self.dhdx(idx(N,k,'rho',i), idx(N,k-1,'rho',i)), -1);
-          assertElementsAlmostEqual(self.dhdx(idx(N,k,'l',i), idx(N,k-1,'l',i)), -1);          
+          assertElementsAlmostEqual(self.dhdx(idx(N,k,'l',i), idx(N,k-1,'l',i)), -1);
         end
       end
     end
@@ -104,7 +100,11 @@ classdef GradientTestCase < TestCase
           uval = self.u(k,i);
           rval = self.scen.links(i).rmax;
           lval = self.states.queue(k,i);
-          assertElementsAlmostEqual(djduval, parameters.R*(max(uval - min(lval / self.scen.dt, rval), 0)^2));
+          limitValue = min(lval / self.scen.dt, rval);
+          potentialPenalty = uval - limitValue;
+          zeroedPenalty = max(potentialPenalty, 0);
+          parammedPenalty = parameters.R.*(zeroedPenalty^2);
+          assertElementsAlmostEqual(djduval, parammedPenalty);
         end
       end
     end
@@ -113,6 +113,6 @@ classdef GradientTestCase < TestCase
     function tearDown(self)
     end
   end
-    
-    
+  
+  
 end

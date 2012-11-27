@@ -27,7 +27,7 @@ classdef ForwardSimTestCase < TestCase
     
     
     function setUp(self)
-      loadParameters;
+      setup;
       self.scen = loadScenario(self.fn);
       [states u] = forwardSimulation(self.scen);
       self.u = u;

@@ -13,7 +13,7 @@ assertEqual(ssx, x);
 assertEqual(sx(10), ssx(2, 3));
 
 
-scen = loadScenario('../networks/samitha1onrampcomplex.json');
+scen = io.loadScenario('../networks/samitha1onrampcomplex.json');
 
 N = scen.N; T = scen.T;
 

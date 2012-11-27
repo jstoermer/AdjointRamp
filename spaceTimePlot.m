@@ -21,8 +21,8 @@ end
 xticks = .5:N + 1.5;
 yticks = .5:1:(T + 1.5);
 axes1 = axes('Parent', figure1, 'XTickLabel',xlabels,'XTick',xticks,'YTickLabel',ylabels,'YTick',yticks,'Layer','top');
-xlim(axes1,[.5,N + 1.5]);
-ylim(axes1,[.5, T + 1.5]);
+xlim(axes1,[.5,N + .5]);
+ylim(axes1,[.5, T + .5]);
 box(axes1,'on');
 hold(axes1,'all');
 image(densities,'Parent',axes1,'CDataMapping','scaled');
@@ -31,7 +31,9 @@ ylabel('Time');
 title('Density Profile');
 colorbar;
 if whitezero
+  try
     bottom = min(min(densities));
     top = max(max(densities));
     colormap(b2r(bottom, top));
+  end
 end
