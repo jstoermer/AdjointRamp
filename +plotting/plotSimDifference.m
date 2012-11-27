@@ -6,8 +6,8 @@ l1 = s1.queue;
 rho2 = s2.density;
 l2 = s2.queue;
 
-spaceTimePlot(rho2 - rho1, true);
-spaceTimePlot(l2 - l1, true);
+plotting.spaceTimePlot(rho2 - rho1, true);
+plotting.spaceTimePlot(l2 - l1, true);
 sumr1 = sum(rho1,2);
 sumr2 = sum(rho2,2);
 suml1 = sum(l1,2);
