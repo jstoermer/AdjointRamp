@@ -18,7 +18,10 @@ end
 
 function out = standardGradientDescentSpecifyLS(lineSearch)
 global parameters;
-out = @(u0, objective, gradient) gradientDescent(u0, objective, gradient, parameters.globalMaxIterations,lineSearch, @stopIterating);
+  function out = helper(u0, objective, gradient)
+    out = gradientDescent(u0, objective, gradient, parameters.globalMaxIterations,lineSearch, @stopIterating);
+  end
+out = @helper;
 end
 
 
