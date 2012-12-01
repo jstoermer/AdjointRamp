@@ -1,16 +1,47 @@
 function spaceTimePlot(varargin)
 
-densities = varargin{1};
+% Creates a default struct that contains the plotting parameters.
+plotInfo = struct('xLabel', '', 'yLabel', '', 'title', '', 'axesHandle', '', 'whiteZero', false);
 
-if nargin == 2
-    whitezero = varargin{2};
+primaryArg = varargin{1};
+
+if nargin == 2;
+    otherArg = varargin{2};
+    
+    % If the additional argument is a double, it corresponds to the
+    % whitezero value.
+    if islogical(otherArg)
+        if otherArg == 1
+            plotInfo.whiteZero = true;
+        end % end if
+        
+        % If the additional argument is a struct, it corresponds to a struct
+        % that may contain plotting parameters.
+    elseif isstruct(otherArg)
+        
+        if isfield(otherArg, 'xLabel')
+            plotInfo.xLabel = otherArg.xLabel;
+        elseif isfield(otherArg, 'yLabel')
+            plotInfo.yLabel = otherArg.yLabel;
+        elseif isfield(otherArg, 'title')
+            plotInfo.title = otherArg.title;
+        elseif isfield(otherArg, 'axesHandle')
+            plotInfo.axesHandle = otherArg.axesHandle;
+        elseif isfield(otherArg, 'whiteZero')
+            plotInfo.whiteZero = otherArg.whiteZero;
+        end % end if
+        
+    else
+        error('Incorrect variable type for additional argument.');
+    end % end if
+    
 else
-    whitezero = false;
+    error('Incorrect number of arguments.');
 end
 
-[T,N] = size(densities);
+[T,N] = size(primaryArg);
 
-% createfigure(densities);
+% createfigure(primaryArg);
 
 figure1 = figure;
 xlabels = {};
@@ -24,19 +55,20 @@ end
 xticks = .5:N + 1.5;
 yticks = .5:1:(T + 1.5);
 axes1 = axes('Parent', figure1, 'XTickLabel',xlabels,'XTick',xticks,'YTickLabel',ylabels,'YTick',yticks,'Layer','top');
-xlim(axes1,[.5,N + .5]);
+xlim(axes1,[.5, N + .5]);
 ylim(axes1,[.5, T + .5]);
 box(axes1,'on');
 hold(axes1,'all');
-image(densities,'Parent',axes1,'CDataMapping','scaled');
-xlabel('Downstream');
-ylabel('Time');
-title('Density Profile');
+image(primaryArg,'Parent',axes1,'CDataMapping','scaled');
+xlabel(plotInfo.xLabel);
+ylabel(plotInfo.yLabel);
+title(plotInfo.title);
 colorbar;
-if whitezero
-  try
-    bottom = min(min(densities));
-    top = max(max(densities));
+
+if plotInfo.whiteZero
+    bottom = min(min(primaryArg));
+    top = max(max(primaryArg));
     colormap(b2r(bottom, top));
-  end
+end
+
 end
