@@ -3,36 +3,37 @@ clear statesStore;
 global statesStore;
 statesStore = false;
 
-  function out = updateStates(u)
-    statesStore = state(data, u);
-    out = statesStore;
-  end
+    function out = updateStates(u)
+        statesStore = state(data, u);
+        out = statesStore;
+    end
 
-  function out = getStates
-    out = statesStore;
-  end
-      
-  function [out, info] = gradient(u)
-    states = getStates;
-    dhdxVal = dhdx(data, states, u);
-    djdxVal = djdx(data, states, u);
-    dhduVal =  dhdu(data, states, u);
-    djduVal = djdu(data, states, u);
-    [out, lambda] = adjointGradient(dhdxVal, djdxVal, djduVal, dhduVal);
-    if nargout == 2
-      info.dhdx = dhdxVal;
-      info.djdx = djdxVal;
-      info.dhdu = dhduVal;
-      info.djdu = djduVal;
-      info.lambda = lambda;
-    end    
-  end
+    function out = getStates
+        out = statesStore;
+    end
 
-  function out = objective(u)
-    updateStates(u);
-    states = getStates;
-    out = cost(data, states, u);
-  end
+    function [out, info] = gradient(u)
+        states = getStates;
+        dhdxVal = dhdx(data, states, u);
+        djdxVal = djdx(data, states, u);
+        dhduVal =  dhdu(data, states, u);
+        djduVal = djdu(data, states, u);
+        
+        [out, lambda] = adjointGradient(dhdxVal, djdxVal, djduVal, dhduVal);
+        if nargout == 2
+            info.dhdx = dhdxVal;
+            info.djdx = djdxVal;
+            info.dhdu = dhduVal;
+            info.djdu = djduVal;
+            info.lambda = lambda;
+        end
+    end
+
+    function out = objective(u)
+        updateStates(u);
+        states = getStates;
+        out = cost(data, states, u);
+    end
 
 out.gradient = @gradient;
 out.objective = @objective;
