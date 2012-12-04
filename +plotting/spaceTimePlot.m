@@ -70,12 +70,24 @@ for i = 0:T+1
     yTickLabel{i + 1} = num2str(i);
 end
 
-myFigure = figure;
 xTick = 0.5:(N + 1.5);
 yTick = 0.5:1:(T + 1.5);
-myAxes = axes('Parent', myFigure, 'XTickLabel',xTickLabel,'XTick',xTick,'YTickLabel',yTickLabel,'YTick',yTick,'Layer','top');
-xlim(myAxes,[.5, N + .5]);
-ylim(myAxes,[.5, T + .5]);
+
+if isempty(plotInfo.axesHandle)
+    myFigure = figure();
+    myAxes = axes('Parent', myFigure, 'XTickLabel',xTickLabel,'XTick',xTick,'YTickLabel',yTickLabel,'YTick',yTick,'Layer','top');
+else
+    myAxes = plotInfo.axesHandle;
+    set(myAxes, 'Layer', 'top');
+    set(myAxes, 'XTick', xTick);
+    set(myAxes, 'YTickLabel', xTickLabel);
+    set(myAxes, 'YTick', yTick);
+    set(myAxes, 'YTickLabel', yTickLabel);
+end
+    
+    
+xlim(myAxes,[0.5, N + 0.5]);
+ylim(myAxes,[0.5, T + 0.5]);
 box(myAxes,'on');
 hold(myAxes,'all');
 image(primaryArg,'Parent',myAxes,'CDataMapping','scaled');

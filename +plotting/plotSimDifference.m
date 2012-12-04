@@ -1,41 +1,59 @@
-function plotSimDifference(s1, s2)
+function plotSimDifference(state_1, state_2)
 
-rho1 = s1.density;
-l1 = s1.queue;
+density_1 = state_1.density;
+queue_1 = state_1.queue;
+uPenalty_1 = [state_1.uPenalty; zeros(1, size(state_1.uPenalty, 2))];
 
-rho2 = s2.density;
-l2 = s2.queue;
+density_2 = state_2.density;
+queue_2 = state_2.queue;
+uPenalty_2 = [state_2.uPenalty; zeros(1, size(state_2.uPenalty, 2))];
 
-plotting.spaceTimePlot(rho2 - rho1, true);
-plotting.spaceTimePlot(l2 - l1, true);
-sumr1 = sum(rho1,2);
-sumr2 = sum(rho2,2);
-suml1 = sum(l1,2);
-suml2 = sum(l2,2);
-tot1 = sumr1 + suml1;
-tot2 = sumr2 + suml2;
-figure
-h = area(cumsum([sumr1';suml1'],2)');
-set(h(1),'FaceColor',[.5 0 0])
-set(h(2),'FaceColor',[.7 0 0])
-alpha(.4);
-hold on
-h = area(cumsum([sumr2';suml2'],2)','LineWidth',2,'LineStyle','--');
-set(h(1),'FaceColor',[0 .5 0])
-set(h(2),'FaceColor',[0 .7 0])
+% Does not work as intended.
+% plotting.spaceTimePlot(density_2 - density_1, true);
+% plotting.spaceTimePlot(queue_2 - queue_1, true);
+sumDensity_1 = sum(density_1,2);
+sumDensity_2 = sum(density_2,2);
+
+sumQueue_1 = sum(queue_1,2);
+sumQueue_2 = sum(queue_2,2);
+
+sumUPenalty_1 = sum(uPenalty_1, 2);
+sumUPenalty_2 = sum(uPenalty_2, 2);
+
+totalState_1 = sumDensity_1 + sumQueue_1 + sumUPenalty_1;
+totalState_2 = sumDensity_2 + sumQueue_2 + sumUPenalty_2;
+
+figure;
+
+h = area(cumsum([sumDensity_1'; sumQueue_1'; sumUPenalty_1'], 2)');
+set(h(1), 'FaceColor', [0.5 0 0])
+set(h(2), 'FaceColor', [0.7 0 0])
+set(h(3), 'FaceColor', [0.9 0 0])
+alpha(0.4);
+hold on;
+
+h = area(cumsum([sumDensity_2'; sumQueue_2'; sumUPenalty_2'], 2)','LineWidth', 2,'LineStyle','--');
+set(h(1),'FaceColor',[0 0.5 0])
+set(h(2),'FaceColor',[0 0.7 0])
+set(h(3),'FaceColor',[0 0.9 0])
+alpha(0.4);
+
 xlabel('Time');
 ylabel('Cumulative Density');
 title('Comparative Density');
-alpha(.4);
-legend('prev main', 'prev ramp', 'opt main', 'opt ramp');
+legend('Previous Main', 'Previous Ramp', 'Previous u Penalty', 'Optimal Main', 'Optimal Ramp', 'Optimal u Penalty');
+
 figure;
+
 grid on;
 hold on;
-plot(cumsum(sumr2 - sumr1),'b-.','LineWidth',2);
-plot(cumsum(suml2 - suml1),'r:','LineWidth', 2);
-plot(cumsum(tot2 - tot1),'k', 'LineWidth', 3);
-legend('density diff', 'ramp diff', 'tot diff');
+plot(cumsum(sumDensity_2 - sumDensity_1),'b-.', 'LineWidth', 2);
+plot(cumsum(sumQueue_2 - sumQueue_1),'r:', 'LineWidth', 2);
+plot(cumsum(sumUPenalty_2 - sumUPenalty_1), 'g-','LineWidth', 2);
+plot(cumsum(totalState_2 - totalState_1),'k', 'LineWidth', 3);
+legend('Density Difference', 'Ramp Difference', 'u Penalty Difference', 'Total Difference');
 xlabel('Time');
-ylabel('Cum. Density');
-title('Cum .Density Difference');
-end
+ylabel('Cumulative Density');
+title('Cumulative Density Difference');
+
+end % end plotSimDifference
