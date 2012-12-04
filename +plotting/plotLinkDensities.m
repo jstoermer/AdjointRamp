@@ -1,3 +1,4 @@
 function plotLinkDensities(states)
-plotting.spaceTimePlot(states.density);
+plotInfo = struct('xLabel', 'Downstream', 'yLabel', 'Time', 'title', 'Link Densities');
+plotting.spaceTimePlot(states.density, plotInfo);
 end

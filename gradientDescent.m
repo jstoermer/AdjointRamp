@@ -9,7 +9,7 @@ while iteration < maxIter
         break;
     end
     u = nextU;
-    disp(cost(u))
+    % disp(cost(u));
 end
 out = u;
 end

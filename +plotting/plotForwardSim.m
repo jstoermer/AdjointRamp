@@ -3,6 +3,6 @@ function out = plotForwardSim(varargin)
 states = forwardSimulation(scen, u);
 plotting.plotLinkDensities(states);
 plotting.plotQueueLengths(states);
-plotUPenalty(scen, u);
+plotting.plotUPenalty(states);
 out = states;
 end

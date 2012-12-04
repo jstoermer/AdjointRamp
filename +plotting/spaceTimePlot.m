@@ -3,72 +3,93 @@ function spaceTimePlot(varargin)
 % Creates a default struct that contains the plotting parameters.
 plotInfo = struct('xLabel', '', 'yLabel', '', 'title', '', 'axesHandle', '', 'whiteZero', false);
 
-primaryArg = varargin{1};
+if nargin == 1
+    primaryArg = varargin{1};
 
-if nargin == 2;
+% If there are two arguments, the additional argument has to be a double or
+% a struct.
+elseif nargin == 2;
+    primaryArg = varargin{1};
     otherArg = varargin{2};
     
     % If the additional argument is a double, it corresponds to the
     % whitezero value.
     if islogical(otherArg)
+        
         if otherArg == 1
             plotInfo.whiteZero = true;
-        end % end if
+        end % end if block
         
-        % If the additional argument is a struct, it corresponds to a struct
-        % that may contain plotting parameters.
+    % If the additional argument is a struct, it corresponds to a struct
+    % that may contain plotting parameters.
     elseif isstruct(otherArg)
         
         if isfield(otherArg, 'xLabel')
             plotInfo.xLabel = otherArg.xLabel;
-        elseif isfield(otherArg, 'yLabel')
-            plotInfo.yLabel = otherArg.yLabel;
-        elseif isfield(otherArg, 'title')
-            plotInfo.title = otherArg.title;
-        elseif isfield(otherArg, 'axesHandle')
-            plotInfo.axesHandle = otherArg.axesHandle;
-        elseif isfield(otherArg, 'whiteZero')
-            plotInfo.whiteZero = otherArg.whiteZero;
-        end % end if
+        end
         
-    else
-        error('Incorrect variable type for additional argument.');
-    end % end if
+        if isfield(otherArg, 'yLabel')
+            plotInfo.yLabel = otherArg.yLabel;
+        end
+        
+        if isfield(otherArg, 'title')
+            plotInfo.title = otherArg.title;
+        end
+        
+        if isfield(otherArg, 'axesHandle')
+            plotInfo.axesHandle = otherArg.axesHandle;
+        end
+        
+        if isfield(otherArg, 'whiteZero')
+            plotInfo.whiteZero = otherArg.whiteZero;
+        end
     
+    % If the additional argument is not a double or a struct, it is an
+    % invalid argument.
+    else
+        error('Invalid argument. Additional argument must be a logical or a struct.');
+    
+    end % end iflogical(otherArg)
+
+% If there are more than two arguments, there are an invalid number of
+% arguments.
 else
-    error('Incorrect number of arguments.');
-end
+    error('Invalid number of arguments. Must have one or two arguments.');
+
+end % end if nargin == 1
 
 [T,N] = size(primaryArg);
 
-% createfigure(primaryArg);
+xTickLabel = {};
+for i = 0:(N + 1)
+    xTickLabel{i + 1} = ['Link ' num2str(i)];
+end
 
-figure1 = figure;
-xlabels = {};
-for i = 0:N+1
-    xlabels{i+1} = ['Link ' num2str(i)];
-end
-ylabels = {};
+yTickLabel = {};
 for i = 0:T+1
-    ylabels{i+1} = num2str(i);
+    yTickLabel{i + 1} = num2str(i);
 end
-xticks = .5:N + 1.5;
-yticks = .5:1:(T + 1.5);
-axes1 = axes('Parent', figure1, 'XTickLabel',xlabels,'XTick',xticks,'YTickLabel',ylabels,'YTick',yticks,'Layer','top');
-xlim(axes1,[.5, N + .5]);
-ylim(axes1,[.5, T + .5]);
-box(axes1,'on');
-hold(axes1,'all');
-image(primaryArg,'Parent',axes1,'CDataMapping','scaled');
+
+myFigure = figure;
+xTick = 0.5:(N + 1.5);
+yTick = 0.5:1:(T + 1.5);
+myAxes = axes('Parent', myFigure, 'XTickLabel',xTickLabel,'XTick',xTick,'YTickLabel',yTickLabel,'YTick',yTick,'Layer','top');
+xlim(myAxes,[.5, N + .5]);
+ylim(myAxes,[.5, T + .5]);
+box(myAxes,'on');
+hold(myAxes,'all');
+image(primaryArg,'Parent',myAxes,'CDataMapping','scaled');
 xlabel(plotInfo.xLabel);
 ylabel(plotInfo.yLabel);
 title(plotInfo.title);
 colorbar;
 
 if plotInfo.whiteZero
-    bottom = min(min(primaryArg));
-    top = max(max(primaryArg));
-    colormap(b2r(bottom, top));
+    try
+        bottom = min(min(primaryArg));
+        top = max(max(primaryArg));
+        colormap(plotting.b2r(bottom, top));
+    end
 end
 
 end

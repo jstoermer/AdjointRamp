@@ -1,3 +1,4 @@
 function plotQueueLengths(states)
-plotting.spaceTimePlot(states.queue);
+plotInfo = struct('xLabel', 'Downstream', 'yLabel', 'Time', 'title', 'Queue Lengths');
+plotting.spaceTimePlot(states.queue, plotInfo);
 end
