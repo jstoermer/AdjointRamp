@@ -25,6 +25,7 @@ totalState_2 = sumDensity_2 + sumQueue_2 + sumUPenalty_2;
 
 figure;
 
+subplot(2,1,1);
 h = area(cumsum([sumDensity_1'; sumQueue_1'; sumUPenalty_1'], 2)');
 set(h(1), 'FaceColor', [0.5 0 0])
 set(h(2), 'FaceColor', [0.7 0 0])
@@ -41,17 +42,16 @@ alpha(0.4);
 xlabel('Time');
 ylabel('Cumulative Density');
 title('Comparative Density');
-legend('Previous Main', 'Previous Ramp', 'Previous u Penalty', 'Optimal Main', 'Optimal Ramp', 'Optimal u Penalty');
+legend('Previous Main', 'Previous Ramp', 'Previous \it{u}\rm Penalty', 'Optimal Main', 'Optimal Ramp', 'Optimal \it{u}\rm Penalty');
 
-figure;
-
+subplot(2,1,2);
 grid on;
 hold on;
 plot(cumsum(sumDensity_2 - sumDensity_1),'b-.', 'LineWidth', 2);
 plot(cumsum(sumQueue_2 - sumQueue_1),'r:', 'LineWidth', 2);
 plot(cumsum(sumUPenalty_2 - sumUPenalty_1), 'g-','LineWidth', 2);
 plot(cumsum(totalState_2 - totalState_1),'k', 'LineWidth', 3);
-legend('Density Difference', 'Ramp Difference', 'u Penalty Difference', 'Total Difference');
+legend('Density Difference', 'Ramp Difference', '\it{u}\rm Penalty Difference', 'Total Difference');
 xlabel('Time');
 ylabel('Cumulative Density');
 title('Cumulative Density Difference');
