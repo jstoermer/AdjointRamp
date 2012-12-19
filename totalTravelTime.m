@@ -1,7 +1,9 @@
 function out = totalTravelTime(varargin)
+
 global parameters;
 R = parameters.R;
 scen = varargin{1};
+
 if nargin == 2
     u = varargin{2};
     states = forwardSimulation(scen, u);

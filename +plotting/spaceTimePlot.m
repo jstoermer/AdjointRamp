@@ -6,13 +6,13 @@ plotInfo = struct('xLabel', '', 'yLabel', '', 'title', '', 'axesHandle', '', 'wh
 if nargin == 1
     primaryArg = varargin{1};
 
-% If there are two arguments, the additional argument has to be a double or
+% If there are two arguments, the additional argument has to be a logical or
 % a struct.
 elseif nargin == 2;
     primaryArg = varargin{1};
     otherArg = varargin{2};
     
-    % If the additional argument is a double, it corresponds to the
+    % If the additional argument is a logical, it corresponds to the
     % whitezero value.
     if islogical(otherArg)
         

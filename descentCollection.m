@@ -18,9 +18,11 @@ end
 
 function out = standardGradientDescentSpecifyLS(lineSearch)
 global parameters;
-  function out = helper(u0, objective, gradient)
-    out = gradientDescent(u0, objective, gradient, parameters.globalMaxIterations,lineSearch, @stopIterating);
-  end
+    function varargout = helper(u0, objective, gradient)
+        [out, cost] = gradientDescent(u0, objective, gradient, parameters.globalMaxIterations,lineSearch, @stopIterating);
+        varargout{1} = out;
+        varargout{2} = cost;
+    end
 out = @helper;
 end
 
@@ -42,8 +44,8 @@ bfgsStore.evaluateCost = obj;
 bfgsStore.evaluateGradient = grad;
 
 out = lbfgsb(uvec,lb,ub,'bfgsCostWrapper', 'bfgsGradientWrapper',...
-  [],'genericcallback','maxiter',parameters.globalMaxIterations,'m',4,'factr',1e-8,...
-  'pgtol',parameters.globalConvergenceThreshold);
+    [],'genericcallback','maxiter',parameters.globalMaxIterations,'m',4,'factr',1e-8,...
+    'pgtol',parameters.globalConvergenceThreshold);
 clear bfgsStore;
 end
 
@@ -51,9 +53,9 @@ end
 function out = basicLineSearch(u, gradient, ~, iteration)
 global parameters
 if isfield(parameters, 'alpha')
-  alpha = parameters.alpha;
+    alpha = parameters.alpha;
 else
-  alpha = 0.1;
+    alpha = 0.1;
 end
 stepSize=parameters.alpha/sqrt(iteration);
 out = u  - stepSize.*gradient;
@@ -63,11 +65,11 @@ end
 function out = backtrackingLineSearch(x, gradient, cost, ~)
 global parameters
 if isfield(parameters, 'bt')
-  alpha = parameters.bt.alpha;
-  beta =  parameters.bt.beta;
+    alpha = parameters.bt.alpha;
+    beta =  parameters.bt.beta;
 else
-  alpha = 0.5;
-  beta = 0.9;
+    alpha = 0.5;
+    beta = 0.9;
 end
 
 t = 1;
@@ -79,11 +81,11 @@ gradProduct = gradient'*dx;
 counter = 0;
 MAX_ITER = 100;
 while cost(x + t.*dx) > cx + alpha.*t.*gradProduct
-  t = beta*t;
-  counter= counter + 1;
-  if counter > MAX_ITER
-    break;
-  end
+    t = beta*t;
+    counter= counter + 1;
+    if counter > MAX_ITER
+        break;
+    end
 end
 out = x + t.*dx;
 end
