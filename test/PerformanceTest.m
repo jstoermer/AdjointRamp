@@ -11,7 +11,7 @@ classdef PerformanceTest < TestCase
     function self = PerformanceTest(name)
       self = self@TestCase(name);
       self.dir = '../networks/';
-      self.fns = {'simple.json', 'samitha1onramp.json','2on2off.json'};
+      self.fns = {'samitha1onramp.json','2on2off.json'};
       % self.fns = {'2on2off.json'};
       % self.fns = {'simple.json', 'samitha1onramp.json'};
       self.dfuns = rampPartialFunctions;
