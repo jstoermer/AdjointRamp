@@ -2,9 +2,7 @@ function [] = sweepInitU(varargin)
 % Inputs:
 % varargin(1) - JSON description of a scenario.
 % Either: varargin(2) - Number of trials,
-% Or: varargin(2,3,...) - Matrices of various initial u-values. At least
-% two matrices must be provided.
-
+% Or: varargin(2,3,...) - Matrices of various initial u-values. 
 % If the number of trials are provided, matrices of various initial
 % u-values will be generated, ranging from a matrix of zeros to a matrix of
 % no control.
@@ -13,7 +11,7 @@ scenFile = varargin{1};
 myScenario = io.loadScenario(scenFile);
 varargin(1) = [];
 
-if length(varargin) == 1    
+if length(varargin{1}) == 1
     numTrials = varargin{1};
     initU = cell(1, numTrials);
     myNoControlU = noControlU(myScenario);
