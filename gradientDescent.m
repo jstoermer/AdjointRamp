@@ -1,6 +1,9 @@
-function out = gradientDescent(u0, cost, gradient, maxIter, lineSearch, stop)
+function varargout = gradientDescent(u0, cost, gradient, maxIter, lineSearch, stop)
+
 iteration = 0;
 u = u0;
+totCost = [];
+
 while iteration < maxIter
     iteration = iteration + 1;
     nextU = lineSearch(u, gradient(u), cost, iteration);
@@ -9,7 +12,10 @@ while iteration < maxIter
         break;
     end
     u = nextU;
-    disp(cost(u))
+    totCost(iteration) = cost(u);
 end
-out = u;
+
+varargout{1} = u;
+varargout{2} = totCost;
+
 end

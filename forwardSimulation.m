@@ -100,6 +100,7 @@ outputState.fluxOffRamp = fluxOffRamp;
 outputState.supply = supplyML;
 outputState.demand = demandML;
 outputState.rampDemand = demandRamp;
+outputState.uPenalty = uPenalty(scen, queueStore, u);
 
 end
 

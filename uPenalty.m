@@ -1,18 +1,29 @@
-function myPenalty = uPenalty(myScenario, u)
+function myPenalty = uPenalty(varargin)
 
 global parameters;
 R = parameters.R;
+
+if (nargin >= 2)
+    myScenario = varargin{1};
+else
+    error('Too few arguments. Needs at least a scenario and a matrix for u.');
+end % end if (nargin >= 2)
+
+if (nargin == 2)
+    u = varargin{2};
+    myStates = forwardSimulation(myScenario, u);
+    myQueue = myStates.queue;
+elseif (nargin == 3)
+    myQueue = varargin{2};
+    u = varargin{3};
+else
+    error('Too many arguments. Can have at most a scenario, a matrix for queue lengths, and a matrix for u.');
+end % end if (nargin == 2)
+
 dt = myScenario.dt;
 rMax  = repmat([myScenario.links.rmax], myScenario.T, 1);
+l = myQueue(1:(end - 1), :);
 
-[numRowsU,numColsU] = size(u);
-
-myPenalty = zeros(numRowsU, numColsU);
-
-for i = 1:numRowsU    
-    for j = 1:numColsU
-        myPenalty(i,j) = 3 * R .* (max(u(i,j) - min(1./dt, rMax(i,j)), 0)).^3;
-    end % end j for loop 
-end % end i for loop
+myPenalty = 3 * R .* (max(u - min(l ./ dt, rMax), 0)).^3;
 
 end % end myPenalty
