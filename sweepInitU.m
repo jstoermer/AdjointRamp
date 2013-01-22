@@ -38,9 +38,7 @@ for i = 1:length(initU)
     [u, totCost] = adjointOptimization(myScenario, stacker(initU{i}), ...
         scenStruct.state, scenStruct.cost, scenStruct.dhdx, ...
         scenStruct.djdx, scenStruct.dhdu, scenStruct.djdu, descentAlg);
-    % Sum or last?
-    myCost(i) = sum(totCost);
-    % myCost(i) = totCost(end);   
+    myCost(i) = totCost(end);   
 end % end for i = 1:length(initU)
 
 trialNum = 1:numTrials;

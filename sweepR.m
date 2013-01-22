@@ -16,13 +16,7 @@ for i = 1:numTrials
     parameters.R = initR * 10^(i - 1);
     [u, totCost] = adjointOptimization(scen, stacker(u0), s.state, s.cost, s.dhdx, s.djdx, s.dhdu, s.djdu, descent);
     r(i) = parameters.R;
-    
-    % Do we want the sum of the costs?
-    cost(i) = sum(totCost);
-    
-    % Or the final cost?
-    % cost(i) = totCost(end);
-    
+    cost(i) = totCost(end);
 end % end for i = 1:numTrials
 
 semilogx(r, cost);
