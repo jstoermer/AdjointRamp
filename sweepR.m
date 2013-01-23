@@ -7,6 +7,7 @@ R = logspace(X1, X2, N);
 outputStruct = [];
 
 global parameters;
+oldR = parameters.R;
 
 for i = 1:N
     % disp(i);
@@ -17,5 +18,5 @@ for i = 1:N
         'u', u, 'OutputState', outputState);
     outputStruct = [outputStruct, currTrial];
 end % end for i = 1:N
-
+parameters.R = oldR;
 end % end sweepR
