@@ -1,4 +1,4 @@
-function [] = sweepInitU(varargin)
+function [outputStruct] = sweepInitU(varargin)
 % Inputs:
 % varargin(1) - JSON description of a scenario.
 % Either: varargin(2) - Number of trials,
@@ -27,22 +27,24 @@ else
 end % end if length(varargin == 1)
 
 myCost = zeros(1, numTrials);
-
-global parameters;
-descentAlg = parameters.globalDescentAlgorithm;
-scenStruct = rampAdjointStructures(myScenario);
+outputStruct = [];
 
 for i = 1:length(initU)
-    [u, totCost] = adjointOptimization(myScenario, stacker(initU{i}), ...
-        scenStruct.state, scenStruct.cost, scenStruct.dhdx, ...
-        scenStruct.djdx, scenStruct.dhdu, scenStruct.djdu, descentAlg);
-    myCost(i) = totCost(end);   
+    [u, outputState, totCost] = rampOptimalU(scenFile);
+    myVariable = struct('Name', 'Initial u-Values', 'Value', initU{i});
+    currTrial = struct('Variable', myVariable, 'Cost', totCost(end), ...
+        'u', u, 'OutputState', outputState);
+    outputStruct = [outputStruct, currTrial];
 end % end for i = 1:length(initU)
 
-trialNum = 1:numTrials;
-plot(trialNum, myCost);
-title('Cost vs. Initial \it{u}\rm-Values');
-xlabel('Initial \it{u}\rm-Values Trial');
-ylabel('Cost');
+for i = 1:length(outputStruct)
+    myCost(i) = outputStruct(i).Cost;
+end % end for i = 1:length(outputStruct)
+
+% plot(myCost);
+% set(gca, 'XTick', [1:length(outputStruct)]);
+% title('Cost vs. Initial \it{u}\rm-Values');
+% xlabel('Initial \it{u}\rm-Values Trial');
+% ylabel('Cost');
 
 end % end sweepInitU

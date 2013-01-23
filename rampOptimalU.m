@@ -1,4 +1,4 @@
-function [u, outputState] = rampOptimalU(varargin)
+function varargout = rampOptimalU(varargin)
 % Computes the optimal ramp metering control for a given scenario
 % Inputs
 % varargin(1) - JSON description of a scenario or the scenario structure
@@ -23,6 +23,9 @@ s = rampAdjointStructures(scen);
 [u, totCost] = adjointOptimization(scen, stacker(u0), s.state, s.cost, s.dhdx, s.djdx, s.dhdu, s.djdu, descent);
 u = unstack(u, scen);
 outputState = forwardSimulation(scen, u);
+varargout{1} = u;
+varargout{2} = outputState;
+varargout{3} = totCost;
 
 if plotCost
     plot(totCost);
