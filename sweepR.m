@@ -9,7 +9,7 @@ outputStruct = [];
 global parameters;
 
 for i = 1:N
-    i
+    % disp(i);
     parameters.R = R(i);
     [u, outputState, totCost] = rampOptimalU(scenFile);
     myVariable = struct('Name', 'R-Value', 'Value', R(i));
