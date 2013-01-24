@@ -54,9 +54,9 @@ classdef GradientTestCase < TestCase
       djdx = full(self.gradinfo.djdx); N = self.scen.N; T = self.scen.T;
       for k = 1:T+1
         for i = 1:N
-          xi = idx(N,k,'rho',i);
+          xi = idx(N,k,1,i);
           assertElementsAlmostEqual(djdx(xi), self.scen.links(i).L);
-          xi = idx(N,k,'l',i);
+          xi = idx(N,k,2,i);
           assertElementsAlmostEqual(djdx(xi), 1);
         end
       end
@@ -70,7 +70,7 @@ classdef GradientTestCase < TestCase
       % test for active constraints
       for k = 1:T
         for i = 1:N
-          hi = idx(N,k,'d',i);
+          hi = idx(N,k,5,i);
           xi = uidx(N,k,i);
           dhduval = dhdu(hi,xi);
           uval = self.u(k,i);
@@ -105,6 +105,7 @@ classdef GradientTestCase < TestCase
           zeroedPenalty = max(potentialPenalty, 0);
           parammedPenalty = parameters.R.*(zeroedPenalty^2);
           assertElementsAlmostEqual(djduval, parammedPenalty);
+          disp(djduval);disp(parammedPenalty);
         end
       end
     end

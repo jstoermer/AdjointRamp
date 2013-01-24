@@ -13,6 +13,7 @@ statesStore = false;
     end
 
     function [out, info] = gradient(u)
+%       disp(1/9*(26*u - 12));
         states = getStates;
         dhdxVal = dhdx(data, states, u);
         djdxVal = djdx(data, states, u);
@@ -49,4 +50,6 @@ end
 function [out, lambda] = adjointGradient(dhdx, djdx, djdu, dhdu)
 lambda = (dhdx' \ djdx');
 out = (djdu - lambda'*dhdu)';
+disp('gradient');
+disp(out);
 end

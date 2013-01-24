@@ -20,12 +20,13 @@ global parameters;
 descent = parameters.globalDescentAlgorithm;
 s = rampAdjointStructures(scen);
 
-[u, totCost] = adjointOptimization(scen, stacker(u0), s.state, s.cost, s.dhdx, s.djdx, s.dhdu, s.djdu, descent);
+[u, totCost, t] = adjointOptimization(scen, stacker(u0), s.state, s.cost, s.dhdx, s.djdx, s.dhdu, s.djdu, descent);
 u = unstack(u, scen);
 outputState = forwardSimulation(scen, u);
 varargout{1} = u;
 varargout{2} = outputState;
 varargout{3} = totCost;
+varargout{4} = t;
 
 if plotCost
     plot(totCost);
