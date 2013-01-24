@@ -2,7 +2,7 @@ function outputStates = plotForwardSim(varargin)
 % The last argument may be a struct containing the current iteration, the
 % total number of iterations, and a figure. For use in plotBeforeAndAfter.m.
 
-if isstruct(varargin{end})
+if length(varargin) > 1 && isstruct(varargin{end})
     plotInfo = varargin{end};
     varargin(end) = [];
     
