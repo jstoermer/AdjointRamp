@@ -12,7 +12,7 @@ parameters.alpha = 0.2;
 colls = descentCollection;
 parameters.lineSearch = colls.gdBackTracking;
 parameters.globalConvergenceThreshold = .00000001;
-parameters.globalMaxIterations = 25;
+parameters.globalMaxIterations = 10;
 
 % how much to scale the control when not specified w/r/t the max flux per
 % ramp
