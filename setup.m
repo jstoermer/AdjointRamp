@@ -23,3 +23,5 @@ parameters.bt.alpha = .5;
 parameters.bt.beta = .9;
 
 loadScenario = @io.loadScenario;
+
+addpath(pwd);
