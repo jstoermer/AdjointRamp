@@ -68,7 +68,8 @@ if isfield(parameters, 'alpha')
 else
     alpha = 0.1;
 end
-stepSize=parameters.alpha/sqrt(iteration);
+%stepSize=parameters.alpha/sqrt(iteration);
+stepSize=parameters.alpha/iteration;
 out = u  - stepSize.*gradient;
 end
 

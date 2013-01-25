@@ -1,13 +1,14 @@
 global parameters
 
-parameters.R = .1;
+parameters.R = 10;
 %% gradient methods
 % 1. gradient descent
 % 2. l-bfgs
 
 colls = descentCollection;
-parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
-parameters.alpha = .1;
+parameters.globalDescentAlgorithm = colls.gdBasicPos;
+%parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
+parameters.alpha = 0.2;
 colls = descentCollection;
 parameters.lineSearch = colls.gdBackTracking;
 parameters.globalConvergenceThreshold = .00000001;
