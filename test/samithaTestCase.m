@@ -23,7 +23,7 @@ sum(sum(os2.density)) + sum(sum(os2.queue))
 
 % u_perturb = max(utest + randn(size(utest)), 0)
 u_perturb = utest;
-u_perturb(1,2) = 0.13;
+u_perturb(1,2) = 0.22;
 u_perturb
 figure(1)
 ustar = rampOptimalU(scen, u_perturb,true);
