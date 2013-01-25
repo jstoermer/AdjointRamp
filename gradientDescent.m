@@ -7,7 +7,9 @@ global u12;
 
 while iteration < maxIter
     iteration = iteration + 1;
-    nextU = lineSearch(u, gradient(u), cost, iteration);
+    grad = gradient(u);
+    grad
+    nextU = lineSearch(u, grad, cost, iteration);
     if stop(u, nextU, iteration)
         u = nextU;
         break;

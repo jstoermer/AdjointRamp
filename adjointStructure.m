@@ -49,7 +49,9 @@ end
 
 function [out, lambda] = adjointGradient(dhdx, djdx, djdu, dhdu)
 lambda = (dhdx' \ djdx');
-out = (djdu - lambda'*dhdu)';
+lambda
+right = lambda'*dhdu
+out = (djdu - right)';
 %disp('gradient');
 %disp(out);
 end

@@ -9,14 +9,14 @@ uoff = ones(scen.T, scen.N);
 utest = ones(scen.T, scen.N);
 utest(:,2) = .1;
 
-totalTravelTime(scen , uoff)
-totalTravelTime(scen , utest)
-
-os1 = forwardSimulation(scen, uoff);
-os2 = forwardSimulation(scen, utest);
-
-sum(sum(os1.density)) + sum(sum(os1.queue))
-sum(sum(os2.density)) + sum(sum(os2.queue))
+% totalTravelTime(scen , uoff)
+% totalTravelTime(scen , utest)
+% 
+% os1 = forwardSimulation(scen, uoff);
+% os2 = forwardSimulation(scen, utest);
+% 
+% sum(sum(os1.density)) + sum(sum(os1.queue))
+% sum(sum(os2.density)) + sum(sum(os2.queue))
 
 
 %plotting.plotSimDifference(os1, os2);
@@ -24,15 +24,15 @@ sum(sum(os2.density)) + sum(sum(os2.queue))
 % u_perturb = max(utest + randn(size(utest)), 0)
 u_perturb = utest;
 u_perturb(1,2) = 0.13;
-u_perturb
+% u_perturb
 figure(1)
 ustar = rampOptimalU(scen, u_perturb,true);
 
-os3 = forwardSimulation(scen, ustar);
-us3 = ustar
-sum(sum(os3.density)) + sum(sum(os3.queue))
-figure;
-plot(u12);
+% os3 = forwardSimulation(scen, ustar);
+% us3 = ustar
+% sum(sum(os3.density)) + sum(sum(os3.queue))
+% figure;
+% plot(u12);
 %plotting.plotSimDifference(os2, os3);
 
 %ustar(1,2) = .1;

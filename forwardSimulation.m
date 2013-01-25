@@ -45,7 +45,7 @@ for loopT = 1:T % solve for time step loopT
             queue = [];
             queueDemand = 0;
             uCurrent = 0;
-            beta = 1;
+            beta = 0;
             p = 1.0;
             rmax = 0.0;
         else
@@ -127,24 +127,24 @@ else
     supplyDS = min([linkDown.fm, linkDown.w * (linkDown.pm - densityDown)]); % downstream supply
 end
 
-demand = demandUS * (1 - beta) + demandRamp;
+demand = demandUS * beta + demandRamp;
 if demand < supplyDS % simple when demand constrained
     fluxUSout = demandUS;
     fluxDSRamp = demandRamp;
 else % supply constrained
     % blindly assume P intersects in feasible region
     fluxDSRamp = (1 - p) * supplyDS;
-    fluxUSout = p * supplyDS / (1 - beta);
+    fluxUSout = p * supplyDS / beta;
     if fluxUSout > demandUS % maxed out inlink
         fluxUSout = demandUS;
-        fluxDSRamp = supplyDS - (1 - beta) * fluxUSout;
+        fluxDSRamp = supplyDS - beta * fluxUSout;
     elseif fluxDSRamp > demandRamp % maxed out ramp
         fluxDSRamp = demandRamp;
-        fluxUSout = (supplyDS - fluxDSRamp) / (1 - beta);
+        fluxUSout = (supplyDS - fluxDSRamp) / beta;
     end
 end
-fluxDSin = fluxUSout * (1 - beta) + fluxDSRamp;
-offRampFlux = fluxUSout * beta;
+fluxDSin = fluxUSout * beta + fluxDSRamp;
+offRampFlux = fluxUSout * (1 - beta);
 if fluxDSin + offRampFlux ~= fluxUSout + fluxDSRamp
     return;
 end
