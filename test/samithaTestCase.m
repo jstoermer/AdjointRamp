@@ -3,7 +3,7 @@ function samithaTest
 close all
 global u12;
 u12 = [];
-scen = io.loadScenario('../networks/samitha1onramp.json');
+scen = io.loadScenario('../networks/2on2off.json');
 
 uoff = ones(scen.T, scen.N);
 utest = ones(scen.T, scen.N);
@@ -23,10 +23,11 @@ utest(:,2) = .1;
 
 % u_perturb = max(utest + randn(size(utest)), 0)
 u_perturb = utest;
-u_perturb(1,2) = 0.9;
+u_perturb(1,2) = 0.05;
 u_perturb
 figure(1)
-ustar = rampOptimalU(scen, u_perturb,true);
+ustar = rampOptimalU(scen, u_perturb,true)
+
 
 % os3 = forwardSimulation(scen, ustar);
 % us3 = ustar
