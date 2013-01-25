@@ -23,8 +23,8 @@ utest(:,2) = .1;
 
 % u_perturb = max(utest + randn(size(utest)), 0)
 u_perturb = utest;
-u_perturb(1,2) = 0.13;
-% u_perturb
+u_perturb(1,2) = 0.9;
+u_perturb
 figure(1)
 ustar = rampOptimalU(scen, u_perturb,true);
 
