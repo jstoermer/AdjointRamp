@@ -1,4 +1,4 @@
-function [myScenario] = createScenario(numLinks, numTimeSteps)
+function [myScenario, outputState] = createScenario(numLinks, numTimeSteps)
 
 % Generates a nontrivial scenario, provided the number of links and the
 % number of time steps.
@@ -25,14 +25,7 @@ L = ones(1, numLinks);
 pc = fm ./ v;
 pm = fm ./ w + pc;
 
-% TODO: ADD FORWARD SIMULATIONS TO ADJUST CLEAR TIME.  
-
-if numTimeSteps > clearTime
-    D = [rand(numTimeSteps - clearTime, numLinks); zeros(clearTime, numLinks)];
-else
-    D = zeros(numTimeSteps, numLinks);
-end % end if numTimeSteps > numLinks
-
+D = rand(numTimeSteps, numLinks);
 beta = rand(numTimeSteps, numLinks);
 BC = struct('D', D, 'beta', beta);
 
@@ -56,5 +49,32 @@ processU = @(u)unstack(u,scen); % Default value is @(u)unstack(u,scen).
 myScenario = struct('links', myLinks, 'BC', BC, 'IC', IC, 'N', numLinks, ...
     'T', numTimeSteps, 'dt', timeStepSize, 'nConstraints', nConstraints, ...
     'nControls', nControls, 'processU', processU);
+
+u = chooseInitialU(myScenario);
+
+low = 1;
+high = numTimeSteps;
+i = 0;
+
+% TODO: WHILE LOOP IS NOT TERMINATING CORRECTLY. MAXIMUM RUNNING TIME FOR
+% BINARY SEARCH IS LOG2(N).
+
+% TODO: MAKE DEMAND PROFILE "SMOOTH", RATHER THAN RANDOM.
+
+while (low <= high)
+    i = i + 1
+    mid = floor((low + high) / 2);
+    testD = [D(1:mid, :); zeros(numTimeSteps - mid, numLinks)];
+    myScenario.BC.D = testD;
+    outputState = forwardSimulation(myScenario, u);
+    outputState.density
+    if sum(outputState.density(end, :)) > 1e-4
+        high = mid;
+    elseif sum(outputState.density(end - 1, :)) < 1e-4
+        low = mid;
+    else
+        return;
+    end % end if
+end % end while (low <= high)
 
 end % end createScenario
