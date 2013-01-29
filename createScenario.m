@@ -1,4 +1,4 @@
-function [myScenario, outputState] = createScenario(numLinks, numTimeSteps)
+function [myScenario] = createScenario(numLinks, numTimeSteps)
 
 % Generates a nontrivial scenario, provided the number of links and the
 % number of time steps.
@@ -25,14 +25,7 @@ L = ones(1, numLinks);
 pc = fm ./ v;
 pm = fm ./ w + pc;
 
-% The demand profile will follow a Gaussian distribution.
-X = linspace(-2, 2, numTimeSteps);
-Y = exp(-0.5*X.^2);
-
 D = zeros(numTimeSteps, numLinks);
-for i = 1:numLinks
-    D(:, i) = 0.1*rand(numTimeSteps, 1) + Y(1:end)';
-end % end for i = 1:numTimeSteps
 beta = 0.1 .* ones(numTimeSteps, numLinks) + 0.9 .* rand(numTimeSteps, numLinks);
 BC = struct('D', D, 'beta', beta);
 
@@ -57,36 +50,49 @@ myScenario = struct('links', myLinks, 'BC', BC, 'IC', IC, 'N', numLinks, ...
     'T', numTimeSteps, 'dt', timeStepSize, 'nConstraints', nConstraints, ...
     'nControls', nControls, 'processU', processU);
 
-% TODO: MAKE DEMAND PROFILE "SMOOTH", RATHER THAN RANDOM.
-
 % Binary search to find the optimal demand matrix, ensuring that the
 % network is cleared and minimizing the number of time steps that have no
 % densities.
 
 u = chooseInitialU(myScenario);
-low = 1;
-high = numTimeSteps;
+lowBound = 1;
+highBound = numTimeSteps;
 
-while (low <= high)
-    mid = floor((low + high) / 2);
-    if (mid == low || mid == high)
+while (lowBound <= highBound)
+    midBound = floor((lowBound + highBound) / 2);
+    
+    % Terminates the loop if a "perfect" demand profile cannot be
+    % generated, i.e. neither of the termination conditions can be 
+    % satisfied. Returns the current optimal demand profile.
+    if (midBound == lowBound || midBound == highBound)
+        % disp(outputState.density);
         return;
     end % end if
-    X = linspace(-2, 2, mid);
-    Y = exp(-0.5*X.^2);
+    
+    % The nonzero demands will follow a "noisy" Gaussian distribution with
+    % respect to time.
     D = zeros(numTimeSteps, numLinks);
+    X = linspace(-2, 2, midBound);
+    Y = exp(-0.5*X.^2);
+    
     for i = 1:numLinks
-        D(1:mid, i) = 0.1*rand(mid, 1) + Y(1:end)';
+        D(1:midBound, i) = 0.1*rand(midBound, 1) + Y(1:end)';
     end % end for i = 1:numTimeSteps
+    
     myScenario.BC.D = D;
     outputState = forwardSimulation(myScenario, u);
-    if sum(outputState.density(end, :)) > 1e-4;
-        high = mid;
+    
+    if sum(outputState.density(end, :)) > 1e-8;
+        highBound = midBound;
     elseif sum(outputState.density(end - 1, :)) < 1e-8;
-        low = mid;
+        lowBound = midBound;
     else
+        % disp(outputState.density);
         return;
     end % end if
-end % end while (low <= high)
+    
+end % end while (lowBound <= highBound)
+
+
 
 end % end createScenario
