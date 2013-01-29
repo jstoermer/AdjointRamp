@@ -19,14 +19,21 @@ function [myScenario, outputState] = createScenario(numLinks, numTimeSteps)
 w = 0.5 + 0.5 .* rand(1, numLinks);
 v = ones(1, numLinks);
 fm = 0.5 + 0.5 .* rand(1, numLinks);
-p = rand(1, numLinks);
+p = 0.8 .* ones(1, numLinks);
 rmax = 0.5 + 0.5 .* rand(1, numLinks);
 L = ones(1, numLinks);
 pc = fm ./ v;
 pm = fm ./ w + pc;
 
-D = rand(numTimeSteps, numLinks);
-beta = rand(numTimeSteps, numLinks);
+% The demand profile will follow a Gaussian distribution.
+X = linspace(-2, 2, numTimeSteps);
+Y = exp(-0.5*X.^2);
+
+D = zeros(numTimeSteps, numLinks);
+for i = 1:numLinks
+    D(:, i) = 0.1*rand(numTimeSteps, 1) + Y(1:end)';
+end % end for i = 1:numTimeSteps
+beta = 0.1 .* ones(numTimeSteps, numLinks) + 0.9 .* rand(numTimeSteps, numLinks);
 BC = struct('D', D, 'beta', beta);
 
 l0 = rand(1, numLinks);
@@ -50,27 +57,32 @@ myScenario = struct('links', myLinks, 'BC', BC, 'IC', IC, 'N', numLinks, ...
     'T', numTimeSteps, 'dt', timeStepSize, 'nConstraints', nConstraints, ...
     'nControls', nControls, 'processU', processU);
 
-u = chooseInitialU(myScenario);
-
-low = 1;
-high = numTimeSteps;
-i = 0;
-
-% TODO: WHILE LOOP IS NOT TERMINATING CORRECTLY. MAXIMUM RUNNING TIME FOR
-% BINARY SEARCH IS LOG2(N).
-
 % TODO: MAKE DEMAND PROFILE "SMOOTH", RATHER THAN RANDOM.
 
+% Binary search to find the optimal demand matrix, ensuring that the
+% network is cleared and minimizing the number of time steps that have no
+% densities.
+
+u = chooseInitialU(myScenario);
+low = 1;
+high = numTimeSteps;
+
 while (low <= high)
-    i = i + 1
     mid = floor((low + high) / 2);
-    testD = [D(1:mid, :); zeros(numTimeSteps - mid, numLinks)];
-    myScenario.BC.D = testD;
+    if (mid == low || mid == high)
+        return;
+    end % end if
+    X = linspace(-2, 2, mid);
+    Y = exp(-0.5*X.^2);
+    D = zeros(numTimeSteps, numLinks);
+    for i = 1:numLinks
+        D(1:mid, i) = 0.1*rand(mid, 1) + Y(1:end)';
+    end % end for i = 1:numTimeSteps
+    myScenario.BC.D = D;
     outputState = forwardSimulation(myScenario, u);
-    outputState.density
-    if sum(outputState.density(end, :)) > 1e-4
+    if sum(outputState.density(end, :)) > 1e-4;
         high = mid;
-    elseif sum(outputState.density(end - 1, :)) < 1e-4
+    elseif sum(outputState.density(end - 1, :)) < 1e-8;
         low = mid;
     else
         return;
