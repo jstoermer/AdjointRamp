@@ -18,8 +18,11 @@ l = states.queue(1:end-1,:);
 dt = scen.dt;
 rmax  = repmat([scen.links.rmax], scen.T, 1);
 
-out = (sum(rho * L) + sum(sum(l)))*dt + sum(sum(2*R.*(max(u(:,2:end) - min(l(:,2:end)./dt, rmax(:,2:end)), 0)).^2));
+out = (sum(rho * L) + sum(sum(l)))*dt;
+out = out + sum(sum(uPenalty(scen, u)));
 
-out = out - 1.*sum(min(u(:,1) - scen.links(1).rmax.*ones(size(u(:,1))) , zeros(size(u(:,1)))));
+% + sum(sum(2*R.*(max(u(:,2:end) - min(l(:,2:end)./dt, rmax(:,2:end)), 0)).^2));
+
+% out = out - 1.*sum(min(u(:,1) - scen.links(1).rmax.*ones(size(u(:,1))) , zeros(size(u(:,1)))));
 
 end

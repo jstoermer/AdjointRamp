@@ -24,6 +24,6 @@ dt = myScenario.dt;
 rMax  = repmat([myScenario.links.rmax], myScenario.T, 1);
 l = myQueue(1:(end - 1), :);
 
-myPenalty = 3 * R .* (max(u - min(l ./ dt, rMax), 0)).^3;
+myPenalty = 2 * R .* (max(u - min(l ./ dt, rMax), 0)).^2;
 
 end % end myPenalty
