@@ -182,15 +182,6 @@ out = sparse(...
   R.*(max(u -...
   min(repmat([scen.links.rmax], scen.T, 1),...
   states.queue(1:end-1,:)./scen.dt),0)))');
-
-out(1:scen.N:end) = 0;
-
-newPart = sparse(1,length(u(:)));
-v1 = min(u(:,1) - scen.links(1).rmax.*ones(size(u(:,1))) , zeros(size(u(:,1))));
-v2 = v1~=0;
-vals = 1.*(v2)';
-newPart(1:scen.N:end) = vals;
-out = out - newPart;
 end
 
 function out = dJ_dx(scen, ~, ~)

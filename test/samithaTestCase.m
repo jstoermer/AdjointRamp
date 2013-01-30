@@ -2,11 +2,16 @@ function samithaTest
 
 close all
 global u12;
-u12 = [];
-scen = io.loadScenario('../networks/2on2off.json');
 
-uoff = ones(scen.T, scen.N);
-utest = ones(scen.T, scen.N);
+global parameters;
+parameters.R =1000;
+parameters.alpha = .1;
+parameters.globalMaxIterations = 400;
+u12 = [];
+scen = io.loadScenario('../networks/samitha1onramp.json');
+
+uoff = noControlU(scen);
+utest = uoff;
 utest(:,2) = .1;
 
 % totalTravelTime(scen , uoff)
@@ -28,10 +33,13 @@ u_perturb
 figure(1)
 ustar = rampOptimalU(scen, u_perturb,true)
 
+figure;
+global u_rho_l;
+plot(u_rho_l);
 
-% os3 = forwardSimulation(scen, ustar);
+os3 = forwardSimulation(scen, ustar);
 % us3 = ustar
-% sum(sum(os3.density)) + sum(sum(os3.queue))
+sum(sum(os3.density)) + sum(sum(os3.queue))
 % figure;
 % plot(u12);
 %plotting.plotSimDifference(os2, os3);

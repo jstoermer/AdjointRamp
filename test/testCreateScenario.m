@@ -20,8 +20,8 @@ u_1 = no_u.*.8;
 fs1 = forwardSimulation(scen, no_u);
 disp(sum(sum(fs1.density)) + sum(sum(fs1.queue)));
 pause
-fs2 = forwardSimulation(scen , rampOptimalU(scen, u_1));
-
+u_star = rampOptimalU(scen, u_1);
+fs2 = forwardSimulation(scen , u_star);
 
 plotting.spaceTimePlot(fs2.density - fs1.density, true);
 plotting.spaceTimePlot(fs2.queue - fs1.queue, true);

@@ -4,20 +4,22 @@ iteration = 0;
 u = u0;
 totCost = [];
 global u12;
+global u_rho_l;
+u_rho_l = [];
 
 while iteration < maxIter
-    iteration = iteration + 1;
+    iteration = iteration + 1
     grad = gradient(u);
-    grad
     nextU = lineSearch(u, grad, cost, iteration);
     if stop(u, nextU, iteration)
         u = nextU;
         break;
     end
-    u = nextU;
-    totCost(iteration) = cost(u);
+    u = nextU
+    c = cost(u);
+    disp(c);
+    totCost(iteration) = c;
     u12(iteration) = u(2);
-    u
 end
 
 varargout{1} = u;

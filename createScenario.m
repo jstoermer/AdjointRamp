@@ -18,9 +18,11 @@ function [myScenario] = createScenario(numLinks, numTimeSteps)
 
 w = 0.5 + 0.5 .* rand(1, numLinks);
 v = ones(1, numLinks);
-fm = 0.5 + 0.5 .* rand(1, numLinks);
-p = 0.8 .* ones(1, numLinks);
-rmax = 0.5 + 0.5 .* rand(1, numLinks);
+% fm = 0.5 + 0.5 .* rand(1, numLinks);
+fm = ones(1, numLinks);
+p = .8 .* ones(1, numLinks);
+% rmax = 0.5 + 0.5 .* rand(1, numLinks);
+rmax = ones(1, numLinks);
 L = ones(1, numLinks);
 pc = fm ./ v;
 pm = fm ./ w + pc;
