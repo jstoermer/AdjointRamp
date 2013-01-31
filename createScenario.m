@@ -1,7 +1,13 @@
-function [myScenario] = createScenario(numLinks, numTimeSteps)
+function [myScenario] = createScenario(varargin)
 
 % Generates a nontrivial scenario, provided the number of links and the
 % number of time steps.
+
+% ARGUMENTS:
+% numLinks: Number of links.
+% numTimeSteps: Number of time steps.
+% (Optional) distrStruct: Struct of distributions for variables. See
+% createDistrStruct for possible fields and values.
 
 % w: Wave speed.
 % v: Free-flow speed.
@@ -15,6 +21,13 @@ function [myScenario] = createScenario(numLinks, numTimeSteps)
 % beta: Split ratios.
 % l0: Initial queues.
 % p0: Initial densities.
+
+numLinks = varargin{1};
+numTimeSteps = varargin{2};
+
+if length(varargin) > 2
+    infoStruct = varargin{3};
+end % end if length(varargin) > 2
 
 w = 0.5 + 0.5 .* rand(1, numLinks);
 v = ones(1, numLinks);
