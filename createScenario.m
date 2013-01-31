@@ -1,4 +1,4 @@
-function [myScenario] = createScenario(varargin)
+function [myScenario] = createScenario(numLinks, numTimeSteps)
 
 % Generates a nontrivial scenario, provided the number of links and the
 % number of time steps.
@@ -22,13 +22,6 @@ function [myScenario] = createScenario(varargin)
 % l0: Initial queues.
 % p0: Initial densities.
 
-numLinks = varargin{1};
-numTimeSteps = varargin{2};
-
-if length(varargin) > 2
-    infoStruct = varargin{3};
-end % end if length(varargin) > 2
-
 w = 0.5 + 0.5 .* rand(1, numLinks);
 v = ones(1, numLinks);
 fm = 0.5 + 0.5 .* rand(1, numLinks);
@@ -39,7 +32,7 @@ pc = fm ./ v;
 pm = fm ./ w + pc;
 
 D = zeros(numTimeSteps, numLinks);
-beta = 0.1 .* ones(numTimeSteps, numLinks) + 0.9 .* rand(numTimeSteps, numLinks);
+beta = rand(numTimeSteps, numLinks);
 BC = struct('D', D, 'beta', beta);
 
 l0 = rand(1, numLinks);
@@ -52,7 +45,7 @@ for i = 1:numLinks
     currLink = struct('w', w(i), 'v', v(i), 'fm', fm(i), 'p', p(i), ...
         'rmax', rmax(i), 'L', L(i), 'pc', pc(i), 'pm', pm(i));
     myLinks = [myLinks, currLink];
-end % end for i = 1:numLinks
+end % end for 
 
 timeStepSize = 1; % Default value is 1.
 nConstraints = (numTimeSteps + 1) * numLinks * 8;
@@ -105,7 +98,5 @@ while (lowBound <= highBound)
     end % end if
     
 end % end while (lowBound <= highBound)
-
-
 
 end % end createScenario

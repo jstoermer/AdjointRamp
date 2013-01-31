@@ -64,4 +64,8 @@ if isempty(p0Distr)
     p0Distr = '0, 1';
 end
 
+distrStruct = struct('w', wDistr, 'v', vDistr, 'fm', fmDistr, 'p', ...
+    pDistr, 'rmax', rmaxDistr, 'L', LDistr, 'D', DDistr, 'beta', ...
+    betaDistr, 'l0', l0Distr, 'p0', p0Distr);
+
 end % end createDistrStruct
