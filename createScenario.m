@@ -3,6 +3,12 @@ function [myScenario] = createScenario(numLinks, numTimeSteps)
 % Generates a nontrivial scenario, provided the number of links and the
 % number of time steps.
 
+% ARGUMENTS:
+% numLinks: Number of links.
+% numTimeSteps: Number of time steps.
+% (Optional) distrStruct: Struct of distributions for variables. See
+% createDistrStruct for possible fields and values.
+
 % w: Wave speed.
 % v: Free-flow speed.
 % fm: Maximum flow.
@@ -28,7 +34,7 @@ pc = fm ./ v;
 pm = fm ./ w + pc;
 
 D = zeros(numTimeSteps, numLinks);
-beta = 0.1 .* ones(numTimeSteps, numLinks) + 0.9 .* rand(numTimeSteps, numLinks);
+beta = rand(numTimeSteps, numLinks);
 BC = struct('D', D, 'beta', beta);
 
 l0 = rand(1, numLinks);
@@ -41,7 +47,7 @@ for i = 1:numLinks
     currLink = struct('w', w(i), 'v', v(i), 'fm', fm(i), 'p', p(i), ...
         'rmax', rmax(i), 'L', L(i), 'pc', pc(i), 'pm', pm(i));
     myLinks = [myLinks, currLink];
-end % end for i = 1:numLinks
+end % end for 
 
 timeStepSize = 1; % Default value is 1.
 nConstraints = (numTimeSteps + 1) * numLinks * 8;
@@ -94,7 +100,5 @@ while (lowBound <= highBound)
     end % end if
     
 end % end while (lowBound <= highBound)
-
-
 
 end % end createScenario
