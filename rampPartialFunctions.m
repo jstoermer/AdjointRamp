@@ -192,4 +192,37 @@ for k = 1:T+1
   end
 end
 
+
 end
+
+
+function out = barrierMinU(weight,u, u_min)
+out = 0;
+for k = 1:T+1
+  for i = 1:N
+    out = out - log(u(k,i) - u_min);
+  end
+end
+out = weight*out;
+end
+
+function out = barrierMaxl(weight,l, l_max)
+out = 0;
+for k = 1:T+1
+  for i = 1:N
+    out = out - log(l_max - l(k,i));
+  end
+end
+out = weight*out;
+end
+
+function out = barrierUlessl(weight,u, l)
+out = 0;
+for k = 1:T+1
+  for i = 1:N
+    out = out - log(l(k,i) - u(k,i));
+  end
+end
+out = weight*out;
+end
+
