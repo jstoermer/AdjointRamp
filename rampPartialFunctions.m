@@ -3,7 +3,7 @@ function fns = rampPartialFunctions
 fns.dhdx = @dh_dx;
 fns.djdx = @dJ_dx;
 fns.dhdu = @dh_du;
-fns.djdu = @dJ_du;
+fns.djdu = @dJ_du_barrier;
 end
 
 
@@ -162,7 +162,6 @@ end
   end
 end
 
-
 function out = dJ_du(scen, states, u)
 global parameters;
 R = parameters.R;
@@ -178,12 +177,26 @@ out = sparse(...
   states.queue(1:end-1,:)./scen.dt),0)))');
 end
 
+function out = dJ_du_barrier(scen, states, u)
+global parameters;
+R = parameters.R;
+%Given the controls u, on-ramp queue lengths l and penalty term R, computes
+% partialJ_u given by
+% \frac{\partial J}{u_i(k)} = R \cdot \ind{u_i(k) \le l_i(k)}
+rMax  = repmat([scen.links.rmax], scen.T, 1);
+barrierSum = minBarrierGrad(u, 0) + maxBarrierGrad(u, min(rMax, states.queue(1:end-1,:)));
+
+out = sparse(...
+  stacker(...
+  R.*(barrierSum))');
+end
+
 function out = dJ_dx(scen, ~, ~)
 T = scen.T; N = scen.N;
 n = scen.nConstraints;
 out = sparse(1,n);
 
-for k = 1:T+1
+for k = 1:T+1   
   for i = 1:N
     out(idx(N,k,1,i)) = scen.links(i).L * scen.dt;
   end
@@ -196,33 +209,23 @@ end
 end
 
 
-function out = barrierMinU(weight,u, u_min)
-out = 0;
-for k = 1:T+1
-  for i = 1:N
-    out = out - log(u(k,i) - u_min);
-  end
-end
-out = weight*out;
+function out = barrierMin(x, a)
+out = - log(x-a);
+out = sum(sum(out));
 end
 
-function out = barrierMaxl(weight,l, l_max)
-out = 0;
-for k = 1:T+1
-  for i = 1:N
-    out = out - log(l_max - l(k,i));
-  end
-end
-out = weight*out;
+function out = barrierMax(x, a)
+out = - log(a-x);
+out = sum(sum(out));
 end
 
-function out = barrierUlessl(weight,u, l)
-out = 0;
-for k = 1:T+1
-  for i = 1:N
-    out = out - log(l(k,i) - u(k,i));
-  end
+
+function out = barrierMinGrad(x, a)
+out = -1./(x-a);
 end
-out = weight*out;
+
+function out = barrierMaxGrad(x, a)
+out =  1./(a-x);
 end
+
 
