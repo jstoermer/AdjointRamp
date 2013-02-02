@@ -9,20 +9,14 @@ end
 
 function out = dh_du(scen, states, u)
 T = scen.T; N = scen.N;
-n = scen.nConstraints; nu = scen.nControls;
-c = 5;
-l = states.queue(1:end-1,:);
-
-out = sparse(n,nu);
+out = sparse(N*(T+1)*8, N*T);
 for k = 1:T
   for i = 1:N
-    hi = idx(N,k,c,i);
-    ui = uidx(N,k,i);
-    uval = u(k,i);
     l = states.queue(k,i);
     rmax = scen.links(i).rmax;
-    if uval < l / scen.dt && uval < rmax
-      out(hi,ui) = -1;
+    u_cur = u(k,i);
+    if u_cur < min(l / scen.dt, rmax)
+      out(8*N*(k - 1) + N*(5 - 1) + i, N*(k - 1) + i) = -1;
     end
   end
 end
@@ -148,15 +142,15 @@ end
       fin = fluxIn(kk,i+1);
       beta = betamat(kk,i+1);
       d = rampDemand(kk,i+1);
-      p = pmat(i);
+      p = pmat(i+1);
       sig = supply(kk,i+1);
-      if sig * p / (1 + p) >= del * beta
+      if del*beta + d <= sig || fin * p / beta >= del
         out(hi, N*8*(k - 1) + N*(3 -1) + i) = -1;
-      elseif sig / (1 + p) >= d
+      elseif fin * (1 - p) >= d
         out(hi,N*8*(k - 1) + N*(6 -1) + i+1) = - 1 / beta;
         out(hi,N*8*(k - 1) + N*(5 -1) + i+1) = 1 / beta;
       else
-        out(hi, N*8*(k - 1) + N*(4 -1) + i+1) = -p / ((1 + p)*beta);
+        out(hi, N*8*(k - 1) + N*(4 -1) + i+1) = -p *beta;
       end
     end
   end

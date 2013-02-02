@@ -5,10 +5,10 @@ out.gdBackTracking = standardGradientDescentSpecifyLS(@backtrackingLineSearch);
 out.gdBasic = standardGradientDescentSpecifyLS(@basicLineSearch);
 out.gdBackTrackingPos = standardGradientDescentSpecifyLS(boundedLineSearch(0, inf, @backtrackingLineSearch));
 out.gdBasicPos = standardGradientDescentSpecifyLS(boundedLineSearch(0, inf, @basicLineSearch));
-
+out.backTrackingLineSearch = @backtrackingLineSearch;
 out.bfgs = @unboundedBFGS;
 out.bfgsPos = @strictlyPositiveLBFGS;
-
+out.stopIterating = @stopIterating;
 end
 
 function out = boundedLineSearch(bottom, top, ls)
@@ -91,7 +91,7 @@ gradProduct = gradient'*dx;
 
 
 counter = 0;
-MAX_ITER = 100;
+MAX_ITER = 200;
 while cost(x + t.*dx) > cx + alpha.*t.*gradProduct
     t = beta*t;
     counter= counter + 1;

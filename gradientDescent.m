@@ -19,7 +19,6 @@ while iteration < maxIter
     c = cost(u);
     disp(c);
     totCost(iteration) = c;
-    u12(iteration) = u(2);
 end
 
 varargout{1} = u;
