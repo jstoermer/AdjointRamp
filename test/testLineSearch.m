@@ -4,9 +4,9 @@ global parameters
 global test_u
 test_u = [];
 colls = descentCollection;
-parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
-% parameters.globalDescentAlgorithm = colls.gdBasicPos;
-parameters.R = 5;
+% parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
+parameters.globalDescentAlgorithm = colls.gdBasicPos;
+parameters.R = .005;
 parameters.globalMaxIterations = 1000;
 parameters.alpha = .1;
 % grad = @(x) 2*x;
@@ -26,21 +26,20 @@ parameters.alpha = .1;
 % assertVectorsAlmostEqual(0, x_star);
 % 
 
-scen = createScenario(10,30);
-% scen = io.loadScenario('../networks/samitha1onramp.json');
-
-u = noControlU(scen).*.5;
+%scen = createScenario(10,30);
+ scen = io.loadScenario('../networks/samitha1onramp.json');
 
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
-% % rampOptimalU(scen, u);
+u = noControlU(scen).*.5;
+% rampOptimalU(scen, u);
 % % u(1,2) = .2;
 % % u(2,2) = 0;
 % % rampOptimalU(scen, u);
-% u(1,2) = 0;
-% u(2,2) = .01;
+% u(1,2) = .1;
+% u(2,2) = .1;
 % u(3,1) = .05;
 % u(:,2:end) = 0
-plotting.plotBeforeAndAfter(scen, u);
-% ustar = rampOptimalU(scen, u);
+% plotting.plotBeforeAndAfter(scen, u);
+ustar = rampOptimalU(scen, u);
 
 end

@@ -184,7 +184,8 @@ R = parameters.R;
 % partialJ_u given by
 % \frac{\partial J}{u_i(k)} = R \cdot \ind{u_i(k) \le l_i(k)}
 rMax  = repmat([scen.links.rmax], scen.T, 1);
-barrierSum = minBarrierGrad(u, 0) + maxBarrierGrad(u, min(rMax, states.queue(1:end-1,:)));
+barrierSum = barrierMaxGrad(u, .1 + min(rMax, states.queue(1:end-1,:)));
+% barrierSum = barrierSum + barrierMinGrad(u, 0);
 
 out = sparse(...
   stacker(...
@@ -206,26 +207,6 @@ for k = 1:T+1
 end
 
 
-end
-
-
-function out = barrierMin(x, a)
-out = - log(x-a);
-out = sum(sum(out));
-end
-
-function out = barrierMax(x, a)
-out = - log(a-x);
-out = sum(sum(out));
-end
-
-
-function out = barrierMinGrad(x, a)
-out = -1./(x-a);
-end
-
-function out = barrierMaxGrad(x, a)
-out =  1./(a-x);
 end
 
 

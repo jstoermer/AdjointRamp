@@ -15,7 +15,7 @@ while iteration < maxIter
         u = nextU;
         break;
     end
-    u = nextU;
+    u = nextU
     c = cost(u);
     disp(c);
     totCost(iteration) = c;
