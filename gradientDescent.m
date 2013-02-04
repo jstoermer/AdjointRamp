@@ -9,13 +9,14 @@ u_rho_l = [];
 
 while iteration < maxIter
     iteration = iteration + 1
+    u
     grad = gradient(u);
     nextU = lineSearch(u, grad, cost, iteration);
     if stop(u, nextU, iteration)
         u = nextU;
         break;
     end
-    u = nextU
+    u = nextU;
     c = cost(u);
     disp(c);
     totCost(iteration) = c;
