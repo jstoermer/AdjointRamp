@@ -40,12 +40,9 @@ os3 = forwardSimulation(scen, uoff);
 % os4 = forwardSimulation(scen, ustar);
 
 ustar = uoff*.5;
-for i = 1:5
-  disp(['run ', num2str(i)]);
-%   pause;
-  ustar = rampOptimalU(scen, ustar);
-  parameters.R = parameters.R*.1;
-end
+iters =  5;
+stepScaling = 0.1;
+ustar = rampOptimalUvarR(iters, stepScaling, scen, ustar);
 os4 = forwardSimulation(scen, ustar);
 % rampOptimalU(scen, u);
 % % u(1,2) = .2;
