@@ -51,7 +51,7 @@ elseif strcmp(X, 'T')
         timeVaryX(i) = currTime;
     end % for i
 else
-    error('Incorrect argument for X. X must be "N" or "T".');
+    error('Incorrect argument for X. X must be ''N'' or ''T''.');
 end % if
 
 end % testScalingVary
