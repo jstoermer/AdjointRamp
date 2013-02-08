@@ -1,4 +1,4 @@
-function [NTVaryX, algTocs] = testScalingVary(minNT, maxNT, nTrials, X, nDistr)
+function varargout = testScalingVary(minNT, maxNT, nTrials, X, nDistr)
 % PURPOSE:
 % Helper function to testScaling. Calculates the times of various
 % algorithms against the scale of the scenario, i.e. N * T.
@@ -15,6 +15,8 @@ function [NTVaryX, algTocs] = testScalingVary(minNT, maxNT, nTrials, X, nDistr)
 %       5. djdx
 %       6. djdu
 %       7. solveSystem
+% 3. forTocs: A matrix of the times for the algorithm, dhdx. Separates the
+%    times for before and after the embedded for loop. 
 
 % INPUTS:
 % 1. minNT: The minimum product of N * T.
@@ -32,6 +34,7 @@ dhduTocs = zeros(1, nTrials);
 djdxTocs = zeros(1, nTrials);
 djduTocs = zeros(1, nTrials);
 solveTocs = zeros(1, nTrials);
+forTocs = zeros(2, nTrials);
 
 if strcmp(X, 'N')
     N = testScalingDistr(minNT, maxNT, nTrials, nDistr);
@@ -41,13 +44,15 @@ if strcmp(X, 'N')
         NTVaryX(i) = currNT;
         currScen = createScenario(N(i), T);
         currAlgTocs = testAlgorithms(currScen);
-        loadScenTocs(i) = currAlgTocs(1);
-        updateTocs(i) = currAlgTocs(2);
-        dhdxTocs(i) = currAlgTocs(3);
-        dhduTocs(i) = currAlgTocs(4);
-        djdxTocs(i) = currAlgTocs(5);
-        djduTocs(i) = currAlgTocs(6);
-        solveTocs(i) = currAlgTocs(7);
+        loadScenTocs(i) = currAlgTocs{1};
+        updateTocs(i) = currAlgTocs{2};
+        dhdxTocs(i) = currAlgTocs{3}(1);
+        forTocs(1, i) = currAlgTocs{3}(2);
+        forTocs(2, i) = currAlgTocs{3}(3);
+        dhduTocs(i) = currAlgTocs{4};
+        djdxTocs(i) = currAlgTocs{5};
+        djduTocs(i) = currAlgTocs{6};
+        solveTocs(i) = currAlgTocs{7};
     end % for i
 elseif strcmp(X, 'T')
     N = minNT;
@@ -57,13 +62,15 @@ elseif strcmp(X, 'T')
         NTVaryX(i) = currNT;
         currScen = createScenario(N, T(i));
         currAlgTocs = testAlgorithms(currScen);
-        loadScenTocs(i) = currAlgTocs(1);
-        updateTocs(i) = currAlgTocs(2);
-        dhdxTocs(i) = currAlgTocs(3);
-        dhduTocs(i) = currAlgTocs(4);
-        djdxTocs(i) = currAlgTocs(5);
-        djduTocs(i) = currAlgTocs(6);
-        solveTocs(i) = currAlgTocs(7);
+        loadScenTocs(i) = currAlgTocs{1};
+        updateTocs(i) = currAlgTocs{2};
+        dhdxTocs(i) = currAlgTocs{3}(1);
+        forTocs(1, i) = currAlgTocs{3}(2);
+        forTocs(2, i) = currAlgTocs{3}(3);
+        dhduTocs(i) = currAlgTocs{4};
+        djdxTocs(i) = currAlgTocs{5};
+        djduTocs(i) = currAlgTocs{6};
+        solveTocs(i) = currAlgTocs{7};
     end % for i
 else
     error('Incorrect argument for X. X must be ''N'' or ''T''.');
@@ -71,5 +78,9 @@ end % if
 
 algTocs = [loadScenTocs; updateTocs; dhdxTocs; dhduTocs; djdxTocs; ...
     dhduTocs; solveTocs];
+
+varargout{1} = NTVaryX;
+varargout{2} = algTocs;
+varargout{3} = forTocs;
 
 end % testScalingVary

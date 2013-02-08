@@ -15,21 +15,22 @@ l = states.queue(1:end-1,:);
 
 out = sparse(n,nu);
 for k = 1:T
-  for i = 1:N
-    hi = idx(N,k,c,i);
-    ui = uidx(N,k,i);
-    uval = u(k,i);
-    l = states.queue(k,i);
-    rmax = scen.links(i).rmax;
-    if uval < l / scen.dt && uval < rmax
-      out(hi,ui) = -1;
+    for i = 1:N
+        hi = idx(N,k,c,i);
+        ui = uidx(N,k,i);
+        uval = u(k,i);
+        l = states.queue(k,i);
+        rmax = scen.links(i).rmax;
+        if uval < l / scen.dt && uval < rmax
+            out(hi,ui) = -1;
+        end
     end
-  end
 end
 end
 
-function out = dh_dx(scen, states, u)
+function varargout = dh_dx(scen, states, u)
 
+tic;
 dt = scen.dt;
 T = scen.T;
 N = scen.N;
@@ -50,122 +51,131 @@ supply = states.supply;
 demand = states.demand;
 fluxIn = states.fluxIn;
 for i = 1:N
-  vmat(i) = scen.links(i).v;
-  Fmat(i) = scen.links(i).fm;
-  pmmat(i) = scen.links(i).pm;
-  pmat(i) = scen.links(i).p;
-  wmat(i) = scen.links(i).w;
-  Lmat(i) = scen.links(i).L;
-  rmaxmat(i) = scen.links(i).rmax;
+    vmat(i) = scen.links(i).v;
+    Fmat(i) = scen.links(i).fm;
+    pmmat(i) = scen.links(i).pm;
+    pmat(i) = scen.links(i).p;
+    wmat(i) = scen.links(i).w;
+    Lmat(i) = scen.links(i).L;
+    rmaxmat(i) = scen.links(i).rmax;
 end
 out = sparse(n,n);
 hi = 0;
+beforeToc = toc;
 
+tic;
 for k = 1:T+1 % time step iterator
-  kk = min(k,T); % necessary iterator for T+1 flux boundary conditions
-  for ci = 1:8
-    for i = 1:N % cell iterator
-      hi = hi +1;
-      out(hi, hi) = 1;
-      switch ci
-        case 1; rhoConstraints();
-        case 2; lConstraints();
-        case 3; delConstraints();
-        case 4; sigConstraints();
-        case 5; dConstraints();
-        case 6; fInConstraints();
-        case 7; fOutConstraints();
-        case 8; rConstraints();
-      end
+    kk = min(k,T); % necessary iterator for T+1 flux boundary conditions
+    for ci = 1:8
+        for i = 1:N % cell iterator
+            hi = hi +1;
+            out(hi, hi) = 1;
+            switch ci
+                case 1; rhoConstraints();
+                case 2; lConstraints();
+                case 3; delConstraints();
+                case 4; sigConstraints();
+                case 5; dConstraints();
+                case 6; fInConstraints();
+                case 7; fOutConstraints();
+                case 8; rConstraints();
+            end
+        end
     end
-  end
 end
-  function rhoConstraints()
-    if k == 1; return; end;
-    out(hi,N*8*(k - 1 - 1) + N*(1 -1) + i) = -1;
-    l = Lmat(i);
-    out(hi,N*8*(k - 1 - 1) + N*(6 -1) + i) = -dt / l;
-    out(hi,N*8*(k - 1 - 1) + N*(7 -1) + i) = dt / l;
-  end
-  function lConstraints()    
-    if k == 1; return; end;
-    out(hi,N*8*(k - 1 - 1) + N*(2 -1) + i) = -1;
-    out(hi,N*8*(k - 1 - 1) + N*(8 -1) + i) = dt;
-  end
-  function delConstraints()
-    rho = density(k,i);
-    v = vmat(i);
-    F = Fmat(i);
-    if rho * v < F
-      out(hi,N*8*(k - 1) + N*(1 -1) + i) = -v;
+afterToc = toc;
+
+    function rhoConstraints()
+        if k == 1; return; end;
+        out(hi,N*8*(k - 1 - 1) + N*(1 -1) + i) = -1;
+        l = Lmat(i);
+        out(hi,N*8*(k - 1 - 1) + N*(6 -1) + i) = -dt / l;
+        out(hi,N*8*(k - 1 - 1) + N*(7 -1) + i) = dt / l;
     end
-  end
-  function sigConstraints()
-    rho = density(k,i);
-    w = wmat(i);
-    rho_j = pmmat(i);
-    F = Fmat(i);
-    if w* ( rho_j - rho) < F
-      out(hi,N*8*(k  - 1) + N*(1 -1) + i) = w;
+    function lConstraints()
+        if k == 1; return; end;
+        out(hi,N*8*(k - 1 - 1) + N*(2 -1) + i) = -1;
+        out(hi,N*8*(k - 1 - 1) + N*(8 -1) + i) = dt;
     end
-  end
-  function dConstraints()
-    l = queue(k,i);
-    rmax = rmaxmat(i);
-    uVal = u(kk,i);
-    if l /dt <= min(uVal, rmax)
-      out(hi, N*8*(k - 1) + N*(2 -1) + i) = -1 / dt;
+    function delConstraints()
+        rho = density(k,i);
+        v = vmat(i);
+        F = Fmat(i);
+        if rho * v < F
+            out(hi,N*8*(k - 1) + N*(1 -1) + i) = -v;
+        end
     end
-  end
-  function fInConstraints()
-    if i == 1 % if first cell (no upstream mainline)
-      d = rampDemand(kk,1);
-      sig = supply(kk,1);
-      if d < sig
-        out(hi,N*8*(k- 1) + N*(5 -1) + 1) = -1;
-      else
-        out(hi, N*8*(k - 1) + N*(4 -1) + 1) = -1;
-      end
-    else
-      del = demand(kk,i-1);
-      sig = supply(kk,i);
-      beta = betamat(kk,i);
-      d = rampDemand(kk,i);
-      if del*beta + d < sig
-        out(hi, N*8*(k - 1) + N*(3 -1) + i-1) = -beta;
-        out(hi, N*8*(k - 1) + N*(5 -1) + i) = -1;
-      else
-        out(hi, N*8*(k - 1) + N*(4 -1) + i) = -1;
-      end
+    function sigConstraints()
+        rho = density(k,i);
+        w = wmat(i);
+        rho_j = pmmat(i);
+        F = Fmat(i);
+        if w* ( rho_j - rho) < F
+            out(hi,N*8*(k  - 1) + N*(1 -1) + i) = w;
+        end
+    end
+    function dConstraints()
+        l = queue(k,i);
+        rmax = rmaxmat(i);
+        uVal = u(kk,i);
+        if l /dt <= min(uVal, rmax)
+            out(hi, N*8*(k - 1) + N*(2 -1) + i) = -1 / dt;
+        end
+    end
+    function fInConstraints()
+        if i == 1 % if first cell (no upstream mainline)
+            d = rampDemand(kk,1);
+            sig = supply(kk,1);
+            if d < sig
+                out(hi,N*8*(k- 1) + N*(5 -1) + 1) = -1;
+            else
+                out(hi, N*8*(k - 1) + N*(4 -1) + 1) = -1;
+            end
+        else
+            del = demand(kk,i-1);
+            sig = supply(kk,i);
+            beta = betamat(kk,i);
+            d = rampDemand(kk,i);
+            if del*beta + d < sig
+                out(hi, N*8*(k - 1) + N*(3 -1) + i-1) = -beta;
+                out(hi, N*8*(k - 1) + N*(5 -1) + i) = -1;
+            else
+                out(hi, N*8*(k - 1) + N*(4 -1) + i) = -1;
+            end
+        end
+        
+    end
+    function fOutConstraints()
+        if i == N % if end cell (no downstream cell)
+            out(hi,N*8*(k  - 1) + N*(3 -1) + N) = -1;
+        else
+            del = demand(kk,i);
+            fin = fluxIn(kk,i+1);
+            beta = betamat(kk,i+1);
+            d = rampDemand(kk,i+1);
+            p = pmat(i);
+            sig = supply(kk,i+1);
+            if sig * p / (1 + p) >= del * beta
+                out(hi, N*8*(k - 1) + N*(3 -1) + i) = -1;
+            elseif sig / (1 + p) >= d
+                out(hi,N*8*(k - 1) + N*(6 -1) + i+1) = - 1 / beta;
+                out(hi,N*8*(k - 1) + N*(5 -1) + i+1) = 1 / beta;
+            else
+                out(hi, N*8*(k - 1) + N*(4 -1) + i+1) = -p / ((1 + p)*beta);
+            end
+        end
+    end
+    function rConstraints()
+        out(hi,N*8*(k - 1) + N*(6 -1) + i) = -1;
+        if i > 1
+            out(hi,N*8*(k - 1) + N*(7 -1) + i-1) = betamat(kk,i);
+        end
     end
 
-  end
-  function fOutConstraints()
-    if i == N % if end cell (no downstream cell)
-      out(hi,N*8*(k  - 1) + N*(3 -1) + N) = -1;
-    else
-      del = demand(kk,i);
-      fin = fluxIn(kk,i+1);
-      beta = betamat(kk,i+1);
-      d = rampDemand(kk,i+1);
-      p = pmat(i);
-      sig = supply(kk,i+1);
-      if sig * p / (1 + p) >= del * beta
-        out(hi, N*8*(k - 1) + N*(3 -1) + i) = -1;
-      elseif sig / (1 + p) >= d
-        out(hi,N*8*(k - 1) + N*(6 -1) + i+1) = - 1 / beta;
-        out(hi,N*8*(k - 1) + N*(5 -1) + i+1) = 1 / beta;
-      else
-        out(hi, N*8*(k - 1) + N*(4 -1) + i+1) = -p / ((1 + p)*beta);
-      end
-    end
-  end
-  function rConstraints()
-    out(hi,N*8*(k - 1) + N*(6 -1) + i) = -1;
-    if i > 1
-      out(hi,N*8*(k - 1) + N*(7 -1) + i-1) = betamat(kk,i);
-    end
-  end
+
+varargout{1} = out;
+varargout{2} = [beforeToc, afterToc];
+
 end
 
 
@@ -178,10 +188,10 @@ R = parameters.R;
 
 
 out = sparse(...
-  stacker(...
-  R.*(max(u -...
-  min(repmat([scen.links.rmax], scen.T, 1),...
-  states.queue(1:end-1,:)./scen.dt),0)))');
+    stacker(...
+    R.*(max(u -...
+    min(repmat([scen.links.rmax], scen.T, 1),...
+    states.queue(1:end-1,:)./scen.dt),0)))');
 end
 
 function out = dJ_dx(scen, ~, ~)
@@ -190,12 +200,12 @@ n = scen.nConstraints;
 out = sparse(1,n);
 
 for k = 1:T+1
-  for i = 1:N
-    out(idx(N,k,1,i)) = scen.links(i).L * scen.dt;
-  end
-  for i = 1:N
-    out(idx(N,k,2,i)) = scen.dt;
-  end
+    for i = 1:N
+        out(idx(N,k,1,i)) = scen.links(i).L * scen.dt;
+    end
+    for i = 1:N
+        out(idx(N,k,2,i)) = scen.dt;
+    end
 end
 
 end

@@ -4,12 +4,13 @@ function algTocs = testAlgorithms(testScen)
 % algorithms for a given scenario, testScen.
 
 % OUTPUTS:
-% algToc: An array containing the times for various algorithms, in the
+% algToc: A cell array containing the times for various algorithms, in the
 % following order:
 %   1. loadScenario
 %   2. updateStates
 %   3. dhdx
-%   4. dhdu
+%   4. dhdu, beforeToc, afterToc. beforeToc is the time before the embedded
+%      for loop and afterToc is the time after the embedded for loop.
 %   5. djdx
 %   6. djdu
 %   7. solveSystem
@@ -30,8 +31,10 @@ scenStates = adjStruct.updateStates(u);
 updateToc = toc;
 
 tic;
-dhdx = adjStruct.partials.dhdx(testScen, scenStates, u);
+[dhdx, dhdxTocs] = adjStruct.partials.dhdx(testScen, scenStates, u);
 dhdxToc = toc;
+beforeToc = dhdxTocs(1);
+afterToc = dhdxTocs(2);
 
 tic;
 dhdu = adjStruct.partials.dhdu(testScen, scenStates, u);
@@ -49,7 +52,7 @@ tic;
 adjStruct.solveSystem(dhdx, djdx, djdu, dhdu);
 solveToc = toc;
 
-algTocs = [loadScenToc; updateToc; dhdxToc; dhduToc; djdxToc; djduToc; ...
-    solveToc];
+algTocs = {loadScenToc, updateToc, [dhdxToc, beforeToc, afterToc], ...
+    dhduToc, djdxToc, djduToc, solveToc};
 
 end % testAlgorithms
