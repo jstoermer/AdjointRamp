@@ -45,8 +45,8 @@ plotdhdx = input('Do you want to plot the times before and after the for loop fo
 
 if strcmp(varyNT, 'both')
     nTrials = ceil(nTrials/2);
-    [NTVaryN, tocsVaryN, forTocsVaryN] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
-    [NTVaryT, tocsVaryT, forTocsVaryT] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
+    [NTVaryN, tocsVaryN, dhdxVaryN] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
+    [NTVaryT, tocsVaryT, dhdxVaryT] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
     plot(NTVaryN, tocsVaryN', 'o-', NTVaryT, tocsVaryT', 'o-.');
     legend('loadScenario, Varying N', 'updateStates, Varying N', 'dhdx, Varying N', ...
         'dhdu, Varying N', 'djdx, Varying N', 'djdu, Varying N', 'solveSystem, Varying N', ...
@@ -58,16 +58,16 @@ if strcmp(varyNT, 'both')
     title('Algorithm Time Vs. N {\times} T, Varying Both N And T');
     if strcmp(plotdhdx, 'y')
         figure();
-        plot(NTVaryN, forTocsVaryN', 'o-', NTVaryT, forTocsVaryT', 'o-.');
-        legend('Before For Looop, Varying N', 'After For Loop, Varying N', ...
-            'Before For Loop, Varying T', 'After For Loop, Varying T', ...
-            'Location', 'Northwest');
+        plot(NTVaryN, dhdxVaryN', 'o-', NTVaryT, dhdxVaryT', 'o-.');
+%         legend('Before For Looop, Varying N', 'After For Loop, Varying N', ...
+%             'Before For Loop, Varying T', 'After For Loop, Varying T', ...
+%             'Location', 'Northwest');
         xlabel('N {\times} T, Varying Both N And T');
         ylabel('Algorithm Time (s)');
         title('dhdx Algorithm Time Vs. N {\times} T, Varying Both N And T');
     end % if
 elseif strcmp(varyNT, 'N')
-    [NTVaryN, tocsVaryN, forTocsVaryN] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
+    [NTVaryN, tocsVaryN, dhdxVaryN] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
     plot(NTVaryN, tocsVaryN', 'o-');
     legend('loadScenario', 'updateStates', 'dhdx', 'dhdu', 'djdx', 'djdu', ...
         'solveSystem', 'Location', 'Northwest');
@@ -76,24 +76,23 @@ elseif strcmp(varyNT, 'N')
     title('Algorithm Time Vs. N {\times} T, Varying N');
     if strcmp(plotdhdx, 'y')
         figure();
-        plot(NTVaryN, forTocsVaryN', 'o-');
-        legend('Before For Looop, Varying N', 'After For Loop, Varying N', ...
-            'Location', 'Northwest');
+        plot(NTVaryN, dhdxVaryN', 'o-');
+        legend('rhoConstraints', 'lConstraints', 'delConstraints', 'sigConstraints', 'dConstraints', 'fInConstraints', 'fOutConstraints', 'rConstraints', 'Location', 'Northwest');
         xlabel('N {\times} T, Varying N');
         ylabel('Algorithm Time (s)');
         title('dhdx Algorithm Time Vs. N {\times} T, Varying N');
     end % if
 elseif strcmp(varyNT, 'T')
-    [NTVaryT, tocsVaryT, forTocsVaryT] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
+    [NTVaryT, tocsVaryT, dhdxVaryT] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
     plot(NTVaryT, tocsVaryT', 'o-.');
-    legend('loadScenario', 'updateStates', 'dhdx', 'dhdu', 'djdx', 'djdu', ...
-        'solveSystem', 'Location', 'Northwest');
+%     legend('loadScenario', 'updateStates', 'dhdx', 'dhdu', 'djdx', 'djdu', ...
+%         'solveSystem', 'Location', 'Northwest');
     xlabel('N {\times} T, Varying T');
     ylabel('Algorithm Time (s)');
     title('Algorithm Time Vs. N {\times} T, Varying T');
     if strcmp(plotdhdx, 'y')
         figure();
-        plot(NTVaryT, forTocsVaryT', 'o-.');
+        plot(NTVaryT, dhdxVaryT', 'o-.');
         legend('Before For Looop, Varying T', 'After For Loop, Varying T', ...
             'Location', 'Northwest');
         xlabel('N {\times} T, Varying T');

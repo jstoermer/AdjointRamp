@@ -15,8 +15,8 @@ function varargout = testScalingVary(minNT, maxNT, nTrials, X, nDistr)
 %       5. djdx
 %       6. djdu
 %       7. solveSystem
-% 3. forTocs: A matrix of the times for the algorithm, dhdx. Separates the
-%    times for before and after the embedded for loop. 
+% 3. indivDhdxTocs: A matrix of the times for the algorithm, dhdx.
+%    Separates the individual times for each step.
 
 % INPUTS:
 % 1. minNT: The minimum product of N * T.
@@ -34,7 +34,7 @@ dhduTocs = zeros(1, nTrials);
 djdxTocs = zeros(1, nTrials);
 djduTocs = zeros(1, nTrials);
 solveTocs = zeros(1, nTrials);
-forTocs = zeros(2, nTrials);
+indivDhdxTocs = zeros(8, nTrials);
 
 if strcmp(X, 'N')
     N = testScalingDistr(minNT, maxNT, nTrials, nDistr);
@@ -47,8 +47,14 @@ if strcmp(X, 'N')
         loadScenTocs(i) = currAlgTocs{1};
         updateTocs(i) = currAlgTocs{2};
         dhdxTocs(i) = currAlgTocs{3}(1);
-        forTocs(1, i) = currAlgTocs{3}(2);
-        forTocs(2, i) = currAlgTocs{3}(3);
+        indivDhdxTocs(1, i) = currAlgTocs{3}(2);
+        indivDhdxTocs(2, i) = currAlgTocs{3}(3);
+        indivDhdxTocs(3, i) = currAlgTocs{3}(4);
+        indivDhdxTocs(4, i) = currAlgTocs{3}(5);
+        indivDhdxTocs(5, i) = currAlgTocs{3}(6);
+        indivDhdxTocs(6, i) = currAlgTocs{3}(7);
+        indivDhdxTocs(7, i) = currAlgTocs{3}(8);
+        indivDhdxTocs(8, i) = currAlgTocs{3}(9);
         dhduTocs(i) = currAlgTocs{4};
         djdxTocs(i) = currAlgTocs{5};
         djduTocs(i) = currAlgTocs{6};
@@ -65,8 +71,14 @@ elseif strcmp(X, 'T')
         loadScenTocs(i) = currAlgTocs{1};
         updateTocs(i) = currAlgTocs{2};
         dhdxTocs(i) = currAlgTocs{3}(1);
-        forTocs(1, i) = currAlgTocs{3}(2);
-        forTocs(2, i) = currAlgTocs{3}(3);
+        indivDhdxTocs(1, i) = currAlgTocs{3}(2);
+        indivDhdxTocs(2, i) = currAlgTocs{3}(3);
+        indivDhdxTocs(3, i) = currAlgTocs{3}(4);
+        indivDhdxTocs(4, i) = currAlgTocs{3}(5);
+        indivDhdxTocs(5, i) = currAlgTocs{3}(6);
+        indivDhdxTocs(6, i) = currAlgTocs{3}(7);
+        indivDhdxTocs(7, i) = currAlgTocs{3}(8);
+        indivDhdxTocs(8, i) = currAlgTocs{3}(9);
         dhduTocs(i) = currAlgTocs{4};
         djdxTocs(i) = currAlgTocs{5};
         djduTocs(i) = currAlgTocs{6};
@@ -81,6 +93,6 @@ algTocs = [loadScenTocs; updateTocs; dhdxTocs; dhduTocs; djdxTocs; ...
 
 varargout{1} = NTVaryX;
 varargout{2} = algTocs;
-varargout{3} = forTocs;
+varargout{3} = indivDhdxTocs;
 
 end % testScalingVary

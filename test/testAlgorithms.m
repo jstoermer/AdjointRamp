@@ -30,11 +30,9 @@ tic;
 scenStates = adjStruct.updateStates(u);
 updateToc = toc;
 
-tic;
+t = tic;
 [dhdx, dhdxTocs] = adjStruct.partials.dhdx(testScen, scenStates, u);
-dhdxToc = toc;
-beforeToc = dhdxTocs(1);
-afterToc = dhdxTocs(2);
+dhdxToc = toc(t);
 
 tic;
 dhdu = adjStruct.partials.dhdu(testScen, scenStates, u);
@@ -52,7 +50,7 @@ tic;
 adjStruct.solveSystem(dhdx, djdx, djdu, dhdu);
 solveToc = toc;
 
-algTocs = {loadScenToc, updateToc, [dhdxToc, beforeToc, afterToc], ...
+algTocs = {loadScenToc, updateToc, [dhdxToc, dhdxTocs], ...
     dhduToc, djdxToc, djduToc, solveToc};
 
 end % testAlgorithms

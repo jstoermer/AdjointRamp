@@ -30,7 +30,6 @@ end
 
 function varargout = dh_dx(scen, states, u)
 
-tic;
 dt = scen.dt;
 T = scen.T;
 N = scen.N;
@@ -61,9 +60,16 @@ for i = 1:N
 end
 out = sparse(n,n);
 hi = 0;
-beforeToc = toc;
 
-tic;
+rhoConstrToc = 0;
+lConstrToc = 0;
+delConstrToc = 0;
+sigConstrToc = 0;
+dConstrToc = 0;
+fInConstrToc = 0;
+fOutConstrToc = 0;
+rConstrToc = 0;
+
 for k = 1:T+1 % time step iterator
     kk = min(k,T); % necessary iterator for T+1 flux boundary conditions
     for ci = 1:8
@@ -71,7 +77,7 @@ for k = 1:T+1 % time step iterator
             hi = hi +1;
             out(hi, hi) = 1;
             switch ci
-                case 1; rhoConstraints();
+                case 1; rhoConstraints();    
                 case 2; lConstraints();
                 case 3; delConstraints();
                 case 4; sigConstraints();
@@ -83,29 +89,35 @@ for k = 1:T+1 % time step iterator
         end
     end
 end
-afterToc = toc;
 
     function rhoConstraints()
+        t1 = tic;
         if k == 1; return; end;
         out(hi,N*8*(k - 1 - 1) + N*(1 -1) + i) = -1;
         l = Lmat(i);
         out(hi,N*8*(k - 1 - 1) + N*(6 -1) + i) = -dt / l;
         out(hi,N*8*(k - 1 - 1) + N*(7 -1) + i) = dt / l;
+        rhoConstrToc = toc(t1);
     end
     function lConstraints()
+        t2 = tic;
         if k == 1; return; end;
         out(hi,N*8*(k - 1 - 1) + N*(2 -1) + i) = -1;
         out(hi,N*8*(k - 1 - 1) + N*(8 -1) + i) = dt;
+        lConstrToc = toc(t2);
     end
     function delConstraints()
+        t3 = tic;
         rho = density(k,i);
         v = vmat(i);
         F = Fmat(i);
         if rho * v < F
             out(hi,N*8*(k - 1) + N*(1 -1) + i) = -v;
         end
+        delConstrToc = toc(t3);
     end
     function sigConstraints()
+        t4 = tic;
         rho = density(k,i);
         w = wmat(i);
         rho_j = pmmat(i);
@@ -113,16 +125,20 @@ afterToc = toc;
         if w* ( rho_j - rho) < F
             out(hi,N*8*(k  - 1) + N*(1 -1) + i) = w;
         end
+        sigConstrToc = toc(t4);
     end
     function dConstraints()
+        t5 = tic;
         l = queue(k,i);
         rmax = rmaxmat(i);
         uVal = u(kk,i);
         if l /dt <= min(uVal, rmax)
             out(hi, N*8*(k - 1) + N*(2 -1) + i) = -1 / dt;
         end
+        dConstrToc = toc(t5);
     end
     function fInConstraints()
+        t6 = tic;
         if i == 1 % if first cell (no upstream mainline)
             d = rampDemand(kk,1);
             sig = supply(kk,1);
@@ -143,9 +159,10 @@ afterToc = toc;
                 out(hi, N*8*(k - 1) + N*(4 -1) + i) = -1;
             end
         end
-        
+        fInConstrToc = toc(t6);
     end
     function fOutConstraints()
+        t7 = tic;
         if i == N % if end cell (no downstream cell)
             out(hi,N*8*(k  - 1) + N*(3 -1) + N) = -1;
         else
@@ -164,17 +181,21 @@ afterToc = toc;
                 out(hi, N*8*(k - 1) + N*(4 -1) + i+1) = -p / ((1 + p)*beta);
             end
         end
+        fOutConstrToc = toc(t7);
     end
     function rConstraints()
+        t8 = tic;
         out(hi,N*8*(k - 1) + N*(6 -1) + i) = -1;
         if i > 1
             out(hi,N*8*(k - 1) + N*(7 -1) + i-1) = betamat(kk,i);
         end
+        rConstrToc = toc(t8);
     end
 
 
 varargout{1} = out;
-varargout{2} = [beforeToc, afterToc];
+varargout{2} = [rhoConstrToc, lConstrToc, delConstrToc, sigConstrToc, ...
+    dConstrToc, fInConstrToc, fOutConstrToc, rConstrToc];
 
 end
 
