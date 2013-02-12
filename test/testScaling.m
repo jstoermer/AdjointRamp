@@ -27,7 +27,7 @@ maxNT = varargin{2};
 nTrials = varargin{3};
 varargin(1:3) = [];
 
-varyNT = 'both'; % Default option for varyNT.
+varyNT = 'N'; % Default option for varyNT.
 nDistr = 'linear'; % Default option for nDistr.
 
 if length(varargin) == 1
