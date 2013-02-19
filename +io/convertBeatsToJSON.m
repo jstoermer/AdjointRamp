@@ -7,7 +7,7 @@ else
 end
 % read node list and directions cache
 disp('Reading configuration file')
-scenario = xml_read(fnin);
+scenario = io.xml_read(fnin);
 
 % find terminal nodes
 isterminal = [];
