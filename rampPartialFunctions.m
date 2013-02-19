@@ -170,7 +170,7 @@ forToc = toc(forTic);
             indexCount = indexCount + 1;
             rowInd(indexCount) = hi;
             colInd(indexCount) = N*8*(k - 1) + N*(2 - 1) + i;
-            sparseVal(indexCount) = -l / dt;
+            sparseVal(indexCount) = -1 / dt;
         end
         dConstrToc = [dConstrToc, toc(t5)];
     end
