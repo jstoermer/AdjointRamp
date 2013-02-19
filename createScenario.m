@@ -1,13 +1,11 @@
 function [myScenario] = createScenario(numLinks, numTimeSteps)
-
+% PURPOSE:
 % Generates a nontrivial scenario, provided the number of links and the
 % number of time steps.
 
 % ARGUMENTS:
 % numLinks: Number of links.
 % numTimeSteps: Number of time steps.
-% (Optional) distrStruct: Struct of distributions for variables. See
-% createDistrStruct for possible fields and values.
 
 % w: Wave speed.
 % v: Free-flow speed.

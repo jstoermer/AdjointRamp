@@ -22,12 +22,17 @@ for k = 1:T
 end
 end
 
-function out = dh_dx(scen, states, u)
+function varargout = dh_dx(scen, states, u)
 
 dt = scen.dt;
 T = scen.T;
 N = scen.N;
 n = scen.nConstraints;
+
+rowInd = zeros(1, 4 * n);
+colInd = zeros(1, 4 * n);
+sparseVal = zeros(1, 4 * n);
+
 C = 8;
 density = states.density;
 vmat = zeros(N,1);
@@ -44,122 +49,267 @@ supply = states.supply;
 demand = states.demand;
 fluxIn = states.fluxIn;
 for i = 1:N
-  vmat(i) = scen.links(i).v;
-  Fmat(i) = scen.links(i).fm;
-  pmmat(i) = scen.links(i).pm;
-  pmat(i) = scen.links(i).p;
-  wmat(i) = scen.links(i).w;
-  Lmat(i) = scen.links(i).L;
-  rmaxmat(i) = scen.links(i).rmax;
+    vmat(i) = scen.links(i).v;
+    Fmat(i) = scen.links(i).fm;
+    pmmat(i) = scen.links(i).pm;
+    pmat(i) = scen.links(i).p;
+    wmat(i) = scen.links(i).w;
+    Lmat(i) = scen.links(i).L;
+    rmaxmat(i) = scen.links(i).rmax;
 end
-out = sparse(n,n);
+%out = sparse(n,n);
 hi = 0;
 
+rhoConstrToc = [];
+lConstrToc = [];
+delConstrToc = [];
+sigConstrToc = [];
+dConstrToc = [];
+fInConstrToc = [];
+fOutConstrToc = [];
+rConstrToc = [];
+
+forTic = tic;
+indexCount = 0;
 for k = 1:T+1 % time step iterator
-  kk = min(k,T); % necessary iterator for T+1 flux boundary conditions
-  for ci = 1:8
-    for i = 1:N % cell iterator
-      hi = hi +1;
-      out(hi, hi) = 1;
-      switch ci
-        case 1; rhoConstraints();
-        case 2; lConstraints();
-        case 3; delConstraints();
-        case 4; sigConstraints();
-        case 5; dConstraints();
-        case 6; fInConstraints();
-        case 7; fOutConstraints();
-        case 8; rConstraints();
-      end
+    kk = min(k,T); % necessary iterator for T+1 flux boundary conditions
+    for ci = 1:8
+        for i = 1:N % cell iterator
+            hi = hi +1;
+            indexCount = indexCount + 1;
+            rowInd(indexCount) = hi;
+            colInd(indexCount) = hi;
+            sparseVal(indexCount) = 1;
+            switch ci
+                case 1; rhoConstraints();    
+                case 2; lConstraints();
+                case 3; delConstraints();
+                case 4; sigConstraints();
+                case 5; dConstraints();
+                case 6; fInConstraints();
+                case 7; fOutConstraints();
+                case 8; rConstraints();
+            end
+        end
     end
-  end
 end
-  function rhoConstraints()
-    if k == 1; return; end;
-    out(hi,N*8*(k - 1 - 1) + N*(1 -1) + i) = -1;
-    l = Lmat(i);
-    out(hi,N*8*(k - 1 - 1) + N*(6 -1) + i) = -dt / l;
-    out(hi,N*8*(k - 1 - 1) + N*(7 -1) + i) = dt / l;
-  end
-  function lConstraints()    
-    if k == 1; return; end;
-    out(hi,N*8*(k - 1 - 1) + N*(2 -1) + i) = -1;
-    out(hi,N*8*(k - 1 - 1) + N*(8 -1) + i) = dt;
-  end
-  function delConstraints()
-    rho = density(k,i);
-    v = vmat(i);
-    F = Fmat(i);
-    if rho * v < F
-      out(hi,N*8*(k - 1) + N*(1 -1) + i) = -v;
+forToc = toc(forTic);
+
+    function rhoConstraints()
+        t1 = tic;
+        if k == 1; return; end;
+        %out(hi,N*8*(k - 1 - 1) + N*(1 -1) + i) = -1;
+        indexCount = indexCount + 1;
+        rowInd(indexCount) = hi;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(1 - 1) + i;
+        sparseVal(indexCount) = -1;
+        l = Lmat(i);
+        %out(hi,N*8*(k - 1 - 1) + N*(6 -1) + i) = -dt / l;
+        indexCount = indexCount + 1;
+        rowInd(indexCount) = hi;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(6 - 1) + i;
+        sparseVal(indexCount) = -dt / 1;
+        %out(hi,N*8*(k - 1 - 1) + N*(7 -1) + i) = dt / l;
+        indexCount = indexCount + 1;
+        rowInd(indexCount) = hi;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(7 - 1) + i;
+        sparseVal(indexCount) = dt / 1;
+        rhoConstrToc = [rhoConstrToc, toc(t1)];
     end
-  end
-  function sigConstraints()
-    rho = density(k,i);
-    w = wmat(i);
-    rho_j = pmmat(i);
-    F = Fmat(i);
-    if w* ( rho_j - rho) < F
-      out(hi,N*8*(k  - 1) + N*(1 -1) + i) = w;
+    function lConstraints()
+        t2 = tic;
+        if k == 1; return; end;
+        %out(hi,N*8*(k - 1 - 1) + N*(2 -1) + i) = -1;
+        indexCount = indexCount + 1;
+        rowInd(indexCount) = hi;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(2 - 1) + i;
+        sparseVal(indexCount) = -1;
+        %out(hi,N*8*(k - 1 - 1) + N*(8 -1) + i) = dt;
+        indexCount = indexCount + 1;
+        rowInd(indexCount) = hi;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(8 - 1) + i;
+        sparseVal(indexCount) = -1;
+        lConstrToc = [lConstrToc, toc(t2)];
     end
-  end
-  function dConstraints()
-    l = queue(k,i);
-    rmax = rmaxmat(i);
-    uVal = u(kk,i);
-    if l /dt <= min(uVal, rmax)
-      out(hi, N*8*(k - 1) + N*(2 -1) + i) = -1 / dt;
+    function delConstraints()
+        t3 = tic;
+        rho = density(k,i);
+        v = vmat(i);
+        F = Fmat(i);
+        if rho * v < F
+            %out(hi,N*8*(k - 1) + N*(1 -1) + i) = -v;
+            indexCount = indexCount + 1;
+            rowInd(indexCount) = hi;
+            colInd(indexCount) = N*8*(k - 1) + N*(1 - 1) + i;
+            sparseVal(indexCount) = -v;
+        end
+        delConstrToc = [delConstrToc, toc(t3)];
     end
-  end
-  function fInConstraints()
-    if i == 1 % if first cell (no upstream mainline)
-      d = rampDemand(kk,1);
-      sig = supply(kk,1);
-      if d < sig
-        out(hi,N*8*(k- 1) + N*(5 -1) + 1) = -1;
-      else
-        out(hi, N*8*(k - 1) + N*(4 -1) + 1) = -1;
-      end
-    else
-      del = demand(kk,i-1);
-      sig = supply(kk,i);
-      beta = betamat(kk,i);
-      d = rampDemand(kk,i);
-      if del*beta + d < sig
-        out(hi, N*8*(k - 1) + N*(3 -1) + i-1) = -beta;
-        out(hi, N*8*(k - 1) + N*(5 -1) + i) = -1;
-      else
-        out(hi, N*8*(k - 1) + N*(4 -1) + i) = -1;
-      end
+    function sigConstraints()
+        t4 = tic;
+        rho = density(k,i);
+        w = wmat(i);
+        rho_j = pmmat(i);
+        F = Fmat(i);
+        if w* ( rho_j - rho) < F
+            %out(hi,N*8*(k  - 1) + N*(1 -1) + i) = w;
+            indexCount = indexCount + 1;
+            rowInd(indexCount) = hi;
+            colInd(indexCount) = N*8*(k - 1) + N*(1 - 1) + i;
+            sparseVal(indexCount) = w;
+        end
+        sigConstrToc = [sigConstrToc, toc(t4)];
+    end
+    function dConstraints()
+        t5 = tic;
+        l = queue(k,i);
+        rmax = rmaxmat(i);
+        uVal = u(kk,i);
+        if l /dt <= min(uVal, rmax)
+            %out(hi, N*8*(k - 1) + N*(2 -1) + i) = -1 / dt;
+            indexCount = indexCount + 1;
+            rowInd(indexCount) = hi;
+            colInd(indexCount) = N*8*(k - 1) + N*(2 - 1) + i;
+            sparseVal(indexCount) = -1 / dt;
+        end
+        dConstrToc = [dConstrToc, toc(t5)];
+    end
+    function fInConstraints()
+        t6 = tic;
+        if i == 1 % if first cell (no upstream mainline)
+            d = rampDemand(kk,1);
+            sig = supply(kk,1);
+            if d < sig
+                %out(hi,N*8*(k- 1) + N*(5 -1) + 1) = -1;
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(5 - 1) + 1;
+                sparseVal(indexCount) = -1;
+            else
+                %out(hi, N*8*(k - 1) + N*(4 -1) + 1) = -1;
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(4 - 1) + 1;
+                sparseVal(indexCount) = -1;
+            end
+        else
+            del = demand(kk,i-1);
+            sig = supply(kk,i);
+            beta = betamat(kk,i);
+            d = rampDemand(kk,i);
+            if del*beta + d < sig
+                %out(hi, N*8*(k - 1) + N*(3 -1) + i-1) = -beta;
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(3 - 1) + i - 1;
+                sparseVal(indexCount) = -beta;
+                %out(hi, N*8*(k - 1) + N*(5 -1) + i) = -1;
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(5 - 1) + i;
+                sparseVal(indexCount) = -1;
+            else
+                %out(hi, N*8*(k - 1) + N*(4 -1) + i) = -1;
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(4 - 1) + i;
+                sparseVal(indexCount) = -1;
+            end
+        end
+        fInConstrToc = [fInConstrToc, toc(t6)];
+    end
+    function fOutConstraints()
+        t7 = tic;
+        if i == N % if end cell (no downstream cell)
+            %out(hi,N*8*(k  - 1) + N*(3 -1) + N) = -1;
+            indexCount = indexCount + 1;
+            rowInd(indexCount) = hi;
+            colInd(indexCount) = N*8*(k  - 1) + N*(3 - 1) + N;
+            sparseVal(indexCount) = -1;
+        else
+            del = demand(kk,i);
+            fin = fluxIn(kk,i+1);
+            beta = betamat(kk,i+1);
+            d = rampDemand(kk,i+1);
+            p = pmat(i);
+            sig = supply(kk,i+1);
+            if sig * p / (1 + p) >= del * beta
+                %out(hi, N*8*(k - 1) + N*(3 -1) + i) = -1;
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(3 - 1) + i;
+                sparseVal(indexCount) = -1;
+            elseif sig / (1 + p) >= d
+                %out(hi,N*8*(k - 1) + N*(6 -1) + i+1) = - 1 / beta;
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(6 - 1) + i + 1;
+                sparseVal(indexCount) = -1 / beta;
+                %out(hi,N*8*(k - 1) + N*(5 -1) + i+1) = 1 / beta;
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(5 - 1) + i + 1;
+                sparseVal(indexCount) = 1 / beta;
+            else
+                %out(hi, N*8*(k - 1) + N*(4 -1) + i+1) = -p / ((1 + p)*beta);
+                indexCount = indexCount + 1;
+                rowInd(indexCount) = hi;
+                colInd(indexCount) = N*8*(k - 1) + N*(4 - 1) + i + 1;
+                sparseVal(indexCount) = -p / ((1 + p)*beta);
+            end
+        end
+        fOutConstrToc = [fOutConstrToc, toc(t7)];
+    end
+    function rConstraints()
+        t8 = tic;
+        %out(hi,N*8*(k - 1) + N*(6 -1) + i) = -1;
+        indexCount = indexCount + 1;
+        rowInd(indexCount) = hi;
+        colInd(indexCount) = N*8*(k - 1) + N*(6 - 1) + i;
+        sparseVal(indexCount) = -1;
+        if i > 1
+            %out(hi,N*8*(k - 1) + N*(7 -1) + i-1) = betamat(kk,i);
+            indexCount = indexCount + 1;
+            rowInd(indexCount) = hi;
+            colInd(indexCount) = N*8*(k - 1) + N*(7 - 1) + i - 1;
+            sparseVal(indexCount) = betamat(kk, i);
+        end
+        rConstrToc = [rConstrToc, toc(t8)];
     end
 
-  end
-  function fOutConstraints()
-    if i == N % if end cell (no downstream cell)
-      out(hi,N*8*(k  - 1) + N*(3 -1) + N) = -1;
-    else
-      del = demand(kk,i);
-      fin = fluxIn(kk,i+1);
-      beta = betamat(kk,i+1);
-      d = rampDemand(kk,i+1);
-      p = pmat(i+1);
-      sig = supply(kk,i+1);
-      if del*beta + d <= sig || fin * p / beta >= del
-        out(hi, N*8*(k - 1) + N*(3 -1) + i) = -1;
-      elseif fin * (1 - p) >= d
-        out(hi,N*8*(k - 1) + N*(6 -1) + i+1) = - 1 / beta;
-        out(hi,N*8*(k - 1) + N*(5 -1) + i+1) = 1 / beta;
-      else
-        out(hi, N*8*(k - 1) + N*(4 -1) + i+1) = -p *beta;
-      end
-    end
-  end
-  function rConstraints()
-    out(hi,N*8*(k - 1) + N*(6 -1) + i) = -1;
-    if i > 1
-      out(hi,N*8*(k - 1) + N*(7 -1) + i-1) = betamat(kk,i);
-    end
-  end
+% rhoConstrAvg = mean(rhoConstrToc);
+% lConstrAvg = mean(lConstrToc);
+% delConstrAvg = mean(delConstrToc);
+% sigConstrAvg = mean(sigConstrToc);
+% dConstrAvg = mean(dConstrToc);
+% fInConstrAvg = mean(fInConstrToc);
+% fOutConstrAvg = mean(fOutConstrToc);
+% rConstrAvg = mean(rConstrToc);
+rhoConstrSum = sum(rhoConstrToc);
+lConstrSum = sum(lConstrToc);
+delConstrSum = sum(delConstrToc);
+sigConstrSum = sum(sigConstrToc);
+dConstrSum = sum(dConstrToc);
+fInConstrSum = sum(fInConstrToc);
+fOutConstrSum = sum(fOutConstrToc);
+rConstrSum = sum(rConstrToc);
+
+lastInd = find(rowInd, 1, 'last'); 
+
+rowInd = rowInd(1:lastInd);
+colInd = colInd(1:lastInd);
+
+sparseTic = tic;
+sparseVal = sparseVal(1:lastInd);
+sparseToc = toc(sparseTic);
+
+out = sparse(rowInd, colInd, sparseVal);
+%disp(['length(rowInd) = ', num2str(length(rowInd))]);
+
+varargout{1} = out;
+varargout{2} = [forToc, sparseToc, rhoConstrSum, lConstrSum, delConstrSum, sigConstrSum, ...
+    dConstrSum, fInConstrSum, fOutConstrSum, rConstrSum];
+
 end
 
 function out = dJ_du(scen, states, u)
