@@ -128,7 +128,7 @@ forToc = toc(forTic);
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
         colInd(indexCount) = N*8*(k - 1 - 1) + N*(8 - 1) + i;
-        sparseVal(indexCount) = -1;
+        sparseVal(indexCount) = dt;
         lConstrToc = [lConstrToc, toc(t2)];
     end
     function delConstraints()
