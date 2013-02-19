@@ -108,12 +108,12 @@ forToc = toc(forTic);
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
         colInd(indexCount) = N*8*(k - 1 - 1) + N*(6 - 1) + i;
-        sparseVal(indexCount) = -dt / 1;
+        sparseVal(indexCount) = -dt / l;
         %out(hi,N*8*(k - 1 - 1) + N*(7 -1) + i) = dt / l;
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
         colInd(indexCount) = N*8*(k - 1 - 1) + N*(7 - 1) + i;
-        sparseVal(indexCount) = dt / 1;
+        sparseVal(indexCount) = dt / l;
         rhoConstrToc = [rhoConstrToc, toc(t1)];
     end
     function lConstraints()
@@ -170,7 +170,7 @@ forToc = toc(forTic);
             indexCount = indexCount + 1;
             rowInd(indexCount) = hi;
             colInd(indexCount) = N*8*(k - 1) + N*(2 - 1) + i;
-            sparseVal(indexCount) = -1 / dt;
+            sparseVal(indexCount) = -l / dt;
         end
         dConstrToc = [dConstrToc, toc(t5)];
     end
