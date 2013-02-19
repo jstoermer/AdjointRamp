@@ -300,7 +300,8 @@ fInConstrSum = sum(fInConstrToc);
 fOutConstrSum = sum(fOutConstrToc);
 rConstrSum = sum(rConstrToc);
 
-lastInd = find(rowInd, 1, 'last'); 
+lastInds = [find(rowInd, 1, 'last'), find(colInd, 1, 'last'), find(sparseVal, 1, 'last')];
+lastInd = max(lastInds);
 
 rowInd = rowInd(1:lastInd);
 colInd = colInd(1:lastInd);
