@@ -5,12 +5,12 @@ global test_u
 test_u = [];
 colls = descentCollection;
 % parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
-parameters.globalDescentAlgorithm = colls.ipOptPos;
-% parameters.globalDescentAlgorithm = colls.gdBasicPos;
+% parameters.globalDescentAlgorithm = colls.ipOptPos;
+parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
 parameters.R = .01;
-parameters.globalMaxIterations = 10;
+parameters.globalMaxIterations = 200;
 parameters.alpha = .1;
 % grad = @(x) 2*x;
 % cost = @(x) x^2;
@@ -31,8 +31,8 @@ parameters.alpha = .1;
 
 % scen = createScenario(10,30);
 % scen = 
-scen = io.loadScenario('../networks/2on2off.json');
-% scen = io.loadScenario('../networks/samitha1onramp.json');
+% scen = io.loadScenario('../networks/2on2off.json');
+scen = io.loadScenario('../networks/samitha1onramp.json');
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
 uoff = noControlU(scen);
 os3 = forwardSimulation(scen, uoff);
@@ -40,12 +40,9 @@ os3 = forwardSimulation(scen, uoff);
 % os4 = forwardSimulation(scen, ustar);
 
 ustar = uoff*.5;
-for i = 1:5
-  disp(['run ', num2str(i)]);
-%   pause;
-  ustar = rampOptimalU(scen, ustar);
-  parameters.R = parameters.R*.1;
-end
+iters =  5;
+stepScaling = 0.1;
+ustar = rampOptimalUvarR(iters, stepScaling, scen, ustar);
 os4 = forwardSimulation(scen, ustar);
 % rampOptimalU(scen, u);
 % % u(1,2) = .2;
