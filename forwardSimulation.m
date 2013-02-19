@@ -4,7 +4,6 @@ function [outputState u] = forwardSimulation(varargin)
 %% outputState.fluxIn/Out/Ramp: 1 x N
 [scen, u] = scenUVarArgIn(varargin);
 
-
 T = scen.T; N = scen.N;
 density = zeros(T+1, N);
 queueStore = zeros(T+1, N);

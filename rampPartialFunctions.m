@@ -3,28 +3,22 @@ function fns = rampPartialFunctions
 fns.dhdx = @dh_dx;
 fns.djdx = @dJ_dx;
 fns.dhdu = @dh_du;
-fns.djdu = @dJ_du;
+fns.djdu = @dJ_du_barrier;
 end
 
 
 function out = dh_du(scen, states, u)
 T = scen.T; N = scen.N;
-n = scen.nConstraints; nu = scen.nControls;
-c = 5;
-l = states.queue(1:end-1,:);
-
-out = sparse(n,nu);
+out = sparse(N*(T+1)*8, N*T);
 for k = 1:T
-    for i = 1:N
-        hi = idx(N,k,c,i);
-        ui = uidx(N,k,i);
-        uval = u(k,i);
-        l = states.queue(k,i);
-        rmax = scen.links(i).rmax;
-        if uval < l / scen.dt && uval < rmax
-            out(hi,ui) = -1;
-        end
+  for i = 1:N
+    l = states.queue(k,i);
+    rmax = scen.links(i).rmax;
+    u_cur = u(k,i);
+    if u_cur < min(l / scen.dt, rmax)
+      out(8*N*(k - 1) + N*(5 - 1) + i, N*(k - 1) + i) = -1;
     end
+  end
 end
 end
 
@@ -319,7 +313,6 @@ varargout{2} = [forToc, sparseToc, rhoConstrSum, lConstrSum, delConstrSum, sigCo
 
 end
 
-
 function out = dJ_du(scen, states, u)
 global parameters;
 R = parameters.R;
@@ -329,10 +322,25 @@ R = parameters.R;
 
 
 out = sparse(...
-    stacker(...
-    R.*(max(u -...
-    min(repmat([scen.links.rmax], scen.T, 1),...
-    states.queue(1:end-1,:)./scen.dt),0)))');
+  stacker(...
+  R.*(max(u -...
+  min(repmat([scen.links.rmax], scen.T, 1),...
+  states.queue(1:end-1,:)./scen.dt),0)))');
+end
+
+function out = dJ_du_barrier(scen, states, u)
+global parameters;
+R = parameters.R;
+%Given the controls u, on-ramp queue lengths l and penalty term R, computes
+% partialJ_u given by
+% \frac{\partial J}{u_i(k)} = R \cdot \ind{u_i(k) \le l_i(k)}
+rMax  = repmat([scen.links.rmax], scen.T, 1);
+barrierSum = barrierMaxGrad(u, .1 + min(rMax, states.queue(1:end-1,:)));
+% barrierSum = barrierSum + barrierMinGrad(u, 0);
+
+out = sparse(...
+  stacker(...
+  R.*(barrierSum))');
 end
 
 function out = dJ_dx(scen, ~, ~)
@@ -340,13 +348,16 @@ T = scen.T; N = scen.N;
 n = scen.nConstraints;
 out = sparse(1,n);
 
-for k = 1:T+1
-    for i = 1:N
-        out(idx(N,k,1,i)) = scen.links(i).L * scen.dt;
-    end
-    for i = 1:N
-        out(idx(N,k,2,i)) = scen.dt;
-    end
+for k = 1:T+1   
+  for i = 1:N
+    out(idx(N,k,1,i)) = scen.links(i).L * scen.dt;
+  end
+  for i = 1:N
+    out(idx(N,k,2,i)) = scen.dt;
+  end
 end
 
+
 end
+
+

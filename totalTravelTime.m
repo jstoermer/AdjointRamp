@@ -24,5 +24,5 @@ global u_rho_l
 
 u_rho_l(end+1) = out;
 
-out = out + sum(sum(uPenalty(scen, u)));
+out = out + sum(sum(uPenalty(scen, states.queue, u)));
 end

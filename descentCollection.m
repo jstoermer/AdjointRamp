@@ -5,10 +5,11 @@ out.gdBackTracking = standardGradientDescentSpecifyLS(@backtrackingLineSearch);
 out.gdBasic = standardGradientDescentSpecifyLS(@basicLineSearch);
 out.gdBackTrackingPos = standardGradientDescentSpecifyLS(boundedLineSearch(0, inf, @backtrackingLineSearch));
 out.gdBasicPos = standardGradientDescentSpecifyLS(boundedLineSearch(0, inf, @basicLineSearch));
-
+out.backTrackingLineSearch = @backtrackingLineSearch;
 out.bfgs = @unboundedBFGS;
 out.bfgsPos = @strictlyPositiveLBFGS;
-
+out.ipOptPos = @ipOptPos;
+out.stopIterating = @stopIterating;
 end
 
 function out = boundedLineSearch(bottom, top, ls)
@@ -60,6 +61,42 @@ clear bfgsStore;
 
 end
 
+function out = ipOptPos(uvec, obj, grad)
+lb = zeros(size(uvec));
+ub = ones(size(uvec)).*inf;
+out = ipOpt(uvec, obj, grad, lb, ub);
+end
+
+
+function out = ipOpt(uvec, obj, grad, lb, ub)
+global parameters;
+x0 = uvec;
+options.lb = lb;
+options.ub = ub;
+
+% The callback functions.
+funcs.objective        = obj;
+funcs.gradient         = grad;
+funcs.iterfunc         = @callback;
+
+% Set the IPOPT options.
+options.ipopt.mu_strategy = 'adaptive';
+options.ipopt.hessian_approximation = 'limited-memory';
+options.ipopt.print_level = 0;
+options.ipopt.tol         = 1e-7;
+options.ipopt.max_iter    = parameters.globalMaxIterations;
+
+% Run IPOPT.
+[x info] = ipopt(x0,funcs,options);
+info
+
+function b = callback (t, f, x)
+  fprintf('%3d  %0.3g \n',t,f);
+  b = true;
+end
+out = x;
+end
+
 
 function out = basicLineSearch(u, gradient, ~, iteration)
 global parameters
@@ -91,7 +128,7 @@ gradProduct = gradient'*dx;
 
 
 counter = 0;
-MAX_ITER = 100;
+MAX_ITER = 200;
 while cost(x + t.*dx) > cx + alpha.*t.*gradProduct
     t = beta*t;
     counter= counter + 1;
