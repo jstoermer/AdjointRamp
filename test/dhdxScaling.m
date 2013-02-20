@@ -1,4 +1,37 @@
 function [NTVaryX, dhdxVaryX] = dhdxScaling(varargin)
+% PURPOSE:
+% To calculate and plot the times for the dh_dx algorithm. It will scale
+% with respect to the product N * T, where N is the number links and
+% T is the number of time iterations.
+
+% OUTPUTS:
+% 1. NTVaryX: An array of products, N * T, with holding one variable
+%    constant and varying the other variable, X.
+% 2. dhdxVaryX: A matrix of the times for various functions in dh_dx. The
+%    various functions are separated into the following rows:
+%        1. dh_dx,
+%        2. for loop iterations,
+%        3. sparse matrix creation,
+%        4. rhoConstraints,
+%        5. lConstraints,
+%        6. delConstraints,
+%        7. sigConstraints,
+%        8. dConstraints,
+%        9. fInConstraints,
+%       10. fOutConstraints, and
+%       11. rConstraints.
+% 3. A plot of the times for various functions in dh_dx against the scale of 
+%    the scenario, where the the scale is determined by the product N * T.
+
+% INPUTS:
+% 1. minNT: The minimum product of N * T.
+% 2. maxNT: The maximum product of N * T.
+% 3. nTrials: The number of trials.
+% 4. (Optional) varyNT: Vary N, T, or both.  Available options are 'N',
+%    'T', or 'both'. Not specifying an argument will default to 'N'.
+% 5. (Optional) nDistr: Distribution of trials. Available options are
+%    'linear' and 'log'. Not specifying an argument will default to
+%    'linear'.
 
 minNT = varargin{1};
 maxNT = varargin{2};
@@ -41,6 +74,7 @@ if strcmp(varyNT, 'both')
         dhdxVaryT(4:11, :)', '-.');
     hold off;
     
+    % Set the output variables.
     NTVaryX = [NTVaryN, NTVaryT];
     dhdxVaryX = [dhdxVaryN, dhdxVaryT];
     
@@ -72,6 +106,7 @@ elseif strcmp(varyNT, 'N')
         'fOutConstraints', 'rConstraints', 'Location', 'Northwest');
     hold off;
     
+    % Set the output variables.
     NTVaryX = NTVaryN;
     dhdxVaryX = dhdxVaryN;
     
@@ -93,6 +128,7 @@ elseif strcmp(varyNT, 'T')
     plot(NTVaryT, dhdxVaryT(4:11, :)');
     hold off;
     
+    % Set the output variables.
     NTVaryX = NTVaryT;
     dhdxVaryX = dhdxVaryT;
     

@@ -13,7 +13,7 @@ function [] = testScaling(varargin)
 % 2. maxNT: The maximum product of N * T.
 % 3. nTrials: The number of trials.
 % 4. (Optional) varyNT: Vary N, T, or both.  Available options are 'N',
-%    'T', or 'both'. Not specifying an argument will default to 'both'.
+%    'T', or 'both'. Not specifying an argument will default to 'N'.
 % 5. (Optional) nDistr: Distribution of trials. Available options are
 %    'linear' and 'log'. Not specifying an argument will default to
 %    'linear'.
@@ -23,7 +23,7 @@ maxNT = varargin{2};
 nTrials = varargin{3};
 varargin(1:3) = [];
 
-varyNT = 'both'; % Default option for varyNT.
+varyNT = 'N'; % Default option for varyNT.
 nDistr = 'linear'; % Default option for nDistr.
 
 if length(varargin) == 1
@@ -41,7 +41,7 @@ if strcmp(varyNT, 'both')
     nTrials = ceil(nTrials/2);
     [NTVaryN, tocsVaryN] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
     [NTVaryT, tocsVaryT] = testScalingVary(minNT, maxNT, nTrials, 'T', nDistr);
-    plot(NTVaryN, tocsVaryN', 'o-', NTVaryT, tocsVaryT', 'o-.');
+    plot(NTVaryN, tocsVaryN, NTVaryT, tocsVaryT, '-.');
     legend('loadScenario, Varying N', 'updateStates, Varying N', 'dhdx, Varying N', ...
         'dhdu, Varying N', 'djdx, Varying N', 'djdu, Varying N', 'solveSystem, Varying N', ...
         'loadScenario, Varying T', 'updateStates, Varying T', 'dhdx, Varying T', ...
@@ -52,7 +52,7 @@ if strcmp(varyNT, 'both')
     title('Algorithm Time Vs. N {\times} T, Varying Both N And T');
 elseif strcmp(varyNT, 'N')
     [NTVaryN, tocsVaryN] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
-    plot(NTVaryN, tocsVaryN', 'o-');
+    plot(NTVaryN, tocsVaryN);
     legend('loadScenario', 'updateStates', 'dhdx', 'dhdu', 'djdx', 'djdu', ...
         'solveSystem', 'Location', 'Northwest');
     xlabel('N {\times} T, Varying N');
@@ -60,7 +60,7 @@ elseif strcmp(varyNT, 'N')
     title('Algorithm Time Vs. N {\times} T, Varying N');
 elseif strcmp(varyNT, 'T')
     [NTVaryT, tocsVaryT] = testScalingVary(minNT, maxNT, nTrials, 'N', nDistr);
-    plot(NTVaryT, tocsVaryT', 'o-.');
+    plot(NTVaryT, tocsVaryT, '-.');
     legend('loadScenario', 'updateStates', 'dhdx', 'dhdu', 'djdx', 'djdu', ...
         'solveSystem', 'Location', 'Northwest');
     xlabel('N {\times} T, Varying T');
