@@ -98,37 +98,45 @@ forToc = toc(forTic);
     function rhoConstraints()
         t1 = tic;
         if k == 1; return; end;
+        
         %out(hi,N*8*(k - 1 - 1) + N*(1 -1) + i) = -1;
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
-        colInd(indexCount) = N*8*(k - 1 - 1) + N*(1 - 1) + i;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(1 -1) + i;
         sparseVal(indexCount) = -1;
+        
         l = Lmat(i);
+        
         %out(hi,N*8*(k - 1 - 1) + N*(6 -1) + i) = -dt / l;
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
-        colInd(indexCount) = N*8*(k - 1 - 1) + N*(6 - 1) + i;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(6 -1) + i;
         sparseVal(indexCount) = -dt / l;
+        
         %out(hi,N*8*(k - 1 - 1) + N*(7 -1) + i) = dt / l;
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
-        colInd(indexCount) = N*8*(k - 1 - 1) + N*(7 - 1) + i;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(7 -1) + i;
         sparseVal(indexCount) = dt / l;
+        
         rhoConstrToc = [rhoConstrToc, toc(t1)];
     end
     function lConstraints()
         t2 = tic;
         if k == 1; return; end;
+        
         %out(hi,N*8*(k - 1 - 1) + N*(2 -1) + i) = -1;
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
-        colInd(indexCount) = N*8*(k - 1 - 1) + N*(2 - 1) + i;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(2 -1) + i;
         sparseVal(indexCount) = -1;
+        
         %out(hi,N*8*(k - 1 - 1) + N*(8 -1) + i) = dt;
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
-        colInd(indexCount) = N*8*(k - 1 - 1) + N*(8 - 1) + i;
+        colInd(indexCount) = N*8*(k - 1 - 1) + N*(8 -1) + i;
         sparseVal(indexCount) = dt;
+        
         lConstrToc = [lConstrToc, toc(t2)];
     end
     function delConstraints()
@@ -140,7 +148,7 @@ forToc = toc(forTic);
             %out(hi,N*8*(k - 1) + N*(1 -1) + i) = -v;
             indexCount = indexCount + 1;
             rowInd(indexCount) = hi;
-            colInd(indexCount) = N*8*(k - 1) + N*(1 - 1) + i;
+            colInd(indexCount) = N*8*(k - 1) + N*(1 -1) + i;
             sparseVal(indexCount) = -v;
         end
         delConstrToc = [delConstrToc, toc(t3)];
@@ -155,7 +163,7 @@ forToc = toc(forTic);
             %out(hi,N*8*(k  - 1) + N*(1 -1) + i) = w;
             indexCount = indexCount + 1;
             rowInd(indexCount) = hi;
-            colInd(indexCount) = N*8*(k - 1) + N*(1 - 1) + i;
+            colInd(indexCount) = N*8*(k  - 1) + N*(1 -1) + i;
             sparseVal(indexCount) = w;
         end
         sigConstrToc = [sigConstrToc, toc(t4)];
@@ -169,7 +177,7 @@ forToc = toc(forTic);
             %out(hi, N*8*(k - 1) + N*(2 -1) + i) = -1 / dt;
             indexCount = indexCount + 1;
             rowInd(indexCount) = hi;
-            colInd(indexCount) = N*8*(k - 1) + N*(2 - 1) + i;
+            colInd(indexCount) = N*8*(k - 1) + N*(2 -1) + i;
             sparseVal(indexCount) = -1 / dt;
         end
         dConstrToc = [dConstrToc, toc(t5)];
@@ -183,13 +191,13 @@ forToc = toc(forTic);
                 %out(hi,N*8*(k- 1) + N*(5 -1) + 1) = -1;
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(5 - 1) + 1;
+                colInd(indexCount) = N*8*(k- 1) + N*(5 -1) + 1;
                 sparseVal(indexCount) = -1;
             else
                 %out(hi, N*8*(k - 1) + N*(4 -1) + 1) = -1;
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(4 - 1) + 1;
+                colInd(indexCount) = N*8*(k - 1) + N*(4 -1) + 1;
                 sparseVal(indexCount) = -1;
             end
         else
@@ -201,18 +209,19 @@ forToc = toc(forTic);
                 %out(hi, N*8*(k - 1) + N*(3 -1) + i-1) = -beta;
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(3 - 1) + i - 1;
+                colInd(indexCount) = N*8*(k - 1) + N*(3 -1) + i-1;
                 sparseVal(indexCount) = -beta;
+                
                 %out(hi, N*8*(k - 1) + N*(5 -1) + i) = -1;
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(5 - 1) + i;
+                colInd(indexCount) = N*8*(k - 1) + N*(5 -1) + i;
                 sparseVal(indexCount) = -1;
             else
                 %out(hi, N*8*(k - 1) + N*(4 -1) + i) = -1;
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(4 - 1) + i;
+                colInd(indexCount) = N*8*(k - 1) + N*(4 -1) + i;
                 sparseVal(indexCount) = -1;
             end
         end
@@ -224,38 +233,38 @@ forToc = toc(forTic);
             %out(hi,N*8*(k  - 1) + N*(3 -1) + N) = -1;
             indexCount = indexCount + 1;
             rowInd(indexCount) = hi;
-            colInd(indexCount) = N*8*(k  - 1) + N*(3 - 1) + N;
+            colInd(indexCount) = N*8*(k  - 1) + N*(3 -1) + N;
             sparseVal(indexCount) = -1;
         else
             del = demand(kk,i);
             fin = fluxIn(kk,i+1);
             beta = betamat(kk,i+1);
             d = rampDemand(kk,i+1);
-            p = pmat(i);
+            p = pmat(i+1);
             sig = supply(kk,i+1);
-            if sig * p / (1 + p) >= del * beta
+            if del*beta + d <= sig || fin * p / beta >= del
                 %out(hi, N*8*(k - 1) + N*(3 -1) + i) = -1;
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(3 - 1) + i;
+                colInd(indexCount) = N*8*(k - 1) + N*(3 -1) + i;
                 sparseVal(indexCount) = -1;
-            elseif sig / (1 + p) >= d
+            elseif fin * (1 - p) >= d
                 %out(hi,N*8*(k - 1) + N*(6 -1) + i+1) = - 1 / beta;
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(6 - 1) + i + 1;
-                sparseVal(indexCount) = -1 / beta;
+                colInd(indexCount) = N*8*(k - 1) + N*(6 -1) + i+1;
+                sparseVal(indexCount) = - 1 / beta;
                 %out(hi,N*8*(k - 1) + N*(5 -1) + i+1) = 1 / beta;
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(5 - 1) + i + 1;
+                colInd(indexCount) = N*8*(k - 1) + N*(5 -1) + i+1;
                 sparseVal(indexCount) = 1 / beta;
             else
                 %out(hi, N*8*(k - 1) + N*(4 -1) + i+1) = -p / ((1 + p)*beta);
                 indexCount = indexCount + 1;
                 rowInd(indexCount) = hi;
-                colInd(indexCount) = N*8*(k - 1) + N*(4 - 1) + i + 1;
-                sparseVal(indexCount) = -p / ((1 + p)*beta);
+                colInd(indexCount) = N*8*(k - 1) + N*(4 -1) + i+1;
+                sparseVal(indexCount) = -p *beta;
             end
         end
         fOutConstrToc = [fOutConstrToc, toc(t7)];
@@ -265,13 +274,13 @@ forToc = toc(forTic);
         %out(hi,N*8*(k - 1) + N*(6 -1) + i) = -1;
         indexCount = indexCount + 1;
         rowInd(indexCount) = hi;
-        colInd(indexCount) = N*8*(k - 1) + N*(6 - 1) + i;
+        colInd(indexCount) = N*8*(k - 1) + N*(6 -1) + i;
         sparseVal(indexCount) = -1;
         if i > 1
             %out(hi,N*8*(k - 1) + N*(7 -1) + i-1) = betamat(kk,i);
             indexCount = indexCount + 1;
             rowInd(indexCount) = hi;
-            colInd(indexCount) = N*8*(k - 1) + N*(7 - 1) + i - 1;
+            colInd(indexCount) = N*8*(k - 1) + N*(7 -1) + i-1;
             sparseVal(indexCount) = betamat(kk, i);
         end
         rConstrToc = [rConstrToc, toc(t8)];
