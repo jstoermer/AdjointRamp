@@ -5,12 +5,12 @@ global test_u
 test_u = [];
 colls = descentCollection;
 % parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
-% parameters.globalDescentAlgorithm = colls.ipOptPos;
-parameters.globalDescentAlgorithm = colls.gdBasicPos;
+parameters.globalDescentAlgorithm = colls.ipOptPos;
+% parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
-parameters.R = .01;
-parameters.globalMaxIterations = 200;
+parameters.R = 1.0;
+parameters.globalMaxIterations = 20;
 parameters.alpha = .1;
 % grad = @(x) 2*x;
 % cost = @(x) x^2;
@@ -40,8 +40,8 @@ os3 = forwardSimulation(scen, uoff);
 % os4 = forwardSimulation(scen, ustar);
 
 ustar = uoff*.5;
-iters =  5;
-stepScaling = 0.1;
+iters =  10;
+stepScaling = .2;
 ustar = rampOptimalUvarR(iters, stepScaling, scen, ustar);
 os4 = forwardSimulation(scen, ustar);
 % rampOptimalU(scen, u);
