@@ -11,24 +11,25 @@ scenario = io.xml_read(fnin);
 
 % find terminal nodes
 isterminal = [];
-for i=1:length(scenario.network.NodeList.node)
-    if(isempty(scenario.network.NodeList.node(i).inputs))
-        isterminal = [isterminal scenario.network.NodeList.node(i).ATTRIBUTE.id];
+for i=1:length(scenario.NetworkList.network.NodeList.node)
+    if(isempty(scenario.NetworkList.network.NodeList.node(i).inputs))
+        isterminal = [isterminal scenario.NetworkList.network.NodeList.node(i).ATTRIBUTE.id];
     end
-    nodeid(i) = scenario.network.NodeList.node(i).ATTRIBUTE.id;
+    nodeid(i) = scenario.NetworkList.network.NodeList.node(i).ATTRIBUTE.id;
 end
 
 % find mainline links with terminal begin node
 sourceFWid = [];
 fwlink2beginnode = [];
 orlink2endnode = [];
-for i=1:length(scenario.network.LinkList.link)
-    link = scenario.network.LinkList.link(i);
+for i=1:length(scenario.NetworkList.network.LinkList.link)
+    link = scenario.NetworkList.network.LinkList.link(i);
     linkid(i) = link.ATTRIBUTE.id;
-    if(strcmp(link.ATTRIBUTE.type,'FW'))
+    if(strcmp(link.ATTRIBUTE.type,'freeway'))
         begin_node = link.begin.ATTRIBUTE.node_id;
         fwlink2beginnode = [fwlink2beginnode;[linkid(i) begin_node]];
         if(ismember(begin_node,isterminal))
+            disp(i);
             sourceFWid = [sourceFWid begin_node];
         end
     end
@@ -50,9 +51,9 @@ cNodeId = sourceFWid;
 fwlinksid = [];
 fwlinks = {};
 nodes = {};
-demand = scenario.DemandProfileSet.demand;
+demand = scenario.DemandProfileSet.demandProfile;
 while(1)
-    currentNode = scenario.network.NodeList.node(nodeid==cNodeId);
+    currentNode = scenario.NetworkList.network.NodeList.node(nodeid==cNodeId);
     nodes{end+1} = currentNode;
     
     % find list of freeway output links
@@ -69,7 +70,7 @@ while(1)
     end
     nextlinkid = fwlink2beginnode(outFwLinks,1);
     fwlinksid = [fwlinksid nextlinkid];
-    nextlink = scenario.network.LinkList.link(linkid==nextlinkid);
+    nextlink = scenario.NetworkList.network.LinkList.link(linkid==nextlinkid);
     cNodeId = nextlink.xEnd.ATTRIBUTE.node_id;
     % is there an onramp here?
     if any(orlink2endnode(orlink2endnode==cNodeId))
@@ -110,16 +111,17 @@ nodes = [nodes{:}];
 % CLEAN UP REPRESENTATION
 for i = 1:length(fwlinks)
     link = fwlinks(i);
-    nl(i).rj = link.fd.ATTRIBUTE.densityJam;
-    nl(i).rc = link.fd.ATTRIBUTE.densityCritical;
-    nl(i).fm = link.fd.ATTRIBUTE.flowMax;
+    currFD = scenario.FundamentalDiagramProfileSet.fundamentalDiagramProfile(i).fundamentalDiagram;
+    nl(i).v = currFD.ATTRIBUTE.free_flow_speed;
+    nl(i).w = currFD.ATTRIBUTE.congestion_speed;
+    nl(i).fm = currFD.ATTRIBUTE.capacity;
+    nl(i).rc = nl(i).fm / nl(i).v;
+    nl(i).rj = currFD.ATTRIBUTE.jam_density;
     nl(i).l = link.ATTRIBUTE.length;
-    nl(i).beta = .5;
-    nl(i).p = .5;
+    nl(i).beta = 0.5;
+    nl(i).p = 0.5;
     nl(i).dt = link.demand_dt;
     nl(i).d = link.demand;
-    nl(i).v = nl(i).fm / nl(i).rc;
-    nl(i).w = nl(i).fm / (nl(i).rj - nl(i).rc);
 end
 
 
@@ -129,7 +131,7 @@ json.w = [nl.w];
 json.fm = [nl.fm];
 json.beta = [nl.beta];
 json.L = [nl.l];
-%% NO INIITIAL CONDITIONS BUILT IN YET, DEAL WITH IT
+% NO INIITIAL CONDITIONS BUILT IN YET, DEAL WITH IT
 json.l0 = zeros(size(json.v));
 json.p0 = zeros(size(json.v));
 json.p = [nl.p];
@@ -144,7 +146,7 @@ end
 json.D = json.D';
 json.D0 = zeros(1, size(json.D, 1));
 json.R = .1;
-json.dt = scenario.network.ATTRIBUTE.dt;
+json.dt = scenario.NetworkList.network.ATTRIBUTE.dt;
 %% THERE'S A BUG IN OUR CODE IF SOMETHING IS ACTUALLY USING DX
 json.dx = 0;
 savejson('',json, fnout);

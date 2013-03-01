@@ -61,28 +61,29 @@ end % end if nargin == 1
 [T,N] = size(primaryArg);
 
 xTickLabel = {};
-for i = 0:(N + 1)
-    xTickLabel{i + 1} = ['Link ' num2str(i)];
+for i = 1:(N + 1)
+    xTickLabel{i} = ['Link ' num2str(i)];
 end
 
-yTickLabel = {};
-for i = 0:T+1
-    yTickLabel{i + 1} = num2str(i);
-end
+% yTickLabel = {};
+% for i = 0:T+1
+%     yTickLabel{i + 1} = num2str(i);
+% end
 
 xTick = 0.5:(N + 1.5);
-yTick = 0.5:1:(T + 1.5);
+% yTick = 0.5:1:(T + 1.5);
 
 if isempty(plotInfo.axesHandle)
     myFigure = figure();
-    myAxes = axes('Parent', myFigure, 'XTickLabel',xTickLabel,'XTick',xTick,'YTickLabel',yTickLabel,'YTick',yTick,'Layer','top');
+    myAxes = axes('Parent', myFigure, 'XTickLabel',xTickLabel,'XTick',xTick,'Layer','top');
+%     'YTickLabel',yTickLabel,'YTick',yTick,
 else
     myAxes = plotInfo.axesHandle;
     set(myAxes, 'Layer', 'top');
     set(myAxes, 'XTick', xTick);
-    set(myAxes, 'YTickLabel', xTickLabel);
-    set(myAxes, 'YTick', yTick);
-    set(myAxes, 'YTickLabel', yTickLabel);
+    set(myAxes, 'XTickLabel', xTickLabel);
+%     set(myAxes, 'YTick', yTick);
+%     set(myAxes, 'YTickLabel', yTickLabel);
 end
     
     
