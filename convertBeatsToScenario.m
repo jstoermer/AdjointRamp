@@ -213,6 +213,10 @@ jsonScen = struct('links', links, 'BC', BC, 'IC', IC, 'N', N, 'T', T, ...
     'dt', dt, 'nConstraints', nConstraints, 'nControls', nControls, ...
     'processU', processU);
 
+% Split links into smaller links if the ratio v/L exceeds 0.5.
+jsonScen = splitLinks(jsonScen);
+D = jsonScen.BC.D;
+
 % Binary search to find the optimal demand matrix, ensuring that the
 % network is cleared and minimizing the number of time steps that have no
 % densities.
@@ -255,6 +259,5 @@ for i = 1:length(jsonScen.links)
     dispMsg = ['v/L for link ', num2str(i), ' is ', num2str(currCFL), '.'];
     disp(dispMsg);
 end % end for i
-
 
 end % convertBeatsToScenario

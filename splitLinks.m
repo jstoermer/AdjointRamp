@@ -13,40 +13,50 @@ function splitScen = splitLinks(unsplitScen)
 % splitScen - A scenario, given in the JSON format. For each link, v/L will
 %  not be less than 0.5.
 
-currUnsplitLinks = unsplitScen.links;
-currUnsplitDemand = unsplitScen.BC.D;
+unsplitLinks = unsplitScen.links;
+unsplitDemand = unsplitScen.BC.D;
+unsplitBeta = unsplitScen.BC.beta;
 
 while true
     splitLinks = [];
     splitCounter = 0;
-    [numTimeSteps, numLinks] = size(currUnsplitDemand);
+    [numTimeSteps, numLinks] = size(unsplitDemand);
     for i = 1:numLinks
-        if currUnsplitLinks(i).v / currUnsplitLinks(i).L < 0.5
-            splitLinkBegin = currUnsplitLinks(i);
-            splitLinkBegin.L = currUnsplitLinks(i).L / 2;
-            splitLinkEnd = currUnsplitLinks(i);
-            splitLinkEnd.L = currUnsplitLinks(i).L / 2;
+        if unsplitLinks(i).v / unsplitLinks(i).L < 0.5
+            splitLinkBegin = unsplitLinks(i);
+            splitLinkBegin.L = unsplitLinks(i).L / 2;
+            splitLinkEnd = unsplitLinks(i);
+            splitLinkEnd.L = unsplitLinks(i).L / 2;
             splitLinkEnd.rmax = 0;
             splitLinks = [splitLinks, splitLinkBegin, splitLinkEnd];
-            splitDemand = [currUnsplitDemand(:, 1:(i + splitCounter)) ...
-                zeros(numTimeSteps, 1), currUnsplitDemand(:, (i + 1 + ... 
+            splitDemand = [unsplitDemand(:, 1:(i + splitCounter)), ...
+                zeros(numTimeSteps, 1), unsplitDemand(:, (i + 1 + ... 
+                splitCounter):end)];
+            splitBeta = [unsplitBeta(:, 1:(i + splitCounter)), ...
+                zeros(numTimeSteps, 1), unsplitBeta(:, (i + 1 + ...
                 splitCounter):end)];
             splitCounter = splitCounter + 1;
-            currUnsplitDemand = splitDemand;
+            unsplitDemand = splitDemand;
+            unsplitBeta = splitBeta;
         else
-            splitLinks = [splitLinks, currUnsplitLinks(i)];
+            splitLinks = [splitLinks, unsplitLinks(i)];
         end % end if
     end % end for
-    if length(currUnsplitLinks) == length(splitLinks)
+    if length(unsplitLinks) == length(splitLinks)
         break;
     end % end if
-    currUnsplitLinks = splitLinks;
+    unsplitLinks = splitLinks;
 end % end while
 
-splitScen = struct('links', splitLinks, 'BC', splitDemand);
+unsplitScen.links = splitLinks;
+unsplitScen.BC.D = splitDemand;
+unsplitScen.BC.beta = splitBeta;
+unsplitScen.N = length(unsplitScen.links);
+unsplitScen.IC.l0 = zeros(1, unsplitScen.N);
+unsplitScen.IC.p0 = zeros(1, unsplitScen.N);
+unsplitScen.nConstraints = (unsplitScen.T + 1) * unsplitScen.N * 8;
+unsplitScen.nControls = unsplitScen.T * unsplitScen.N;
 
-for i = 1:length(splitScen.links)
-    disp(splitScen.links(i).v/splitScen.links(i).L);
-end 
+splitScen = unsplitScen;
 
 end % end splitLinks
