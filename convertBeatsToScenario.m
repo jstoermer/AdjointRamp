@@ -105,6 +105,24 @@ while true
         currLink.rmax = 0;
     end % if
     
+    for i = 1:length(beatsScen.SplitRatioProfileSet.splitratioProfile.splitratio)
+        currSplitRatio = beatsScen.SplitRatioProfileSet.splitratioProfile.splitratio(i);
+        currBeta = currSplitRatio.CONTENT;
+        currBetaLinkIn = currSplitRatio.ATTRIBUTE.link_in;
+        currBetaLinkOut = currSplitRatio.ATTRIBUTE.link_out;
+        % Attach the split ratio to the corresponding link.
+        if currBetaLinkIn == currLinkID
+            % Check that the link out is a freeway link, rather than an offramp.
+            if any(ismember(freewayLinks(:, 1), currBetaLinkOut)) 
+                currLink.beta = currBeta;
+            end % end if
+        end % end if
+    end % end for i
+    
+    if ~isfield(currLink, 'beta')
+        currLink.beta = 0;
+    end % end if
+    
     freewayLinksList{end + 1} = currLink;
     currNodeID = currLink.xEnd.ATTRIBUTE.node_id;
     
@@ -254,10 +272,10 @@ while (lowBound <= highBound)
 end % end while
 
 % Check the CFL condition.
-for i = 1:length(jsonScen.links)
-    currCFL = jsonScen.links(i).v / jsonScen.links(i).L;
-    dispMsg = ['v/L for link ', num2str(i), ' is ', num2str(currCFL), '.'];
-    disp(dispMsg);
-end % end for i
+% for i = 1:length(jsonScen.links)
+%     currCFL = jsonScen.links(i).v / jsonScen.links(i).L;
+%     dispMsg = ['v/L for link ', num2str(i), ' is ', num2str(currCFL), '.'];
+%     disp(dispMsg);
+% end % end for i
 
 end % convertBeatsToScenario
