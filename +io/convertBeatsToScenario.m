@@ -251,13 +251,13 @@ D = jsonScen.BC.D;
 beta = jsonScen.BC.beta;
 lowBound = 0;
 highBound = 2 * T;
-i = 0;
+% i = 0;
 
 while (lowBound <= highBound)
     midBound = floor((lowBound + highBound) / 2);
     % Check if the binary search is working as intended.
-    i = i + 1;
-    disp(['Current trial is ', num2str(i), ', with lowBound = ', num2str(lowBound), ' and highBound = ', num2str(highBound), '.']);
+    % i = i + 1;
+    % disp(['Current trial is ', num2str(i), ', with lowBound = ', num2str(lowBound), ' and highBound = ', num2str(highBound), '.']);
     
     % Terminates the loop if a "perfect" demand profile cannot be
     % generated, i.e. neither of the termination conditions can be 
