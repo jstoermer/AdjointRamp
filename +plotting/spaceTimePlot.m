@@ -62,7 +62,7 @@ end % end if nargin == 1
 
 xTickLabel = {};
 for i = 1:(N + 1)
-    xTickLabel{i} = ['Link ' num2str(i)];
+    xTickLabel{i} = num2str(i);
 end
 
 % yTickLabel = {};

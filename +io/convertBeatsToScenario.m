@@ -120,7 +120,7 @@ while true
     end % end for i
     
     if ~isfield(currLink, 'beta')
-        currLink.beta = 0;
+        currLink.beta = 1;
     end % end if
     
     freewayLinksList{end + 1} = currLink;
@@ -183,7 +183,7 @@ for i = 1:length(freewayLinksList)
     scenLinks(i).L = currLink.ATTRIBUTE.length;
     scenLinks(i).pc = scenLinks(i).fm / scenLinks(i).v;
     scenLinks(i).pm = currFD.ATTRIBUTE.jam_density;
-    scenBC(i).beta = 0.5;
+    scenBC(i).beta = currLink.beta;
     scenBC(i).dt = currLink.dt;
     scenBC(i).D = currLink.demand * convFactor; % Convert from veh/h to veh/"unit".
 end % for
@@ -209,8 +209,18 @@ l0 = zeros(1, N);
 p0 = zeros(1, N);
 IC = struct('l0', l0, 'p0', p0);
 
-% Create boundary conditions.
-beta = 0.5 * ones(T, N);
+% Create split ratios network.
+beta = zeros(T, N);
+for i = 1:N
+    currLinkDT = scenBC(i).dt;
+    for j = 1:T
+        if (j * dt) <= currLinkDT
+            beta(j, i) = scenBC(i).beta;
+        else
+            beta(j, i) = 1;
+        end
+    end 
+end
 
 % Create demand matrix.
 D = zeros(T, N);
@@ -232,18 +242,22 @@ jsonScen = struct('links', links, 'BC', BC, 'IC', IC, 'N', N, 'T', T, ...
     'processU', processU);
 
 % Split links into smaller links if the ratio v/L exceeds 0.5.
-jsonScen = splitLinks(jsonScen);
-D = jsonScen.BC.D;
+jsonScen = io.splitLinks(jsonScen);
 
 % Binary search to find the optimal demand matrix, ensuring that the
 % network is cleared and minimizing the number of time steps that have no
 % densities.
-
+D = jsonScen.BC.D;
+beta = jsonScen.BC.beta;
 lowBound = 0;
-highBound = 10 * T;
+highBound = 2 * T;
+i = 0;
 
 while (lowBound <= highBound)
     midBound = floor((lowBound + highBound) / 2);
+    % Check if the binary search is working as intended.
+    i = i + 1;
+    disp(['Current trial is ', num2str(i), ', with lowBound = ', num2str(lowBound), ' and highBound = ', num2str(highBound), '.']);
     
     % Terminates the loop if a "perfect" demand profile cannot be
     % generated, i.e. neither of the termination conditions can be 
@@ -255,7 +269,7 @@ while (lowBound <= highBound)
     testD = [D; zeros(midBound, size(D, 2))];
     jsonScen.BC.D = testD;
     jsonScen.T = size(jsonScen.BC.D, 1);
-    jsonScen.BC.beta = 0.5 * ones(jsonScen.T, jsonScen.N);
+    jsonScen.BC.beta = [beta; ones(midBound, size(beta, 2))];
     jsonScen.nConstraints = (jsonScen.T + 1) * jsonScen.N * 8;
     jsonScen.nControls = jsonScen.T * jsonScen.N;
     
@@ -264,6 +278,7 @@ while (lowBound <= highBound)
     
     if sum(outputState.density(end, :)) > 1
         lowBound = midBound;
+        highBound = 2 * highBound;
     elseif sum(outputState.density(end - 1, :)) < 1
         highBound = midBound;
     else
