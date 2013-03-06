@@ -1,15 +1,15 @@
 function plotBeforeAndAfter(varargin)
 [scen, u1] = scenUVarArgIn(varargin);
 
-myFigure = figure();
+% myFigure = figure();
 
-plotInfo = struct('currIter', 1, 'totalIter', 2, 'parentFigure', myFigure);
-os1 = plotting.plotForwardSim(scen, u1, plotInfo);
+% plotInfo = struct('currIter', 1, 'totalIter', 2, 'parentFigure', myFigure);
+os1 = plotting.plotForwardSim(scen, u1); % plotInfo
 
 u2 = rampOptimalU(scen, u1);
 
-plotInfo.currIter = 2;
-os2 = plotting.plotForwardSim(scen, u2, plotInfo);
+% plotInfo.currIter = 2;
+os2 = plotting.plotForwardSim(scen, u2); % plotInfo
 
 plotting.plotSimDifference(os1, os2);
 

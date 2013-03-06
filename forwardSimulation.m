@@ -58,6 +58,7 @@ for loopT = 1:T % solve for time step loopT
             rmax = linkDown.rmax;
         end
         [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandR, supplyDS, fluxOff] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, uCurrent, beta, p, scen.dt, rmax);
+        
         if loopLink > 1
             outFluxes(loopLink-1) = fluxUSout;
             mlDemand(loopLink - 1) = demandUS;
@@ -104,6 +105,8 @@ outputState.uPenalty = uPenalty(scen, queueStore, u);
 end
 
 function [fluxUSout, fluxDSin, fluxDSRamp, demandUS, demandRamp, supplyDS, offRampFlux] = solveJunction(linkUp, densityUp, linkDown, densityDown, queue, queueDemand, u, beta, p, dt, rmax)
+
+p = 1 / (1 + p);
 
 if isempty(linkUp) % start corner case
     demandUS = 0;
