@@ -184,7 +184,7 @@ for i = 1:length(freewayLinksList)
     scenLinks(i).pc = scenLinks(i).fm / scenLinks(i).v;
     scenLinks(i).pm = currFD.ATTRIBUTE.jam_density;
     scenBC(i).beta = currLink.beta;
-    scenBC(i).dt = currLink.dt;
+    scenBC(i).dt = currLink.dt / scenDT; % Convert from seconds to "unit".
     scenBC(i).D = currLink.demand * convFactor; % Convert from veh/h to veh/"unit".
 end % for
 
@@ -194,11 +194,12 @@ links = scenLinks;
 N = length(scenLinks);
 
 for i = 1:length(scenBC)
+    numDemands(i) = length(scenBC(i).D);
     demandDTs(i) = scenBC(i).dt;
 end % for i
-maxDemandDT = max(demandDTs);
+maxDemandDT = max(demandDTs) * max(numDemands);
 
-T = maxDemandDT / scenDT;
+T = maxDemandDT;
 dt = 1;
 nConstraints = (T + 1) * N * 8;
 nControls = T * N;
@@ -212,10 +213,15 @@ IC = struct('l0', l0, 'p0', p0);
 % Create split ratios network.
 beta = zeros(T, N);
 for i = 1:N
+    currLinkBeta = scenBC(i).beta;
     currLinkDT = scenBC(i).dt;
     for j = 1:T
-        if (j * dt) <= currLinkDT
-            beta(j, i) = scenBC(i).beta;
+        if (j * dt) <= currLinkDT * length(currLinkBeta)
+            for k = 1:length(currLinkBeta)
+                if (j * dt) <= k * currLinkDT && (j * dt) > (k-1) * currLinkDT
+                    beta(j, i) = scenBC(i).beta(k);
+                end
+            end
         else
             beta(j, i) = 1;
         end
@@ -225,10 +231,15 @@ end
 % Create demand matrix.
 D = zeros(T, N);
 for i = 1:N
+    currLinkDemand = scenBC(i).D;
     currLinkDT = scenBC(i).dt;
     for j = 1:T
-        if (j * dt) <= currLinkDT
-            D(j, i) = scenBC(i).D;
+        if (j * dt) <= currLinkDT * length(currLinkDemand)
+            for k = 1:length(currLinkDemand)
+                if (j * dt) <= k * currLinkDT && (j * dt) > (k-1) * currLinkDT
+                    D(j, i) = scenBC(i).D(k);
+                end
+            end
         else
             D(j, i) = 0;
         end % if
