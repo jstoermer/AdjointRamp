@@ -197,7 +197,7 @@ for i = 1:length(scenBC)
     numDemands(i) = length(scenBC(i).D);
     demandDTs(i) = scenBC(i).dt;
 end % for i
-maxDemandDT = max(demandDTs) * max(numDemands);
+maxDemandDT = max(demandDTs .* numDemands);
 
 T = maxDemandDT;
 dt = 1;
@@ -280,7 +280,7 @@ while (lowBound <= highBound)
     testD = [D; zeros(midBound, size(D, 2))];
     jsonScen.BC.D = testD;
     jsonScen.T = size(jsonScen.BC.D, 1);
-    jsonScen.BC.beta = [beta; ones(midBound, size(beta, 2))];
+    jsonScen.BC.beta = [beta; repmat(beta(end, :), midBound, 1)];
     jsonScen.nConstraints = (jsonScen.T + 1) * jsonScen.N * 8;
     jsonScen.nControls = jsonScen.T * jsonScen.N;
     
