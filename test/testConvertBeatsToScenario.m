@@ -1,15 +1,8 @@
 function testConvertBeatsToScenario
 
 % LOAD SAMPLE SCENARIOS.
-smallTestTic = tic;
 smallTest = io.convertBeatsToScenario('../networks/smalltest.xml');
-smallTestToc = toc(smallTestTic);
-disp(['Scenario for smallTest was generated in ', num2str(smallTestToc), ' seconds.']);
-
-smallTestVaryTic = tic;
 smallTestVary = io.convertBeatsToScenario('../networks/smallTestVary.xml');
-smallTestVaryToc = toc(smallTestVaryTic);
-disp(['Scenario for smallTestVary was generated in ', num2str(smallTestVaryToc), ' seconds.']);
 
 % TEST THAT EACH SCENARIO HAS THE CORRECT NUMBER OF LINKS.
 assertEqual(length(smallTest.links), smallTest.N);

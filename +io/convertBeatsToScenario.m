@@ -1,5 +1,7 @@
 function jsonScen = convertBeatsToScenario(fileName)
 
+tic;
+
 beatsScen = io.xml_read(fileName);
 numLinks = length(beatsScen.NetworkList.network.LinkList.link);
 numNodes = length(beatsScen.NetworkList.network.NodeList.node);
@@ -303,5 +305,8 @@ end % end while
 %     dispMsg = ['v/L for link ', num2str(i), ' is ', num2str(currCFL), '.'];
 %     disp(dispMsg);
 % end % end for i
+
+totalTime = toc;
+disp(['Scenario was generated in ', num2str(totalTime), ' seconds.']);
 
 end % convertBeatsToScenario
