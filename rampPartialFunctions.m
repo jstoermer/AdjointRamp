@@ -354,7 +354,9 @@ out = sparse(...
     R.*(barrierSum))');
 end
 
-function out = dJ_dx(scen, ~, ~)
+function out = dJ_dx(scen, states, u)
+global parameters;
+R = parameters.R;
 T = scen.T; N = scen.N;
 n = scen.nConstraints;
 out = sparse(1,n);
@@ -362,9 +364,18 @@ out = sparse(1,n);
 for k = 1:T+1
     for i = 1:N
         out(idx(N,k,1,i)) = scen.links(i).L * scen.dt;
-    end
-    for i = 1:N
         out(idx(N,k,2,i)) = scen.dt;
+        if k == T+1
+          continue;
+        end
+        l = states.queue(k,i);
+        uVal = u(k,i);
+        rMax = scen.links(i).rmax;
+        if uVal > .1 + min(rMax, l)
+          out(idx(N,k,2,i)) = inf;
+        elseif l < rMax
+          out(idx(N,k,2,i)) = out(idx(N,k,2,i)) + -R / (.1 + l - uVal);
+        end
     end
 end
 

@@ -1,5 +1,6 @@
 function testLineSearch
 clc; close all;
+do_plot = false;
 global parameters
 global test_u
 test_u = [];
@@ -9,8 +10,8 @@ parameters.globalDescentAlgorithm = colls.ipOptPos;
 % parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
-parameters.R = 1.0;
-parameters.globalMaxIterations = 20;
+parameters.R = .1;
+parameters.globalMaxIterations = 2;
 parameters.alpha = .1;
 % grad = @(x) 2*x;
 % cost = @(x) x^2;
@@ -32,16 +33,17 @@ parameters.alpha = .1;
 % scen = createScenario(10,30);
 % scen = 
 % scen = io.loadScenario('../networks/2on2off.json');
-scen = io.loadScenario('../networks/samitha1onramp.json');
+% scen = io.loadScenario('../networks/samitha1onramp.json');
+scen = io.convertBeatsToScenario('../networks/smalltest.xml');
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
 uoff = noControlU(scen);
 os3 = forwardSimulation(scen, uoff);
 % ustar = rampOptimalU(scen, uoff.*.5);
 % os4 = forwardSimulation(scen, ustar);
 
-ustar = uoff*.5;
-iters =  10;
-stepScaling = .2;
+ustar = uoff*.3;
+iters =  15;
+stepScaling = .1;
 ustar = rampOptimalUvarR(iters, stepScaling, scen, ustar);
 os4 = forwardSimulation(scen, ustar);
 % rampOptimalU(scen, u);
@@ -60,9 +62,10 @@ sum(sum(os4.density)) + sum(sum(os4.queue))
 totalTravelTime(scen, os3, uoff)
 totalTravelTime(scen, os4, ustar)
 
-plotting.spaceTimePlot(os3.density - os4.density, true);
-plotting.spaceTimePlot(os3.queue - os4.queue, true);
-plotting.plotForwardSim(scen, uoff);
-plotting.plotForwardSim(scen, ustar);
-
+if do_plot
+  plotting.spaceTimePlot(os3.density - os4.density, true);
+  plotting.spaceTimePlot(os3.queue - os4.queue, true);
+  plotting.plotForwardSim(scen, uoff);
+  plotting.plotForwardSim(scen, ustar);
+end
 end
