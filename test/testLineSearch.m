@@ -1,6 +1,6 @@
 function testLineSearch
 clc; close all;
-do_plot = false;
+do_plot = true;
 global parameters
 global test_u
 test_u = [];
@@ -10,7 +10,7 @@ colls = descentCollection;
 parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
-parameters.R = .1;
+parameters.R = 0.1;
 parameters.globalMaxIterations = 2;
 parameters.alpha = 0.1;
 % grad = @(x) 2*x;
@@ -34,8 +34,9 @@ parameters.alpha = 0.1;
 % scen = 
 % scen = io.loadScenario('../networks/2on2off.json');
 % scen = io.loadScenario('../networks/samitha1onramp.json');
-scen = io.convertBeatsToScenario('../networks/smalltest.xml');
+% scen = io.convertBeatsToScenario('../networks/smalltest.xml');
 % scen = io.convertBeatsToScenario('../networks/smallTestVary.xml');
+scen = io.convertBeatsToScenario('../networks/smallExample.xml');
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
 uoff = noControlU(scen);
 os3 = forwardSimulation(scen, uoff);
