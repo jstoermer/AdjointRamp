@@ -1,5 +1,6 @@
 function testLineSearch
 clc; close all;
+do_plot = false;
 global parameters
 global test_u
 test_u = [];
@@ -9,7 +10,7 @@ colls = descentCollection;
 parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
-parameters.R = 1.0;
+parameters.R = .1;
 parameters.globalMaxIterations = 2;
 parameters.alpha = 0.1;
 % grad = @(x) 2*x;
@@ -62,9 +63,10 @@ sum(sum(os4.density)) + sum(sum(os4.queue))
 totalTravelTime(scen, os3, uoff)
 totalTravelTime(scen, os4, ustar)
 
-% plotting.spaceTimePlot(os3.density - os4.density, true);
-% plotting.spaceTimePlot(os3.queue - os4.queue, true);
-% plotting.plotForwardSim(scen, uoff);
-% plotting.plotForwardSim(scen, ustar);
-
+if do_plot
+  plotting.spaceTimePlot(os3.density - os4.density, true);
+  plotting.spaceTimePlot(os3.queue - os4.queue, true);
+  plotting.plotForwardSim(scen, uoff);
+  plotting.plotForwardSim(scen, ustar);
+end
 end
