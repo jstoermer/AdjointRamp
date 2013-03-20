@@ -10,8 +10,13 @@ parameters.globalDescentAlgorithm = colls.ipOptPos;
 % parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
+<<<<<<< HEAD
 parameters.R = .1;
 parameters.globalMaxIterations = 2;
+=======
+parameters.R = .01;
+parameters.globalMaxIterations = 50;
+>>>>>>> new test for debugging
 parameters.alpha = .1;
 % grad = @(x) 2*x;
 % cost = @(x) x^2;
@@ -32,9 +37,14 @@ parameters.alpha = .1;
 
 % scen = createScenario(10,30);
 % scen = 
+<<<<<<< HEAD
 % scen = io.loadScenario('../networks/2on2off.json');
 % scen = io.loadScenario('../networks/samitha1onramp.json');
 scen = io.convertBeatsToScenario('../networks/smalltest.xml');
+=======
+%scen = io.loadScenario('../networks/2on2off.json');
+ scen = io.loadScenario('../networks/samitha1onramp.json');
+>>>>>>> new test for debugging
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
 uoff = noControlU(scen);
 os3 = forwardSimulation(scen, uoff);

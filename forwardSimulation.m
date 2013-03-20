@@ -147,7 +147,4 @@ else % supply constrained
 end
 fluxDSin = fluxUSout * beta + fluxDSRamp;
 offRampFlux = fluxUSout * (1 - beta);
-if fluxDSin + offRampFlux ~= fluxUSout + fluxDSRamp
-    return;
-end
 end
