@@ -10,9 +10,13 @@ colls = descentCollection;
 parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
-parameters.R = 0.1;
-parameters.globalMaxIterations = 100;
-parameters.alpha = 0.1;
+parameters.R = .1;
+parameters.globalMaxIterations = 2;
+=======
+parameters.R = .01;
+parameters.globalMaxIterations = 50;
+>>>>>>> new test for debugging
+parameters.alpha = .1;
 % grad = @(x) 2*x;
 % cost = @(x) x^2;
 % 
@@ -38,15 +42,16 @@ parameters.alpha = 0.1;
 % scen = io.convertBeatsToScenario('../networks/smallTestVary.xml');
 % scen = io.convertBeatsToScenario('../networks/smallExample.xml');
 scen = io.convertBeatsToScenario('../networks/tinyExample.xml');
+>>>>>>> new test for debugging
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
 uoff = noControlU(scen);
 os3 = forwardSimulation(scen, uoff);
 % ustar = rampOptimalU(scen, uoff.*.5);
 % os4 = forwardSimulation(scen, ustar);
 
-ustar = uoff * 0.5;
-iters =  1;
-stepScaling = 0.2;
+ustar = uoff*.3;
+iters =  15;
+stepScaling = .1;
 ustar = rampOptimalUvarR(iters, stepScaling, scen, ustar);
 os4 = forwardSimulation(scen, ustar);
 % rampOptimalU(scen, u);
