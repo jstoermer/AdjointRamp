@@ -1,6 +1,6 @@
 global parameters
 
-parameters.R = 10;
+parameters.R = 0.10;
 %% gradient methods
 % 1. gradient descent
 % 2. l-bfgs
@@ -8,10 +8,10 @@ parameters.R = 10;
 colls = descentCollection;
 parameters.globalDescentAlgorithm = colls.gdBasicPos;
 %parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
-parameters.alpha = 0.2;
+parameters.alpha = 0.10;
 colls = descentCollection;
 parameters.lineSearch = colls.gdBackTracking;
-parameters.globalConvergenceThreshold = .00000001;
+parameters.globalConvergenceThreshold = 1.00e-8;
 parameters.globalMaxIterations = 100;
 
 % how much to scale the control when not specified w/r/t the max flux per
@@ -20,8 +20,8 @@ parameters.defaultUScale = 0.95;
 
 %% backtracking line search specifics
 
-parameters.bt.alpha = .5;
-parameters.bt.beta = .9;
+parameters.bt.alpha = 0.50;
+parameters.bt.beta = 0.90;
 
 loadScenario = @io.loadScenario;
 

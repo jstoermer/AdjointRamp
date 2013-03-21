@@ -11,7 +11,7 @@ parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
 parameters.R = 0.1;
-parameters.globalMaxIterations = 2;
+parameters.globalMaxIterations = 100;
 parameters.alpha = 0.1;
 % grad = @(x) 2*x;
 % cost = @(x) x^2;
@@ -36,7 +36,8 @@ parameters.alpha = 0.1;
 % scen = io.loadScenario('../networks/samitha1onramp.json');
 % scen = io.convertBeatsToScenario('../networks/smalltest.xml');
 % scen = io.convertBeatsToScenario('../networks/smallTestVary.xml');
-scen = io.convertBeatsToScenario('../networks/smallExample.xml');
+% scen = io.convertBeatsToScenario('../networks/smallExample.xml');
+scen = io.convertBeatsToScenario('../networks/tinyExample.xml');
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
 uoff = noControlU(scen);
 os3 = forwardSimulation(scen, uoff);
@@ -44,7 +45,7 @@ os3 = forwardSimulation(scen, uoff);
 % os4 = forwardSimulation(scen, ustar);
 
 ustar = uoff * 0.5;
-iters =  10;
+iters =  1;
 stepScaling = 0.2;
 ustar = rampOptimalUvarR(iters, stepScaling, scen, ustar);
 os4 = forwardSimulation(scen, ustar);
@@ -59,10 +60,22 @@ os4 = forwardSimulation(scen, ustar);
 % plotting.plotBeforeAndAfter(scen, u);
 % ustar = rampOptimalU(scen, u);
 % os4 = forwardSimulation(scen, ustar);
+
 sum(sum(os3.density)) + sum(sum(os3.queue))
 sum(sum(os4.density)) + sum(sum(os4.queue))
 totalTravelTime(scen, os3, uoff)
 totalTravelTime(scen, os4, ustar)
+
+% The following plots the "activity" of u for tinyExample.xml.
+uActivity_os3_onramp1 = max(min(os3.queue(:, 1), scen.links(1).rmax) - [0; uoff(:, 1)], 0);
+uActivity_os3_onramp2 = max(min(os3.queue(:, 5), scen.links(5).rmax) - [0; uoff(:, 5)], 0);
+uActivity_os4_onramp1 = max(min(os4.queue(:, 1), scen.links(1).rmax) - [0; ustar(:, 1)], 0);
+uActivity_os4_onramp2 = max(min(os4.queue(:, 5), scen.links(5).rmax) - [0; ustar(:, 5)], 0);
+T = 1:length(uActivity_os3_onramp1);
+plot(T, uActivity_os3_onramp1, T, uActivity_os3_onramp2, T, uActivity_os4_onramp1, T, uActivity_os4_onramp2);
+legend('u_{off} for On-Ramp #1', 'u_{off} for On-Ramp #2', 'u_* for On-Ramp #1', 'u_* for On-Ramp #2');
+ylabel('Arbitrary Unit for u "Activity"');
+xlabel('Time Step');
 
 if do_plot
   plotting.spaceTimePlot(os3.density - os4.density, true);

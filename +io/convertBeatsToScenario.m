@@ -286,13 +286,13 @@ while (lowBound <= highBound)
     jsonScen.nConstraints = (jsonScen.T + 1) * jsonScen.N * 8;
     jsonScen.nControls = jsonScen.T * jsonScen.N;
     
-    u = chooseInitialU(jsonScen);
+    u = noControlU(jsonScen);
     outputState = forwardSimulation(jsonScen, u);
     
-    if sum(outputState.density(end, :)) > 1
+    if sum(outputState.density(end, :)) > 0.1
         lowBound = midBound;
         highBound = 2 * highBound;
-    elseif sum(outputState.density(end - 1, :)) < 1
+    elseif sum(outputState.density(end - 1, :)) < 0.1
         highBound = midBound;
     else
         break;
