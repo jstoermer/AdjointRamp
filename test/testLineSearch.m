@@ -10,13 +10,11 @@ colls = descentCollection;
 parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 
-parameters.R = .1;
-parameters.globalMaxIterations = 2;
-=======
-parameters.R = .01;
-parameters.globalMaxIterations = 50;
->>>>>>> new test for debugging
-parameters.alpha = .1;
+parameters.R = 0.1;
+parameters.globalMaxIterations = 100;
+parameters.alpha = 0.1;
+
+% new test for debugging
 % grad = @(x) 2*x;
 % cost = @(x) x^2;
 % 
@@ -42,17 +40,18 @@ parameters.alpha = .1;
 % scen = io.convertBeatsToScenario('../networks/smallTestVary.xml');
 % scen = io.convertBeatsToScenario('../networks/smallExample.xml');
 scen = io.convertBeatsToScenario('../networks/tinyExample.xml');
->>>>>>> new test for debugging
+
+% new test for debugging
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
 uoff = noControlU(scen);
 os3 = forwardSimulation(scen, uoff);
 % ustar = rampOptimalU(scen, uoff.*.5);
 % os4 = forwardSimulation(scen, ustar);
 
-ustar = uoff*.3;
-iters =  15;
-stepScaling = .1;
-ustar = rampOptimalUvarR(iters, stepScaling, scen, ustar);
+ustar = uoff * 0.3;
+iters =  1;
+stepScaling = 0.1;
+[ustar, costStar] = rampOptimalUvarR(iters, stepScaling, scen, ustar);
 os4 = forwardSimulation(scen, ustar);
 % rampOptimalU(scen, u);
 % % u(1,2) = .2;
@@ -72,15 +71,18 @@ totalTravelTime(scen, os3, uoff)
 totalTravelTime(scen, os4, ustar)
 
 % The following plots the "activity" of u for tinyExample.xml.
-uActivity_os3_onramp1 = max(min(os3.queue(:, 1), scen.links(1).rmax) - [0; uoff(:, 1)], 0);
-uActivity_os3_onramp2 = max(min(os3.queue(:, 5), scen.links(5).rmax) - [0; uoff(:, 5)], 0);
-uActivity_os4_onramp1 = max(min(os4.queue(:, 1), scen.links(1).rmax) - [0; ustar(:, 1)], 0);
-uActivity_os4_onramp2 = max(min(os4.queue(:, 5), scen.links(5).rmax) - [0; ustar(:, 5)], 0);
+uActivity_os3_onramp1 = onRampActivity(os3, 1, uoff);
+uActivity_os3_onramp2 = onRampActivity(os3, 5, uoff);
+uActivity_os4_onramp1 = onRampActivity(os4, 1, ustar);
+uActivity_os4_onramp2 = onRampActivity(os4, 5, ustar);
 T = 1:length(uActivity_os3_onramp1);
 plot(T, uActivity_os3_onramp1, T, uActivity_os3_onramp2, T, uActivity_os4_onramp1, T, uActivity_os4_onramp2);
 legend('u_{off} for On-Ramp #1', 'u_{off} for On-Ramp #2', 'u_* for On-Ramp #1', 'u_* for On-Ramp #2');
 ylabel('Arbitrary Unit for u "Activity"');
 xlabel('Time Step');
+
+% The following plots the "cost" for tinyExample.xml.
+plo
 
 if do_plot
   plotting.spaceTimePlot(os3.density - os4.density, true);
