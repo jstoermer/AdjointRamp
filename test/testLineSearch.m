@@ -71,18 +71,15 @@ totalTravelTime(scen, os3, uoff)
 totalTravelTime(scen, os4, ustar)
 
 % The following plots the "activity" of u for tinyExample.xml.
-uActivity_os3_onramp1 = onRampActivity(os3, 1, uoff);
-uActivity_os3_onramp2 = onRampActivity(os3, 5, uoff);
-uActivity_os4_onramp1 = onRampActivity(os4, 1, ustar);
-uActivity_os4_onramp2 = onRampActivity(os4, 5, ustar);
-T = 1:length(uActivity_os3_onramp1);
-plot(T, uActivity_os3_onramp1, T, uActivity_os3_onramp2, T, uActivity_os4_onramp1, T, uActivity_os4_onramp2);
-legend('u_{off} for On-Ramp #1', 'u_{off} for On-Ramp #2', 'u_* for On-Ramp #1', 'u_* for On-Ramp #2');
-ylabel('Arbitrary Unit for u "Activity"');
-xlabel('Time Step');
-
-% The following plots the "cost" for tinyExample.xml.
-plo
+% uActivity_os3_onramp1 = onRampActivity(os3, 1, uoff);
+% uActivity_os3_onramp2 = onRampActivity(os3, 5, uoff);
+% uActivity_os4_onramp1 = onRampActivity(os4, 1, ustar);
+% uActivity_os4_onramp2 = onRampActivity(os4, 5, ustar);
+% T = 1:length(uActivity_os3_onramp1);
+% plot(T, uActivity_os3_onramp1, T, uActivity_os3_onramp2, T, uActivity_os4_onramp1, T, uActivity_os4_onramp2);
+% legend('u_{off} for On-Ramp #1', 'u_{off} for On-Ramp #2', 'u_* for On-Ramp #1', 'u_* for On-Ramp #2');
+% ylabel('Arbitrary Unit for u "Activity"');
+% xlabel('Time Step');
 
 if do_plot
   plotting.spaceTimePlot(os3.density - os4.density, true);
