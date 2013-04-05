@@ -5,11 +5,14 @@ function outVal = fixInfVal(inVal)
 nonInf = inVal < Inf;
 nonInfVal = inVal(nonInf);
 finiteMax = max(nonInfVal);
+if isempty(finiteMax)
+   finiteMax = 1e4; 
+end
 outVal = inVal;
 
 for i = 1:length(inVal)
     if inVal(i) == Inf
-        outVal(i) = 2*finiteMax;
+        outVal(i) = 10*finiteMax;
     end
 end
 

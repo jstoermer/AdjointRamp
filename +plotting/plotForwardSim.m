@@ -29,21 +29,21 @@ elseif (totalIter == 2)
     subplotWidth = 0.334659;
     if (currIter == 1)
         subplotLeft = 0.13;
-        myTitle = ' Before \it{u}\rm Optimization';
+        myTitle = ', Before Optimization';
     elseif (currIter == 2)
         subplotLeft = 0.570341;
-        myTitle = ' After \it{u}\rm Optimization';
+        myTitle = ', After Optimization';
     end
 end
 
-linkDensities_axesHandle = axes('Parent', myFigure, 'Position', [subplotLeft, 0.709265, subplotWidth, 0.215735]);
+linkDensities_axesHandle = axes('Parent', myFigure, 'Position', [subplotLeft, 0.5838, subplotWidth, 0.3412]); % Previously [subplotLeft, 0.709625, subplotWidth, 0.3412].
 plotting.plotLinkDensities(myStates, linkDensities_axesHandle, myTitle);
 
-queueLength_axesHandle = axes('Parent', myFigure, 'Position', [subplotLeft, 0.409632, subplotWidth, 0.215735]);
+queueLength_axesHandle = axes('Parent', myFigure, 'Position', [subplotLeft, 0.11, subplotWidth, 0.3412]); % Previously [subplotLeft, 0.409632, subplotWidth, 0.215735].
 plotting.plotQueueLengths(myStates, queueLength_axesHandle, myTitle);
 
-uPenalty_axesHandle = axes('Parent', myFigure, 'Position', [subplotLeft, 0.11, subplotWidth, 0.215735]);
-plotting.plotUPenalty(myStates, uPenalty_axesHandle, myTitle);
+% uPenalty_axesHandle = axes('Parent', myFigure, 'Position', [subplotLeft, 0.11, subplotWidth, 0.215735]);
+% plotting.plotUPenalty(myStates, uPenalty_axesHandle, myTitle);
 
 outputStates = myStates;
 

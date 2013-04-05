@@ -40,17 +40,21 @@ for i = 1:numTrials
     optU = rampOptimalU(jsonScen);
     outState = forwardSimulation(jsonScen, u);
     optOutState = forwardSimulation(jsonScen, optU);
-    objCost(i) = findObjective(jsonScen, outState);
-    optObjCost(i) = findObjective(jsonScen, optOutState);
-    TTT(i) = findTTT(jsonScen, outState, u);
-    optTTT(i) = findTTT(jsonScen, optOutState, optU);
+    objCost(i) = findObjective(jsonScen, outState, u);
+    optObjCost(i) = findObjective(jsonScen, optOutState, optU);
+    TTT(i) = findTTT(jsonScen, outState);
+    optTTT(i) = findTTT(jsonScen, optOutState);
 end % end for
 
-% TO DO: MAKE PLOTS MORE ROBUST.
+objCost = fixInfVal(objCost);
+optObjCost = fixInfVal(optObjCost);
+TTT = fixInfVal(TTT);
+optTTT = fixInfVal(optTTT);
 
-subplot(2, 1, 1);
-area([objCost; TTT - objCost]');
-subplot(2, 1, 2);
-area([optObjCost; optTTT - optObjCost]');
+plot(numTimeSteps, objCost, 'o-', numTimeSteps, optObjCost, 'o-', numTimeSteps, TTT, 'o-', numTimeSteps, optTTT, 'o-');
+legend('Objective Cost, Before Optimization', 'Objective Cost, After Optimization', 'Total Travel Time, Before Optimization', 'Total Travel Time, After Optimization', 'Location', 'Northwest');
+title('Objective Costs and Travel Times');
+ylabel('Cost');
+xlabel('Number of Time Steps');
 
 end % end plotObjTTT
