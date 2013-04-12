@@ -1,4 +1,4 @@
-function plotBeforeAndAfter(varargin)
+function varargout = plotBeforeAndAfter(varargin)
 
 [scen, u1] = scenUVarArgIn(varargin);
 % myFigure = figure();
@@ -8,5 +8,8 @@ u2 = rampOptimalU(scen, u1);
 %plotInfo.currIter = 2;
 os2 = plotting.plotForwardSim(scen, u2); % Previously (scen, u2, plotInfo).
 %plotting.plotSimDifference(os1, os2);
+
+varargout{1} = os1;
+varargout{2} = os2;
 
 end
