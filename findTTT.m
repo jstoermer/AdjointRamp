@@ -17,4 +17,4 @@ l = states.queue(1:end - 1, :);
 dt = scen.dt;
 TTT = (sum(rho * L) + sum(sum(l))) * dt;
 
-end % end findObjective
+end % end findTTT

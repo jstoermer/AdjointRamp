@@ -9,6 +9,7 @@ out.backTrackingLineSearch = @backtrackingLineSearch;
 out.bfgs = @unboundedBFGS;
 out.bfgsPos = @strictlyPositiveLBFGS;
 out.ipOptPos = @ipOptPos;
+out.fMinCon = @fMinCon;
 out.stopIterating = @stopIterating;
 end
 
@@ -97,6 +98,18 @@ end
 out = x;
 end
 
+function out = fMinCon(u, objFn, gradFn)
+lowerBound = zeros(size(u));
+upperBound = ones(size(u))*inf;
+out = fMinConHelper(u, objFn, gradFn, lowerBound, upperBound);
+end % end fMinCon
+
+function out = fMinConHelper(u, objFn, gradFn, lowerBound, upperBound)
+global parameters;
+fun = {objFn, gradFn};
+options = optimset('GradObj', 'on', 'MaxIter', parameters.globalMaxIterations);
+out = fmincon(fun, u, [], [], [], [], lowerBound, upperBound, [], options);
+end % end fMinConHelper
 
 function out = basicLineSearch(u, gradient, ~, iteration)
 global parameters

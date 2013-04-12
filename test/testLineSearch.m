@@ -1,16 +1,18 @@
 function testLineSearch
 clc; close all;
-do_plot = true;
+tic;
+do_plot = false;
 global parameters
 global test_u
 test_u = [];
 colls = descentCollection;
 % parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
 % parameters.globalDescentAlgorithm = colls.ipOptPos;
-parameters.globalDescentAlgorithm = colls.gdBasicPos;
+% parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
+parameters.globalDescentAlgorithm = colls.fMinCon;
 
-parameters.R = 0.1;
+parameters.R = 0.01;
 parameters.globalMaxIterations = 100;
 parameters.alpha = 0.1;
 
@@ -35,11 +37,11 @@ parameters.alpha = 0.1;
 % scen = createScenario(10,30);
 % scen = 
 % scen = io.loadScenario('../networks/2on2off.json');
-% scen = io.loadScenario('../networks/samitha1onramp.json');
+scen = io.loadScenario('../networks/samitha1onramp.json');
 % scen = io.convertBeatsToScenario('../networks/smalltest.xml');
 % scen = io.convertBeatsToScenario('../networks/smallTestVary.xml');
 % scen = io.convertBeatsToScenario('../networks/smallExample.xml');
-scen = io.convertBeatsToScenario('../networks/tinyExample.xml');
+% scen = io.convertBeatsToScenario('../networks/tinyExample2.xml');
 
 % new test for debugging
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];
@@ -65,10 +67,23 @@ os4 = forwardSimulation(scen, ustar);
 % ustar = rampOptimalU(scen, u);
 % os4 = forwardSimulation(scen, ustar);
 
-sum(sum(os3.density)) + sum(sum(os3.queue))
-sum(sum(os4.density)) + sum(sum(os4.queue))
-totalTravelTime(scen, os3, uoff)
-totalTravelTime(scen, os4, ustar)
+% sum(sum(os3.density)) + sum(sum(os3.queue))
+% sum(sum(os4.density)) + sum(sum(os4.queue))
+% totalTravelTime(scen, os3, uoff)
+% totalTravelTime(scen, os4, ustar)
+
+runningTime = toc;
+
+clc;
+disp('Total travel time for scenario with no control = ');
+disp(findTTT(scen, os3));
+disp('Total travel time for scenario with control = ');
+disp(findTTT(scen, os4));
+disp('Total objective cost for scenario with no control = ');
+disp(findObjective(scen, os3, uoff));
+disp('Total objective cost for scenario with control = ');
+disp(findObjective(scen, os4, ustar));
+disp(['Total running time for testLineSearch was ', num2str(runningTime), ' seconds.']);
 
 % The following plots the "activity" of u for tinyExample.xml.
 % uActivity_os3_onramp1 = onRampActivity(os3, 1, uoff);
@@ -86,5 +101,6 @@ if do_plot
   plotting.spaceTimePlot(os3.queue - os4.queue, true);
   plotting.plotForwardSim(scen, uoff);
   plotting.plotForwardSim(scen, ustar);
-end
-end
+end % end if
+
+end % end testLineSearch

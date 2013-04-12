@@ -6,8 +6,9 @@ parameters.R = 0.10;
 % 2. l-bfgs
 
 colls = descentCollection;
-parameters.globalDescentAlgorithm = colls.gdBasicPos;
-%parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
+%parameters.globalDescentAlgorithm = colls.gdBasicPos;
+parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
+
 parameters.alpha = 0.10;
 colls = descentCollection;
 parameters.lineSearch = colls.gdBackTracking;
