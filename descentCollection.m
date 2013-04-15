@@ -9,6 +9,7 @@ out.backTrackingLineSearch = @backtrackingLineSearch;
 out.bfgs = @unboundedBFGS;
 out.bfgsPos = @strictlyPositiveLBFGS;
 out.ipOptPos = @ipOptPos;
+out.knitroOptPos = @knitroOptPos;
 out.stopIterating = @stopIterating;
 end
 
@@ -94,6 +95,32 @@ function b = callback (t, f, x)
   fprintf('%3d  %0.3g \n',t,f);
   b = true;
 end
+out = x;
+end
+
+function out = knitroOptPos(uvec, obj, grad)
+lb = zeros(size(uvec));
+ub = ones(size(uvec)).*inf;
+out = knitroOpt(uvec, obj, grad, lb, ub);
+end
+
+
+function out = knitroOpt(uvec, obj, grad, lb, ub)
+global parameters;
+x0 = uvec;
+
+% The callback functions.
+
+  function [a,b] = helper(u)
+    a = obj(u);
+    [b,c] = grad(u);
+  end
+
+options = optimset('Display','iter','GradObj','on','TolFun',1e-7,'MaxIter',parameters.globalMaxIterations);
+
+% Run IPOPT.
+x = ktrlink(@helper, x0, [], [], [], [], lb, ub, [], options);
+
 out = x;
 end
 

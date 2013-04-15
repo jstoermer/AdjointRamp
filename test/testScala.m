@@ -1,21 +1,19 @@
 function testScala
 clc; close all;
-do_plot = false;
 global parameters
-global test_u
-test_u = [];
 colls = descentCollection;
 parameters.globalDescentAlgorithm = colls.gdBasicPos;
+% parameters.globalDescentAlgorithm = colls.ipOptPos;
+
 
 parameters.R = .01;
-parameters.globalMaxIterations = 400;
-parameters.alpha = .1;
-scen = io.loadScenario('../networks/samitha1onramp.json');
+parameters.globalMaxIterations = 2000;
+parameters.alpha = .5;
+scen = io.loadScenario('../networks/samitha1onrampdt5.json');
 uoff = noControlU(scen);
-
-u0 = uoff*.5;
+u0 = uoff;
 ustar = rampOptimalU(scen, u0);
 
-os4 = forwardSimulation(scen, ustar);
-sum(sum(os4.density)) + sum(sum(os4.queue))
-totalTravelTime(scen, os4, ustar)
+sim = forwardSimulation(scen, ustar);
+sum(sum(sim.density)) + sum(sum(sim.queue))
+totalTravelTime(scen, sim, ustar)

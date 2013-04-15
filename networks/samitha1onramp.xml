@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario id="null" name="null" schemaVersion="2.0.2">
+  
+  <settings>
+    <units>US</units>
+    <VehicleTypes>
+      <vehicle_type name="car" weight="1.0"/>
+    </VehicleTypes>
+  </settings>
+
+  <InitialDensitySet>
+    <density link_id="-1">0.9</density>
+    <density link_id="-2">0.0</density>
+    <density link_id="1">0.9</density>
+    <density link_id="2">0.2</density>
+  </InitialDensitySet>
+
+  <DemandProfileSet>
+    <demandProfile dt="1" link_id_origin="-1">0.9, 0</demandProfile>
+    <demandProfile dt="1" link_id_origin="-2">0.0</demandProfile>
+  </DemandProfileSet>
+
+  <ControllerSet>
+    <!-- gabriel fill this in -->
+  </ControllerSet>
+
+  <FundamentalDiagramProfileSet>
+
+    <fundamentalDiagramProfile link_id="-1">
+      <fundamentalDiagram capacity="1" congestion_speed="1" jam_density="100" free_flow_speed="1" />
+    </fundamentalDiagramProfile>
+    
+    <fundamentalDiagramProfile link_id="-2">
+      <fundamentalDiagram capacity="1" congestion_speed="15" jam_density="100" free_flow_speed="1"/>
+    </fundamentalDiagramProfile>
+
+    <fundamentalDiagramProfile link_id="1">
+      <fundamentalDiagram capacity=".9" congestion_speed="1" jam_density=".9" free_flow_speed="1" />
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile link_id="2">
+      <fundamentalDiagram capacity="1" congestion_speed="1" jam_density="1" free_flow_speed="1" />
+    </fundamentalDiagramProfile>
+  </FundamentalDiagramProfileSet>
+  <NetworkList>
+    <network dt="5" id="-1" name="New Network">
+      <NodeList>
+        <node id="-1" type="terminal">
+          <outputs>
+            <output link_id="-1"/>
+          </outputs>
+          <inputs>
+          </inputs>
+        </node>
+
+        <node id="-2" type="terminal">
+          <outputs>
+            <output link_id="-2"/>
+          </outputs>
+          <inputs>
+          </inputs>
+        </node>
+
+        <node id="-3" type="terminal">
+          <outputs>
+          </outputs>
+          <inputs>
+            <input link_id="2"/>            
+          </inputs>
+        </node>
+
+        <node id="1" type="simple">
+          <outputs>
+            <output link_id="1"/>            
+          </outputs>
+          <inputs>
+            <input link_id="-1"/>            
+          </inputs>
+        </node>
+
+        <node id="2" type="simple">
+          <outputs>
+            <output link_id="2"/>            
+          </outputs>
+          <inputs>
+            <input link_id="-2"/>            
+            <input link_id="1"/>                        
+          </inputs>
+        </node>
+      </NodeList>
+      <LinkList>
+        <link id="-1" lanes="1" length="1" type="onramp">
+          <begin node_id="-1"/>
+          <end node_id="1"/>
+          <dynamics type="CTM"/>
+        </link>
+        <link id="-2" lanes="1" length="1" type="onramp">
+          <begin node_id="-2"/>
+          <end node_id="2"/>
+          <dynamics type="CTM"/>
+        </link>
+
+        <link id="1" lanes="1" length="1" type="freeway">
+          <begin node_id="1"/>
+          <end node_id="2"/>
+          <dynamics type="CTM"/>
+        </link>
+
+        <link id="2" lanes="1" length="1" type="freeway">
+          <begin node_id="2"/>
+          <end node_id="3"/>
+          <dynamics type="CTM"/>
+        </link>
+      </LinkList>
+    </network>
+  </NetworkList>
+</scenario>
