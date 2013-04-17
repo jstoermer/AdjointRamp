@@ -4,7 +4,7 @@ function out = descentCollection
 out.gdBackTracking = standardGradientDescentSpecifyLS(@backtrackingLineSearch);
 out.gdBasic = standardGradientDescentSpecifyLS(@basicLineSearch);
 out.gdBackTrackingPos = standardGradientDescentSpecifyLS(boundedLineSearch(0, inf, @backtrackingLineSearch));
-out.gdBasicPos = standardGradientDescentSpecifyLS(boundedLineSearch(0, inf, @basicLineSearch));
+out.gdBasicPos = standardGradientDescentSpecifyLS(boundedLineSearch(0.001, .999, @basicLineSearch));
 out.backTrackingLineSearch = @backtrackingLineSearch;
 out.bfgs = @unboundedBFGS;
 out.bfgsPos = @strictlyPositiveLBFGS;
@@ -63,8 +63,8 @@ clear bfgsStore;
 end
 
 function out = ipOptPos(uvec, obj, grad)
-lb = zeros(size(uvec));
-ub = ones(size(uvec)).*inf;
+lb = ones(size(uvec)).*.00001;
+ub = ones(size(uvec)).*.99999;
 out = ipOpt(uvec, obj, grad, lb, ub);
 end
 
@@ -99,8 +99,8 @@ out = x;
 end
 
 function out = knitroOptPos(uvec, obj, grad)
-lb = zeros(size(uvec));
-ub = ones(size(uvec)).*inf;
+lb = ones(size(uvec)).*.00001;
+ub = ones(size(uvec)).*.99999;
 out = knitroOpt(uvec, obj, grad, lb, ub);
 end
 

@@ -8,12 +8,6 @@ else
 end
 
 
-T = scen.T;
-N = scen.N;
+u = noControlU(scen).*factor;
 
-u = zeros(T,N);
-
-for n = 1:N
-    u(:, n) = scen.links(n).rmax* factor;
-end
 end

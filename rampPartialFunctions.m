@@ -14,10 +14,7 @@ for k = 1:T
     for i = 1:N
         l = states.queue(k,i);
         rmax = scen.links(i).rmax;
-        u_cur = u(k,i);
-        if u_cur < min(l / scen.dt, rmax)
-            out(8*N*(k - 1) + N*(5 - 1) + i, N*(k - 1) + i) = -1;
-        end
+        out(8*N*(k - 1) + N*(5 - 1) + i, N*(k - 1) + i) = -min(l / scen.dt, rmax);
     end
 end
 end
@@ -175,12 +172,12 @@ forToc = toc(forTic);
         l = queue(k,i);
         rmax = rmaxmat(i);
         uVal = u(kk,i);
-        if l /dt <= min(uVal, rmax)
+        if l /dt <= rmax
             %out(hi, N*8*(k - 1) + N*(2 -1) + i) = -1 / dt;
             indexCount = indexCount + 1;
             rowInd(indexCount) = hi;
             colInd(indexCount) = N*8*(k - 1) + N*(2 -1) + i;
-            sparseVal(indexCount) = -1 / dt;
+            sparseVal(indexCount) = -uVal / dt;
         end
         dConstrToc = [dConstrToc, toc(t5)];
     end
@@ -346,8 +343,8 @@ R = parameters.R;
 % partialJ_u given by
 % \frac{\partial J}{u_i(k)} = R \cdot \ind{u_i(k) \le l_i(k)}
 rMax  = repmat([scen.links.rmax], scen.T, 1);
-barrierSum = barrierMaxGrad(u, .1 + min(rMax, states.queue(1:end-1,:)));
-% barrierSum = barrierSum + barrierMinGrad(u, 0);
+barrierSum = barrierMaxGrad(u, 1.0);
+barrierSum = barrierSum + barrierMinGrad(u, 0.0);
 
 out = sparse(...
     stacker(...
@@ -365,17 +362,6 @@ for k = 1:T+1
     for i = 1:N
         out(idx(N,k,1,i)) = scen.links(i).L * scen.dt;
         out(idx(N,k,2,i)) = scen.dt;
-        if k == T+1
-          continue;
-        end
-        l = states.queue(k,i);
-        uVal = u(k,i);
-        rMax = scen.links(i).rmax;
-        if uVal > .1 + min(rMax, l)
-          out(idx(N,k,2,i)) = inf;
-        elseif l < rMax
-          out(idx(N,k,2,i)) = out(idx(N,k,2,i)) + -R / (.1 + l - uVal);
-        end
     end
 end
 
