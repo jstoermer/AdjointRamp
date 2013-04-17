@@ -114,7 +114,7 @@ else
     demandUS = min(linkUp.v * densityUp, linkUp.fm); % upstream demand
 end
 
-demandRamp = min([queue / dt, rmax, u]);
+demandRamp = u*min([queue / dt, rmax]);
 % this approach isn't really working
 %
 %   if queue == 0 % check for empty queue

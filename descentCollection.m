@@ -4,12 +4,13 @@ function out = descentCollection
 out.gdBackTracking = standardGradientDescentSpecifyLS(@backtrackingLineSearch);
 out.gdBasic = standardGradientDescentSpecifyLS(@basicLineSearch);
 out.gdBackTrackingPos = standardGradientDescentSpecifyLS(boundedLineSearch(0, inf, @backtrackingLineSearch));
-out.gdBasicPos = standardGradientDescentSpecifyLS(boundedLineSearch(0, inf, @basicLineSearch));
+out.gdBasicPos = standardGradientDescentSpecifyLS(boundedLineSearch(0.001, .999, @basicLineSearch));
 out.backTrackingLineSearch = @backtrackingLineSearch;
 out.bfgs = @unboundedBFGS;
 out.bfgsPos = @strictlyPositiveLBFGS;
 out.ipOptPos = @ipOptPos;
 out.fMinCon = @fMinCon;
+out.knitroOptPos = @knitroOptPos;
 out.stopIterating = @stopIterating;
 end
 
@@ -63,8 +64,8 @@ clear bfgsStore;
 end
 
 function out = ipOptPos(uvec, obj, grad)
-lb = zeros(size(uvec));
-ub = ones(size(uvec)).*inf;
+lb = ones(size(uvec)).*.00001;
+ub = ones(size(uvec)).*.99999;
 out = ipOpt(uvec, obj, grad, lb, ub);
 end
 
@@ -95,6 +96,32 @@ function b = callback (t, f, x)
   fprintf('%3d  %0.3g \n',t,f);
   b = true;
 end
+out = x;
+end
+
+function out = knitroOptPos(uvec, obj, grad)
+lb = ones(size(uvec)).*.00001;
+ub = ones(size(uvec)).*.99999;
+out = knitroOpt(uvec, obj, grad, lb, ub);
+end
+
+
+function out = knitroOpt(uvec, obj, grad, lb, ub)
+global parameters;
+x0 = uvec;
+
+% The callback functions.
+
+  function [a,b] = helper(u)
+    a = obj(u);
+    [b,c] = grad(u);
+  end
+
+options = optimset('Display','iter','GradObj','on','TolFun',1e-7,'MaxIter',parameters.globalMaxIterations);
+
+% Run IPOPT.
+x = ktrlink(@helper, x0, [], [], [], [], lb, ub, [], options);
+
 out = x;
 end
 

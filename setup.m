@@ -17,7 +17,7 @@ parameters.globalMaxIterations = 100;
 
 % how much to scale the control when not specified w/r/t the max flux per
 % ramp
-parameters.defaultUScale = 0.95;
+parameters.defaultUScale = 1.0;
 
 %% backtracking line search specifics
 

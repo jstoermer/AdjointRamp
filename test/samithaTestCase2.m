@@ -5,17 +5,18 @@ global u12;
 
 global parameters;
 colls = descentCollection;
-parameters.R =.01   ;
-parameters.alpha = .1
-parameters.globalMaxIterations = 400;
-parameters.globalDescentAlgorithm = colls.gdBasicPos;
+parameters.R =.1   ;
+parameters.alpha = .15;
+parameters.globalMaxIterations = 45;
+% parameters.globalDescentAlgorithm = colls.gdBasicPos;
+parameters.globalDescentAlgorithm = colls.ipOptPos;
 
 u12 = [];
-scen = io.loadScenario('../networks/samitha1onramp.json');
+scen = io.loadScenario('../networks/samitha1onrampdt5.json');
 
 uoff = noControlU(scen);
 %figure(1)
-ustar = rampOptimalU(scen, uoff);
+ustar = rampOptimalU(scen, uoff)
 os3 = forwardSimulation(scen, ustar);
 sum(sum(os3.density)) + sum(sum(os3.queue))
 os3.density

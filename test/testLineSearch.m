@@ -8,34 +8,16 @@ test_u = [];
 colls = descentCollection;
 % parameters.globalDescentAlgorithm = colls.gdBackTrackingPos;
 % parameters.globalDescentAlgorithm = colls.ipOptPos;
-% parameters.globalDescentAlgorithm = colls.gdBasicPos;
+parameters.globalDescentAlgorithm = colls.gdBasicPos;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 parameters.globalDescentAlgorithm = colls.fMinCon;
+% parameters.globalDescentAlgorithm = colls.knitroOptPos;
 
-parameters.R = 0.1;
-parameters.globalMaxIterations = 20;
-parameters.alpha = 0.1;
 
-% new test for debugging
-% grad = @(x) 2*x;
-% cost = @(x) x^2;
-% 
-% x_0 = 4;
-% x_1 = -8;
-% colls = descentCollection;
-% 
-% x_star = gradientDescent(x_0, cost, grad, 20, colls.backTrackingLineSearch, colls.stopIterating);
-% x_star = gradientDescent(x_1, cost, grad, 20, colls.backTrackingLineSearch, colls.stopIterating);
-% 
-% assertVectorsAlmostEqual(0, x_star);
-% 
-% x_star = gradientDescent(x_1, cost, grad, 20, colls.backTrackingLineSearch, colls.stopIterating);
-% 
-% assertVectorsAlmostEqual(0, x_star);
-% 
+parameters.R = .0001;
+parameters.globalMaxIterations = 10;
+parameters.alpha = .5;
 
-% scen = createScenario(10,30);
-% scen = 
 % scen = io.loadScenario('../networks/2on2off.json');
 scen = io.loadScenario('../networks/samitha1onramp.json');
 % scen = io.convertBeatsToScenario('../networks/smalltest.xml');
@@ -49,11 +31,10 @@ uoff = noControlU(scen);
 os3 = forwardSimulation(scen, uoff);
 % ustar = rampOptimalU(scen, uoff.*.5);
 % os4 = forwardSimulation(scen, ustar);
-
-ustar = uoff * 0.7;
-iters =  7;
-stepScaling = 0.2;
-[ustar, costStar] = rampOptimalUvarR(iters, stepScaling, scen, ustar);
+ustar = uoff.*.5;
+iters =  10;
+stepScaling = .001;
+ustar = rampOptimalUvarR(iters, stepScaling, scen, ustar)
 os4 = forwardSimulation(scen, ustar);
 % rampOptimalU(scen, u);
 % % u(1,2) = .2;
