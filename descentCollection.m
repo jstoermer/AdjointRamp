@@ -107,7 +107,7 @@ end % end fMinCon
 function out = fMinConHelper(u, objFn, gradFn, lowerBound, upperBound)
 global parameters;
 fun = {objFn, gradFn};
-options = optimset('GradObj', 'on', 'MaxIter', parameters.globalMaxIterations);
+options = optimset('GradObj', 'on', 'MaxIter', parameters.globalMaxIterations, 'TolFun', 1e-20);
 out = fmincon(fun, u, [], [], [], [], lowerBound, upperBound, [], options);
 end % end fMinConHelper
 

@@ -12,8 +12,8 @@ colls = descentCollection;
 % parameters.globalDescentAlgorithm = colls.bfgsPos;
 parameters.globalDescentAlgorithm = colls.fMinCon;
 
-parameters.R = 0.01;
-parameters.globalMaxIterations = 100;
+parameters.R = 0.1;
+parameters.globalMaxIterations = 20;
 parameters.alpha = 0.1;
 
 % new test for debugging
@@ -50,9 +50,9 @@ os3 = forwardSimulation(scen, uoff);
 % ustar = rampOptimalU(scen, uoff.*.5);
 % os4 = forwardSimulation(scen, ustar);
 
-ustar = uoff * 0.3;
-iters =  1;
-stepScaling = 0.1;
+ustar = uoff * 0.7;
+iters =  7;
+stepScaling = 0.2;
 [ustar, costStar] = rampOptimalUvarR(iters, stepScaling, scen, ustar);
 os4 = forwardSimulation(scen, ustar);
 % rampOptimalU(scen, u);
@@ -74,7 +74,7 @@ os4 = forwardSimulation(scen, ustar);
 
 runningTime = toc;
 
-clc;
+%clc;
 disp('Total travel time for scenario with no control = ');
 disp(findTTT(scen, os3));
 disp('Total travel time for scenario with control = ');
