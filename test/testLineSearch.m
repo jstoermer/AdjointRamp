@@ -19,11 +19,12 @@ parameters.globalMaxIterations = 100;
 parameters.alpha = 0.5;
 
 % scen = io.loadScenario('../networks/2on2off.json');
-scen = io.loadScenario('../networks/samitha1onramp.json');
+% scen = io.loadScenario('../networks/samitha1onramp.json');
 % scen = io.convertBeatsToScenario('../networks/smalltest.xml');
 % scen = io.convertBeatsToScenario('../networks/smallTestVary.xml');
 % scen = io.convertBeatsToScenario('../networks/smallExample.xml');
 % scen = io.convertBeatsToScenario('../networks/tinyExample2.xml');
+scen = evalin('base', 'NT_10');
 
 % new test for debugging
 % u = [.9 .1; .9 .1;0 0;0 0;0 0;];

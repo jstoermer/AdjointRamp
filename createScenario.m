@@ -2,7 +2,7 @@ function [myScenario] = createScenario(numLinks, numTimeSteps)
 % PURPOSE:
 % Generates a nontrivial scenario, provided the number of links and the
 % number of time steps.
-
+%
 % ARGUMENTS:
 % numLinks: Number of links.
 % numTimeSteps: Number of time steps.
@@ -19,6 +19,8 @@ function [myScenario] = createScenario(numLinks, numTimeSteps)
 % beta: Split ratios.
 % l0: Initial queues.
 % p0: Initial densities.
+
+tic;
 
 w = 0.5 + 0.5 .* rand(1, numLinks);
 v = ones(1, numLinks);
@@ -60,7 +62,7 @@ myScenario = struct('links', myLinks, 'BC', BC, 'IC', IC, 'N', numLinks, ...
 % network is cleared and minimizing the number of time steps that have no
 % densities.
 
-u = chooseInitialU(myScenario);
+u = noControlU(myScenario);
 lowBound = 1;
 highBound = numTimeSteps;
 
@@ -72,7 +74,7 @@ while (lowBound <= highBound)
     % satisfied. Returns the current optimal demand profile.
     if (midBound == lowBound || midBound == highBound)
         % disp(outputState.density);
-        return;
+        break;
     end % end if
     
     % The nonzero demands will follow a "noisy" Gaussian distribution with
@@ -94,9 +96,12 @@ while (lowBound <= highBound)
         lowBound = midBound;
     else
         % disp(outputState.density);
-        return;
+        break;
     end % end if
     
 end % end while (lowBound <= highBound)
+
+runningTime = toc;
+disp(['Scenario was generated in ', num2str(runningTime), ' seconds.']);
 
 end % end createScenario
